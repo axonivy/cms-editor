@@ -6,7 +6,7 @@
   "homepage": "https://developer.axonivy.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/axonivy/cms-editor-client"
+    "url": "https://github.com/axonivy/cms-editor"
   },
   "files": [
     "lib",
