@@ -3,8 +3,8 @@
   "private": true,
   "version": "13.2.0-next",
   "dependencies": {
-    "@axonivy/cms-editor": "*",
-    "@axonivy/cms-editor-protocol": "*",
+    "@axonivy/cms-editor": "~13.2.0-next",
+    "@axonivy/cms-editor-protocol": "~13.2.0-next",
     "@axonivy/jsonrpc": "~13.2.0-next.720",
     "@axonivy/ui-components": "~13.2.0-next.720",
     "@axonivy/ui-icons": "~13.2.0-next.720",
