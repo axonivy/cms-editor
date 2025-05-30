@@ -83,9 +83,10 @@ test('keyboard support', async () => {
 
   await add.trigger.click();
   await expect(add.locator).toBeVisible();
+  await expect(add.name.locator).toHaveValue('NewContentObject');
   await add.namespace.locator.fill('/A');
   await keyboard.press('ControlOrMeta+Enter');
-  await expect(add.locator).toBeVisible();
+  await expect(add.name.locator).toHaveValue('');
   await add.name.locator.fill('TestContentObject');
   await keyboard.press('Enter');
   await expect(add.locator).toBeHidden();
