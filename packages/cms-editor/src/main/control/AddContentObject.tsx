@@ -23,7 +23,7 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CmsValueField } from '../../components/CmsValueField';
 import { useAppContext } from '../../context/AppContext';
@@ -42,6 +42,7 @@ type AddContentObjectProps = {
 
 export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const { t } = useTranslation();
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const { context, contentObjects, selectedContentObject, setSelectedContentObject, defaultLanguageTags, languageDisplayName } =
     useAppContext();
 
@@ -89,7 +90,12 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
             .findIndex(co => co.uri === uri);
           setSelectedContentObject(selectedContentObject);
           selectRow(String(selectedContentObject));
-          setOpen(event.ctrlKey || event.metaKey);
+          if (!event.ctrlKey && !event.metaKey) {
+            setOpen(false);
+          } else {
+            setName('');
+            nameInputRef.current?.focus();
+          }
         }
       }
     );
@@ -136,7 +142,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
         <DialogDescription>{t('dialog.addContentObject.description')}</DialogDescription>
         <Flex direction='column' gap={3} ref={enter} tabIndex={-1} className='cms-editor-add-content-object-content-fields'>
           <BasicField label={t('common.label.name')} message={nameMessage}>
-            <Input value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
+            <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
           </BasicField>
           <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
             <Combobox
