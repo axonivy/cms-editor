@@ -8,7 +8,7 @@
       "name": "Launch Standalone (Chrome)",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:3003/?server=localhost:8081&app=designer&pmv=cms-test-project",
+      "url": "http://localhost:3003/?server=localhost:8080/~Developer-cms-test-project&app=Developer-cms-test-project&pmv=cms-test-project",
       "preLaunchTask": "Start Standalone",
       "postDebugTask": "Terminate All Tasks"
     },
