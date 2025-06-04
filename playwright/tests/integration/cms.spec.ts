@@ -1,13 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { CmsEditor } from '../pageobjects/CmsEditor';
 
-let editor: CmsEditor;
-
-test.beforeEach(async ({ page }) => {
-  editor = await CmsEditor.openCms(page);
-});
-
-test('load data', async () => {
+test('load data', async ({ page }) => {
+  const editor = await CmsEditor.openCms(page);
   await expect(editor.main.table.rows).toHaveCount(2);
 
   await editor.main.table.row(0).locator.click();
