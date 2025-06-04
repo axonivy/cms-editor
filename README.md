@@ -25,7 +25,7 @@ This repo contains the web-based CMS Editor client.
 Simply start the `Launch Standalone` or `Launch Standalone Mock` launch config to get debug and breakpoint support.
 
 > [!NOTE]
-> The `Launch Standalone` launch config connects to a real engine and therefore requires a running engine on port 8080 with a workspace and project called `cms-test-project`. These attributes can be changed via URL parameters.
+> The `Launch Standalone` launch config connects to a real engine and therefore requires a running engine on port 8080 with a workspace and project called `cms-test-project`. These attributes can be changed via URL parameters. Execute `./scripts/playwrightInit.sh <path-to-core>` to setup the workspace.
 
 > [!NOTE]
 > The `Launch Standalone Mock` launch config only receives mock data and therefore does not work with features for which a real engine is needed (e.g. data validation).
