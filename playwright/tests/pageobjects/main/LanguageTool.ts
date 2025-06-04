@@ -30,4 +30,10 @@ export class LanguageTool {
   checkboxOfRow(index: number) {
     return this.languages.row(index).locator.getByRole('checkbox');
   }
+
+  async addLanguage(index: number) {
+    await this.add.trigger.click();
+    await this.add.languages.row(index).locator.click();
+    await this.add.add.click();
+  }
 }
