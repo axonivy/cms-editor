@@ -47,7 +47,9 @@ export const MainContent = () => {
     onSelect: selectedRows => {
       const selectedRowId = Object.keys(selectedRows).find(key => selectedRows[key]);
       const selectedContentObject = table.getRowModel().flatRows.find(row => row.id === selectedRowId)?.index;
-      setSelectedContentObject(selectedContentObject);
+      if (selectedContentObject !== undefined) {
+        setSelectedContentObject(selectedContentObject);
+      }
     }
   });
 
