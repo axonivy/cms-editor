@@ -18,7 +18,7 @@ import {
   useTableSort
 } from '@axonivy/ui-components';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type Row } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -89,7 +89,6 @@ export const MainContent = () => {
     data: contentObjects,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    globalFilterFn,
     state: {
       ...selection.tableState,
       ...sort.tableState,
@@ -187,12 +186,4 @@ export const MainContent = () => {
       </BasicField>
     </Flex>
   );
-};
-
-export const globalFilterFn = (row: Row<ContentObject>, _columnId: string, filterValue: string) => {
-  filterValue = filterValue.toLowerCase();
-  if (row.original.uri.toLowerCase().includes(filterValue)) {
-    return true;
-  }
-  return Object.values(row.original.values).some(value => value.toLowerCase().includes(filterValue));
 };
