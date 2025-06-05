@@ -12,6 +12,12 @@ test('add', async () => {
   await editor.main.table.row(0).expectToBeSelected();
   await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
   await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+
+  await editor.main.control.add.add('TestContentObject', '/Z/TestNamespace', { English: 'TestValue' });
+  await editor.main.table.locator.locator('../..').evaluate((el: HTMLElement) => (el.scrollTop = el.scrollHeight));
+  await editor.main.table.row(-1).expectToBeSelected();
+  await editor.main.table.row(-1).expectToHaveColumns(['/Z/TestNamespace/TestContentObject'], ['TestValue']);
+  await editor.detail.expectToHaveValues('/Z/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
 });
 
 test('disable if no languages are present in the CMS', async () => {
