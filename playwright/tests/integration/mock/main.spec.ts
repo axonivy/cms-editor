@@ -14,6 +14,13 @@ test('search', async () => {
   await expect(editor.main.table.rows).toHaveCount(3);
 });
 
+test('remove selection', async () => {
+  await editor.main.table.row(0).locator.click();
+  await editor.main.table.row(0).expectToBeSelected();
+  await editor.main.table.header(0).locator.click();
+  await editor.main.table.row(0).expectNotToBeSelected();
+});
+
 test.describe('table keyboard support', () => {
   test('move selection via arrowKey', async () => {
     await editor.main.table.expectToHaveNoSelection();
