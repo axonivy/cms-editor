@@ -34,7 +34,7 @@ export class Table {
     for (let i = 0; i < (await this.rows.count()); i++) {
       const row = this.row(i);
       if (await row.isSelectable()) {
-        await row.expectToBeUnselected();
+        await row.expectNotToBeSelected();
       }
     }
   }
@@ -95,7 +95,7 @@ export class Row {
     await expect(this.locator).toHaveAttribute('data-state', 'selected');
   }
 
-  async expectToBeUnselected() {
+  async expectNotToBeSelected() {
     await expect(this.locator).toHaveAttribute('data-state', 'unselected');
   }
 

@@ -45,6 +45,10 @@ export const MainContent = () => {
 
   const selection = useTableSelect<ContentObject>({
     onSelect: selectedRows => {
+      if (Object.keys(selectedRows).length === 0) {
+        setSelectedContentObject(undefined);
+        return;
+      }
       const selectedRowId = Object.keys(selectedRows).find(key => selectedRows[key]);
       const selectedContentObject = table.getRowModel().flatRows.find(row => row.id === selectedRowId)?.index;
       if (selectedContentObject !== undefined) {
