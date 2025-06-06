@@ -26,7 +26,7 @@
     "test:ci": "lerna run test:ci",
     "webtest": "npm run -w @axonivy/cms-editor-playwright webtest",
     "webtest:screenshot": "npm run -w @axonivy/cms-editor-playwright webtest:screenshots",
-    "update:axonivy:next": "npx --yes npm-check-updates @axonivy* -ws -t patch -u",
+    "update:axonivy:next": "npx --yes npm-check-updates @axonivy* -ws -t semver -u",
     "publish:next": "lerna publish --exact --canary --preid next --tag-version-prefix beta --pre-dist-tag next --no-git-tag-version --no-push --ignore-scripts --yes"
   },
   "devDependencies": {
