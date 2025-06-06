@@ -10,7 +10,7 @@
   </parent>
   <groupId>cms.test.project</groupId>
   <artifactId>cms-test-project</artifactId>
-  <version>13.1.0-SNAPSHOT</version>
+  <version>13.1.1-SNAPSHOT</version>
   <packaging>iar</packaging>
   <properties>
     <engine.test.app>Developer-cms-test-project</engine.test.app>
