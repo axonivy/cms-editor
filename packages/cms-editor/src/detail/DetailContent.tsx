@@ -4,7 +4,6 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CmsValueField } from '../components/CmsValueField';
 import { useAppContext } from '../context/AppContext';
 import { toLanguages } from '../main/control/language-tool/language-utils';
 import { useClient } from '../protocol/ClientContextProvider';
@@ -12,6 +11,7 @@ import { useMeta } from '../protocol/use-meta';
 import { useQueryKeys } from '../query/query-client';
 import { removeValue } from '../utils/cms-utils';
 import './DetailContent.css';
+import { StringValueField } from '../components/StringValueField';
 
 export const DetailContent = () => {
   const { t } = useTranslation();
@@ -106,7 +106,7 @@ export const DetailContent = () => {
       </BasicField>
       <Flex direction='column' gap={4}>
         {toLanguages(locales, languageDisplayName).map(language => (
-          <CmsValueField
+          <StringValueField
             key={language.value}
             values={contentObject.values}
             updateValue={(languageTag: string, value: string) =>
