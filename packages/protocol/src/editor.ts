@@ -50,9 +50,13 @@ export interface CmsCreateArgs {
   context: CmsEditorDataContext;
 }
 export interface CmsDataObject {
+  meta?: Meta;
   type: ContentObjectType;
   uri: string;
   values: MapStringString;
+}
+export interface Meta {
+  fileExtension: string;
 }
 export interface MapStringString {
   [k: string]: string;
