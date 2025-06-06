@@ -82,7 +82,7 @@ export const LanguageTool = () => {
   const onCheckedChange = (checked: boolean, languageTag: string) =>
     checked ? addDefaultLanguage(languageTag) : removeDefaultLanguage(languageTag);
 
-  const selection = useTableSelect();
+  const selection = useTableSelect<Language>();
   const columns: Array<ColumnDef<Language, string>> = [
     {
       accessorKey: 'label',
