@@ -1,6 +1,13 @@
-import type { CmsCreateArgs, CmsData, ContentObject, MapStringString } from '@axonivy/cms-editor-protocol';
+import {
+  type CmsCreateArgs,
+  type CmsData,
+  type ContentObject,
+  type ContentObjectType,
+  type MapStringString
+} from '@axonivy/cms-editor-protocol';
 import {
   BasicField,
+  BasicSelect,
   Button,
   Combobox,
   Dialog,
@@ -25,6 +32,7 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FileValueField } from '../../components/FileValueField';
 import { StringValueField } from '../../components/StringValueField';
 import { useAppContext } from '../../context/AppContext';
 import { useClient } from '../../protocol/ClientContextProvider';
@@ -33,7 +41,7 @@ import { genQueryKey, useQueryKeys } from '../../query/query-client';
 import { removeValue } from '../../utils/cms-utils';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import './AddContentObject.css';
-import { toLanguages } from './language-tool/language-utils';
+import { toLanguages, type Language } from './language-tool/language-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 type AddContentObjectProps = {
@@ -59,13 +67,17 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
 
   const [name, setName] = useState('');
   const [namespace, setNamespace] = useState('');
+  const [type, setType] = useState<ContentObjectType>('STRING');
   const [values, setValues] = useState<MapStringString>({});
+
+  const isFile = type === 'FILE';
 
   const { languageTags, languageTagsMessage } = useLanguageTags();
 
   const initializeDialog = () => {
     setName('NewContentObject');
     setNamespace(initialNamespace(contentObjects, selectedContentObject));
+    setType('STRING');
     setValues(Object.fromEntries(languageTags.map(tag => [tag, ''])));
   };
 
@@ -81,7 +93,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
     const uri = `${namespace}/${name}`;
     mutate(
-      { context, contentObject: { uri, type: 'STRING', values } },
+      { context, contentObject: { uri, type, values } },
       {
         onSuccess: () => {
           const data: CmsData | undefined = queryClient.getQueryData(dataKey({ context, languageTags: defaultLanguageTags }));
@@ -153,18 +165,21 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
               disabled={isPending}
             />
           </BasicField>
-          {toLanguages(languageTags, languageDisplayName).map(language => (
-            <StringValueField
-              key={language.value}
-              values={values}
-              updateValue={(languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value }))}
-              deleteValue={(languageTag: string) => setValues(values => removeValue(values, languageTag))}
-              label={language.label}
-              languageTag={language.value}
-              disabled={isPending}
-              message={valuesMessage ?? languageTagsMessage}
-            />
-          ))}
+          <BasicField label={t('common.label.type')}>
+            <BasicSelect value={type} onValueChange={value => setType(value as ContentObjectType)} items={typeItems} disabled={isPending} />
+          </BasicField>
+          {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
+            const props = {
+              values,
+              updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
+              deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
+              label: language.label,
+              languageTag: language.value,
+              disabled: isPending,
+              message: valuesMessage ?? languageTagsMessage
+            };
+            return isFile ? <FileValueField key={language.value} {...props} /> : <StringValueField key={language.value} {...props} />;
+          })}
           {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
         </Flex>
         <DialogFooter>
@@ -224,3 +239,8 @@ export const useLanguageTags = () => {
 export const namespaceOptions = (contentObjects: Array<ContentObject>) => {
   return [...new Set(contentObjects.map(co => co.uri.substring(0, co.uri.lastIndexOf('/'))))].map(option => ({ value: option }));
 };
+
+const typeItems: Array<{ value: ContentObjectType; label: string }> = [
+  { value: 'STRING', label: 'String' },
+  { value: 'FILE', label: 'File' }
+];
