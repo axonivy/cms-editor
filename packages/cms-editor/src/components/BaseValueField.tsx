@@ -2,7 +2,6 @@ import type { MapStringString } from '@axonivy/cms-editor-protocol';
 import {
   BasicField,
   Button,
-  Textarea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -11,11 +10,11 @@ import {
   type MessageData
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CmsValueFieldProps = {
+export type BaseValueFieldProps = {
   values: MapStringString;
-  updateValue: (languageTag: string, value: string) => void;
   deleteValue: (languageTag: string) => void;
   label: string;
   languageTag: string;
@@ -23,25 +22,24 @@ type CmsValueFieldProps = {
   disabledDelete?: boolean;
   deleteTooltip?: string;
   message?: MessageData;
+  children?: ReactNode;
 };
 
-export const CmsValueField = ({
+export const BaseValueField = ({
   values,
-  updateValue,
   deleteValue,
   label,
   languageTag,
   disabled,
   disabledDelete,
   deleteTooltip,
-  message
-}: CmsValueFieldProps) => {
+  message,
+  children
+}: BaseValueFieldProps) => {
   const { t } = useTranslation();
-
-  const value = values[languageTag];
-  const isValuePresent = value !== undefined;
-
   const readonly = useReadonly();
+
+  const isValuePresent = values[languageTag] !== undefined;
 
   return (
     <BasicField
@@ -66,12 +64,7 @@ export const CmsValueField = ({
       className='cms-editor-value-field'
       message={message}
     >
-      <Textarea
-        value={isValuePresent ? value : ''}
-        placeholder={isValuePresent ? undefined : t('value.noValue')}
-        onChange={event => updateValue(languageTag, event.target.value)}
-        disabled={disabled}
-      />
+      {children}
     </BasicField>
   );
 };

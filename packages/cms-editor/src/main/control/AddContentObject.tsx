@@ -25,7 +25,7 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CmsValueField } from '../../components/CmsValueField';
+import { StringValueField } from '../../components/StringValueField';
 import { useAppContext } from '../../context/AppContext';
 import { useClient } from '../../protocol/ClientContextProvider';
 import { useMeta } from '../../protocol/use-meta';
@@ -154,7 +154,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
             />
           </BasicField>
           {toLanguages(languageTags, languageDisplayName).map(language => (
-            <CmsValueField
+            <StringValueField
               key={language.value}
               values={values}
               updateValue={(languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value }))}
