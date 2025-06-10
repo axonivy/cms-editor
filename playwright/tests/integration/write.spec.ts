@@ -18,7 +18,7 @@ test('save data', async () => {
   await editor.main.control.languageTool.addLanguage(3);
   await editor.main.control.languageTool.save.trigger.click();
 
-  await editor.main.control.add.add('TestContentObject', '/TestNamespace', { Afrikaans: 'AfrikaansValue' });
+  await editor.main.control.add.addString('TestContentObject', '/TestNamespace', { Afrikaans: 'AfrikaansValue' });
   await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
