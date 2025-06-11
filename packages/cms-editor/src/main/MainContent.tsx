@@ -75,7 +75,10 @@ export const MainContent = () => {
     toLanguages(defaultLanguageTags, languageDisplayName).forEach(language =>
       columns.push({
         id: language.value,
-        accessorFn: co => co.values[language.value],
+        accessorFn: co => {
+          const value = co.values[language.value];
+          return co.type === 'FILE' && value ? window.atob(value) : value;
+        },
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
         cell: cell => <span>{cell.getValue()}</span>,
         minSize: 200,
