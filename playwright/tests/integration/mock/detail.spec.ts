@@ -38,34 +38,33 @@ test.describe('delete value', () => {
     const englishValue = editor.detail.value('English');
     const germanValue = editor.detail.value('German');
 
-    await englishValue.expectToHaveState({
-      isDeleteButtonEnabled: true,
-      deleteButtonTooltip: 'Delete value',
-      value: 'Case',
-      placeholder: ''
-    });
-    await germanValue.expectToHaveState({
-      isDeleteButtonEnabled: true,
-      deleteButtonTooltip: 'Delete value',
-      value: 'Fall',
-      placeholder: ''
-    });
+    await expect(englishValue.delete).toBeEnabled();
+    await englishValue.delete.hover();
+    await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+    await expect(englishValue.textbox.locator).toHaveValue('Case');
+    await englishValue.textbox.expectToHaveNoPlaceholder();
     await expect(row.column(1).value(0)).toHaveText('Case');
 
+    await expect(germanValue.delete).toBeEnabled();
+    await germanValue.delete.hover();
+    await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+    await expect(germanValue.textbox.locator).toHaveValue('Fall');
+    await germanValue.textbox.expectToHaveNoPlaceholder();
+
     await englishValue.delete.click();
-    await englishValue.expectToHaveState({
-      isDeleteButtonEnabled: false,
-      deleteButtonTooltip: 'Delete value',
-      value: '',
-      placeholder: '[no value]'
-    });
-    await germanValue.expectToHaveState({
-      isDeleteButtonEnabled: false,
-      deleteButtonTooltip: 'The last value cannot be deleted',
-      value: 'Fall',
-      placeholder: ''
-    });
+
+    await expect(englishValue.delete).toBeDisabled();
+    await englishValue.delete.hover();
+    await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+    await expect(englishValue.textbox.locator).toHaveValue('');
+    await englishValue.textbox.expectToHavePlaceholder('[no value]');
     await expect(row.column(1).value(0)).toHaveText('');
+
+    await expect(germanValue.delete).toBeDisabled();
+    await germanValue.delete.hover();
+    await expect(editor.page.getByRole('tooltip')).toHaveText('The last value cannot be deleted');
+    await expect(germanValue.textbox.locator).toHaveValue('Fall');
+    await germanValue.textbox.expectToHaveNoPlaceholder();
   });
 
   test('file', async () => {
@@ -82,19 +81,18 @@ test.describe('delete value', () => {
 
     await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
 
-    await englishValue.expectToHaveState({
-      value: 'TestContent\n',
-      placeholder: '',
-      filePickerValue: 'TestFile.txt'
-    });
+    await expect(englishValue.textbox.locator).toHaveValue('TestContent\n');
+    await englishValue.textbox.expectToHaveNoPlaceholder();
+    const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
+    expect(fileName).toEqual('TestFile.txt');
     await expect(row.column(1).value(0)).toHaveText('TestContent');
 
     await englishValue.delete.click();
-    await englishValue.expectToHaveState({
-      value: '',
-      placeholder: '[no value]',
-      filePickerValue: ''
-    });
+
+    await expect(englishValue.textbox.locator).toHaveValue('');
+    await englishValue.textbox.expectToHavePlaceholder('[no value]');
+    const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
+    expect(fileCount).toEqual(0);
     await expect(row.column(1).value(0)).toHaveText('');
   });
 });
