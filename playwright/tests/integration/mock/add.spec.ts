@@ -105,7 +105,7 @@ test('file extension', async ({ page }) => {
   await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
   await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
 
-  add.value('German').selectFile(path.join('test-files', 'TestFile.txt'));
+  await add.value('German').selectFile(path.join('test-files', 'TestFile.txt'));
   await add.value('English').delete.click();
   await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
   await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
