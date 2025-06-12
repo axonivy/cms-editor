@@ -23,7 +23,7 @@ export class Textbox {
   }
 
   async expectToHaveNoPlaceholder() {
-    expect(await this.locator.getAttribute('placeholder')).toBeNull();
+    await expect(this.locator).not.toHaveAttribute('placeholder')
   }
 
   async expectToHavePlaceholder(placeholder: string) {

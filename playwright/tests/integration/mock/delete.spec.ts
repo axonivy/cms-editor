@@ -26,12 +26,12 @@ test('delete', async () => {
   await firstRow.locator.click();
   await editor.page.keyboard.press('ArrowUp');
   const lastRow = editor.main.table.row(-1);
-  await lastRow.expectToHaveColumns(['/Dialogs/trigger/selectParkingLot'], ['Select parking lot']);
-  await editor.detail.expectToHaveValues('/Dialogs/trigger/selectParkingLot', { English: 'Select parking lot' });
+  await lastRow.expectToHaveColumns(['/Files/TextFile'], ['Content']);
+  await editor.detail.expectToHaveValues('/Files/TextFile', { English: 'Content' });
   await deleteButton.click();
   await lastRow.expectToBeSelected();
-  await lastRow.expectToHaveColumns(['/Dialogs/trigger/parkingLotNr'], ['Parking Lot Nr.']);
-  await editor.detail.expectToHaveValues('/Dialogs/trigger/parkingLotNr', { English: 'Parking Lot Nr.' });
+  await lastRow.expectToHaveColumns(['/Dialogs/trigger/selectParkingLot'], ['Select parking lot']);
+  await editor.detail.expectToHaveValues('/Dialogs/trigger/selectParkingLot', { English: 'Select parking lot' });
 });
 
 test('keyboard', async () => {

@@ -1,4 +1,5 @@
 import test, { expect } from '@playwright/test';
+import path from 'path';
 import { CmsEditor } from '../../pageobjects/CmsEditor';
 
 let editor: CmsEditor;
@@ -7,17 +8,27 @@ test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openMock(page);
 });
 
-test('add', async () => {
-  await editor.main.control.add.add('TestContentObject', '/A/TestNamespace', { English: 'TestValue' });
-  await editor.main.table.row(0).expectToBeSelected();
-  await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
-  await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+test.describe('add', () => {
+  test('string', async () => {
+    await editor.main.control.add.addString('TestContentObject', '/A/TestNamespace', { English: 'TestValue' });
+    await editor.main.table.row(0).expectToBeSelected();
+    await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
+    await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
 
-  await editor.main.control.add.add('TestContentObject', '/Z/TestNamespace', { English: 'TestValue' });
-  await editor.main.table.locator.locator('../..').evaluate((el: HTMLElement) => (el.scrollTop = el.scrollHeight));
-  await editor.main.table.row(-1).expectToBeSelected();
-  await editor.main.table.row(-1).expectToHaveColumns(['/Z/TestNamespace/TestContentObject'], ['TestValue']);
-  await editor.detail.expectToHaveValues('/Z/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+    await editor.main.control.add.addString('TestContentObject', '/Z/TestNamespace', { English: 'TestValue' });
+    await editor.main.table.locator.locator('../..').evaluate((el: HTMLElement) => (el.scrollTop = el.scrollHeight));
+    await editor.main.table.row(-1).expectToBeSelected();
+    await editor.main.table.row(-1).expectToHaveColumns(['/Z/TestNamespace/TestContentObject'], ['TestValue']);
+    await editor.detail.expectToHaveValues('/Z/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+  });
+
+  test('file', async () => {
+    await editor.main.control.add.addFile('TestContentObject', '/A/TestNamespace', { English: path.join('test-files', 'TestFile.txt') });
+    await editor.main.table.row(0).expectToBeSelected();
+    await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestContent']);
+    await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestContent\n', German: '' });
+    await expect(editor.detail.value('English').filePicker).toBeVisible();
+  });
 });
 
 test('disable if no languages are present in the CMS', async () => {
@@ -43,19 +54,65 @@ test('disable if no languages are present in the CMS', async () => {
 });
 
 test('default values', async () => {
+  const add = editor.main.control.add;
+
   await editor.main.table.row(0).locator.click();
-  await editor.main.control.add.trigger.click();
-  await expect(editor.main.control.add.name.locator).toHaveValue('NewContentObject');
-  await expect(editor.main.control.add.namespace.locator).toHaveValue('/Dialogs/agileBPM/define_WF');
-  await editor.main.control.add.namespace.expectToHaveOptions(
+  await add.trigger.click();
+  await expect(add.name.locator).toHaveValue('NewContentObject');
+  await expect(add.namespace.locator).toHaveValue('/Dialogs/agileBPM/define_WF');
+  await add.namespace.expectToHaveOptions(
     '/Dialogs/agileBPM/define_WF',
     '/Dialogs/agileBPM/task_Form',
     '/Dialogs/general',
     '/Dialogs/procurementRequest',
     '/Dialogs/signal',
-    '/Dialogs/trigger'
+    '/Dialogs/trigger',
+    '/Files'
   );
-  await expect(editor.main.control.add.value('English').textbox.locator).toHaveValue('');
+  await expect(add.type.locator).toHaveText('String');
+  await expect(add.value('English').textbox.locator).toHaveValue('');
+  await add.value('English').textbox.expectToHaveNoPlaceholder();
+});
+
+test('type', async () => {
+  const add = editor.main.control.add;
+
+  await add.trigger.click();
+  await expect(add.value('English').filePicker).toBeHidden();
+
+  await add.type.select('File');
+  await expect(add.value('English').filePicker).toBeVisible();
+  await expect(add.value('English').textbox.locator).toBeDisabled();
+  await expect(add.value('English').textbox.locator).toHaveValue('');
+  await add.value('English').textbox.expectToHavePlaceholder('[no value]');
+
+  await add.type.select('String');
+  await expect(add.value('English').filePicker).toBeHidden();
+  await expect(add.value('English').textbox.locator).toHaveValue('');
+  await add.value('English').textbox.expectToHaveNoPlaceholder();
+});
+
+test('file extension', async ({ page }) => {
+  editor = await CmsEditor.openMock(page, { defaultLanguages: ['de', 'en'] });
+  const add = editor.main.control.add;
+
+  await add.trigger.click();
+  await add.type.select('File');
+  await expect(add.value('English').filePicker).not.toHaveAttribute('accept');
+  await expect(add.value('German').filePicker).not.toHaveAttribute('accept');
+
+  await add.value('English').selectFile(path.join('test-files', 'TestFile.txt'));
+  await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
+  await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
+
+  await add.value('German').selectFile(path.join('test-files', 'TestFile.txt'));
+  await add.value('English').delete.click();
+  await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
+  await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
+
+  await add.value('German').delete.click();
+  await expect(add.value('English').filePicker).not.toHaveAttribute('accept');
+  await expect(add.value('German').filePicker).not.toHaveAttribute('accept');
 });
 
 test('show fields for values of default languages', async ({ page }) => {
@@ -100,19 +157,34 @@ test('keyboard support', async () => {
   await expect(editor.main.table.row(1).column(0).value(0)).toHaveText('/A/TestContentObject');
 });
 
-test('disable dialog while create request is pending', async () => {
-  const add = editor.main.control.add;
-  await add.trigger.click();
-  await add.name.locator.fill('IsPending');
-  await add.create.click();
-  await expect(add.name.locator).toBeDisabled();
-  await expect(add.namespace.locator).toBeDisabled();
-  await expect(add.value('English').delete).toBeDisabled();
-  await expect(add.value('English').textbox.locator).toBeDisabled();
-  await expect(add.create).toBeDisabled();
-  await editor.page.keyboard.press('Escape');
-  await expect(add.locator).toBeVisible();
-  await expect(add.locator).toBeHidden();
+test.describe('disable dialog while create request is pending', () => {
+  test('string', async () => {
+    const add = editor.main.control.add;
+
+    await add.trigger.click();
+    await add.name.locator.fill('IsPending');
+    await add.create.click();
+    await expect(add.name.locator).toBeDisabled();
+    await expect(add.namespace.locator).toBeDisabled();
+    await expect(add.type.locator).toBeDisabled();
+    await expect(add.value('English').delete).toBeDisabled();
+    await expect(add.value('English').textbox.locator).toBeDisabled();
+    await expect(add.create).toBeDisabled();
+    await editor.page.keyboard.press('Escape');
+    await expect(add.locator).toBeVisible();
+    await expect(add.locator).toBeHidden();
+  });
+
+  test('file', async () => {
+    const add = editor.main.control.add;
+
+    await add.trigger.click();
+    await add.name.locator.fill('IsPending');
+    await add.type.select('File');
+    await add.value('English').selectFile(path.join('test-files', 'TestFile.txt'));
+    await add.create.click();
+    await expect(add.value('English').filePicker).toBeDisabled();
+  });
 });
 
 test('show error if create request is error', async () => {
