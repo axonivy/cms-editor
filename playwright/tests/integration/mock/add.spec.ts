@@ -96,7 +96,7 @@ test('file extension', async ({ page }) => {
   editor = await CmsEditor.openMock(page, { defaultLanguages: ['de', 'en'] });
   const add = editor.main.control.add;
 
-  add.trigger.click();
+  await add.trigger.click();
   add.type.select('File');
   await expect(add.value('English').filePicker).not.toHaveAttribute('accept');
   await expect(add.value('German').filePicker).not.toHaveAttribute('accept');
