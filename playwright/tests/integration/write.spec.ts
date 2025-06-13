@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import path from 'path';
 import { CmsEditor } from '../pageobjects/CmsEditor';
 
 let editor: CmsEditor;
@@ -54,4 +55,18 @@ test('save data', async () => {
   await editor.page.reload();
 
   await expect(editor.main.table.rows).toHaveCount(0);
+});
+
+test('add file', async () => {
+  await editor.main.control.languageTool.trigger.click();
+  await editor.main.control.languageTool.addLanguage(0);
+  await editor.main.control.languageTool.save.trigger.click();
+
+  await editor.main.control.add.addFile('TestFile', '/TestNamespace', { Afrikaans: path.join('test-files', 'TestFile.txt') });
+  await editor.page.reload();
+
+  await editor.main.table.row(0).locator.click();
+  await editor.detail.expectToHaveValues('/TestNamespace/TestFile', { Afrikaans: 'TestContent\n' });
+  await expect(editor.detail.value('Afrikaans').filePicker).toBeVisible();
+  await expect(editor.detail.value('Afrikaans').filePicker).toHaveAttribute('accept', '.txt');
 });

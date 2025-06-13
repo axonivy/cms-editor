@@ -26,10 +26,12 @@ export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFil
   const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      updateValue(baseProps.languageTag, await file.text());
+      updateValue(baseProps.languageTag, await fileValue(file));
       setFileExtension?.(file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.') + 1) : '');
     }
   };
+
+  const value = baseProps.values[baseProps.languageTag];
 
   return (
     <BaseValueField deleteValue={deleteFileValue} {...baseProps}>
@@ -40,7 +42,19 @@ export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFil
         disabled={baseProps.disabled}
         ref={inputRef}
       />
-      <ValueFieldTextArea value={baseProps.values[baseProps.languageTag]} disabled />
+      <ValueFieldTextArea value={value !== undefined ? window.atob(value) : undefined} disabled />
     </BaseValueField>
   );
+};
+
+export const fileValue = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 };
