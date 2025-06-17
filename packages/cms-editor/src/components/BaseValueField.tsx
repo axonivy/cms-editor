@@ -1,4 +1,4 @@
-import type { MapStringString } from '@axonivy/cms-editor-protocol';
+import type { CmsDataObjectValues } from '@axonivy/cms-editor-protocol';
 import {
   BasicField,
   Button,
@@ -13,8 +13,8 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type BaseValueFieldProps = {
-  values: MapStringString;
+export type BaseValueFieldProps<T extends CmsDataObjectValues> = {
+  values: T;
   deleteValue: (languageTag: string) => void;
   label: string;
   languageTag: string;
@@ -35,7 +35,7 @@ export const BaseValueField = ({
   deleteTooltip,
   message,
   children
-}: BaseValueFieldProps) => {
+}: BaseValueFieldProps<CmsDataObjectValues>) => {
   const { t } = useTranslation();
   const readonly = useReadonly();
 

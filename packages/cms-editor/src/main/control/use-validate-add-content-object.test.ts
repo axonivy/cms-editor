@@ -1,4 +1,4 @@
-import type { ContentObject, MapStringString } from '@axonivy/cms-editor-protocol';
+import type { CmsDataObject, MapStringString } from '@axonivy/cms-editor-protocol';
 import { customRenderHook } from '../../context/test-utils/test-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
@@ -20,21 +20,21 @@ test('nameMessage', () => {
   expect(
     renderUseValidateAddContentObject({
       name: 'testName',
-      contentObjects: [{ uri: '/testName' } as ContentObject]
+      contentObjects: [{ uri: '/testName' } as CmsDataObject]
     }).result.current.nameMessage
   ).toEqual(nameIsTakenMessage);
   expect(
     renderUseValidateAddContentObject({
       name: 'testName',
       namespace: 'testNamespace',
-      contentObjects: [{ uri: '/testNamespace/testName' } as ContentObject]
+      contentObjects: [{ uri: '/testNamespace/testName' } as CmsDataObject]
     }).result.current.nameMessage
   ).toEqual(nameIsTakenMessage);
   expect(
     renderUseValidateAddContentObject({
       name: 'tEstNamE',
       namespace: '/tEstNamEspacE',
-      contentObjects: [{ uri: '/testNamespace/testName' } as ContentObject]
+      contentObjects: [{ uri: '/testNamespace/testName' } as CmsDataObject]
     }).result.current.nameMessage
   ).toEqual(nameIsTakenMessage);
 
@@ -53,7 +53,7 @@ type renderUseValidateAddContentObjectProps = {
   name?: string;
   namespace?: string;
   values?: MapStringString;
-  contentObjects?: Array<ContentObject>;
+  contentObjects?: Array<CmsDataObject>;
 };
 
 const renderUseValidateAddContentObject = (props?: renderUseValidateAddContentObjectProps) => {

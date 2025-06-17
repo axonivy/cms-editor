@@ -2,7 +2,8 @@ import type {
   Client,
   CmsActionArgs,
   CmsAddLocalesArgs,
-  CmsCreateArgs,
+  CmsCreateFileArgs,
+  CmsCreateStringArgs,
   CmsData,
   CmsDataArgs,
   CmsDataObject,
@@ -10,7 +11,8 @@ import type {
   CmsDeleteValueArgs,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
-  CmsUpdateValueArgs,
+  CmsUpdateFileValueArgs,
+  CmsUpdateStringValueArgs,
   MetaRequestTypes,
   NotificationTypes,
   RequestTypes,
@@ -23,17 +25,25 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
     return this.sendRequest('data', args);
   }
 
-  create(args: CmsCreateArgs): Promise<Void> {
-    return this.sendRequest('create', args);
+  createString(args: CmsCreateStringArgs): Promise<Void> {
+    return this.sendRequest('createString', args);
+  }
+
+  createFile(args: CmsCreateFileArgs): Promise<Void> {
+    return this.sendRequest('createFile', args);
   }
 
   read(args: CmsReadArgs): Promise<CmsDataObject> {
     return this.sendRequest('read', args);
   }
 
-  updateValue(args: CmsUpdateValueArgs): void {
-    this.sendRequest('updateValue', args);
-  }
+  updateStringValue = (args: CmsUpdateStringValueArgs): void => {
+    this.sendRequest('updateStringValue', args);
+  };
+
+  updateFileValue = (args: CmsUpdateFileValueArgs): void => {
+    this.sendRequest('updateFileValue', args);
+  };
 
   deleteValue(args: CmsDeleteValueArgs): void {
     this.sendRequest('deleteValue', args);

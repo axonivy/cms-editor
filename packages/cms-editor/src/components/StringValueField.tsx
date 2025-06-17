@@ -1,7 +1,8 @@
+import type { MapStringString } from '@axonivy/cms-editor-protocol';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 import { ValueFieldTextArea } from './ValueFieldTextArea';
 
-type StringValueFieldProps = BaseValueFieldProps & {
+type StringValueFieldProps = BaseValueFieldProps<MapStringString> & {
   updateValue: (languageTag: string, value: string) => void;
 };
 

@@ -1,11 +1,11 @@
-import type { Client, CmsEditorDataContext, ContentObject } from '@axonivy/cms-editor-protocol';
+import type { Client, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import { ReadonlyProvider } from '@axonivy/ui-components';
 import { QueryClient } from '@tanstack/react-query';
 import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
 import i18n from 'i18next';
 import type { ReactNode } from 'react';
 import { initReactI18next } from 'react-i18next';
-import { enTranslation } from '../..';
+import { enTranslation, type CmsValueDataObject } from '../..';
 import { ClientContextProvider } from '../../protocol/ClientContextProvider';
 import { QueryProvider } from '../../query/QueryProvider';
 import { AppProvider } from '../AppContext';
@@ -20,7 +20,7 @@ type ContextHelperProps = {
   };
   appContext?: {
     context?: CmsEditorDataContext;
-    contentObjects?: Array<ContentObject>;
+    contentObjects?: Array<CmsValueDataObject>;
     selectedContentObject?: number;
     setSelectedContentObject?: (index?: number) => void;
     detail?: boolean;

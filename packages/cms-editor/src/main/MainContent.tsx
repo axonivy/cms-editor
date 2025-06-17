@@ -1,4 +1,4 @@
-import { type CmsData, type CmsDeleteArgs, type ContentObject } from '@axonivy/cms-editor-protocol';
+import { type CmsData, type CmsDeleteArgs } from '@axonivy/cms-editor-protocol';
 import {
   adjustSelectionAfterDeletionOfRow,
   BasicField,
@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
+import { isCmsFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import './MainContent.css';
 import { MainControl } from './control/MainControl';
@@ -43,7 +44,7 @@ export const MainContent = () => {
     languageDisplayName
   } = useAppContext();
 
-  const selection = useTableSelect<ContentObject>({
+  const selection = useTableSelect<CmsValueDataObject>({
     onSelect: selectedRows => {
       if (Object.keys(selectedRows).length === 0) {
         setSelectedContentObject(undefined);
@@ -62,7 +63,7 @@ export const MainContent = () => {
   const globalFilter = useTableGlobalFilter();
 
   const columns = useMemo(() => {
-    const columns: Array<ColumnDef<ContentObject, string>> = [
+    const columns: Array<ColumnDef<CmsValueDataObject, string>> = [
       {
         accessorKey: 'uri',
         header: ({ column }) => <SortableHeader column={column} name='URI' />,
@@ -76,8 +77,11 @@ export const MainContent = () => {
       columns.push({
         id: language.value,
         accessorFn: co => {
-          const value = co.values[language.value];
-          return co.type === 'FILE' && value ? window.atob(value) : value;
+          if (isCmsFileDataObject(co)) {
+            const value = co.values[language.value];
+            return value ? String.fromCharCode(...value) : '';
+          }
+          return co.values[language.value];
         },
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
         cell: cell => <span>{cell.getValue()}</span>,
@@ -135,7 +139,7 @@ export const MainContent = () => {
         return { ...data, data: data.data.filter(co => co.uri !== args.uri) };
       });
       if (data !== undefined && selectedContentObject !== undefined) {
-        const contentObjects = data?.data.filter(co => co.type !== 'FOLDER');
+        const contentObjects = data?.data.filter(co => isCmsValueDataObject(co));
         const selection = adjustSelectionAfterDeletionOfRow(contentObjects, table, selectedContentObject);
         setSelectedContentObject(selection);
       }

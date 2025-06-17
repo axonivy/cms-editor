@@ -1,10 +1,10 @@
-import type { Client, ContentObject } from '@axonivy/cms-editor-protocol';
+import type { Client, CmsDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
 import { customRenderHook } from '../../context/test-utils/test-utils';
 import { initialNamespace, namespaceOptions, useLanguageTags } from './AddContentObject';
 
 test('initialNamespace', () => {
-  const contentObjects = [{ uri: '/contentObject' }, { uri: '/folder/deep/contentObject' }] as Array<ContentObject>;
+  const contentObjects = [{ uri: '/contentObject' }, { uri: '/folder/deep/contentObject' }] as Array<CmsDataObject>;
   expect(initialNamespace(contentObjects, undefined)).toEqual('');
   expect(initialNamespace(contentObjects, 0)).toEqual('');
   expect(initialNamespace(contentObjects, 1)).toEqual('/folder/deep');
@@ -40,7 +40,7 @@ test('namespaceOptions', () => {
       { uri: '/c/c/a' },
       { uri: '/c/c/b' },
       { uri: '/d/a' }
-    ] as Array<ContentObject>)
+    ] as Array<CmsDataObject>)
   ).toEqual([{ value: '' }, { value: '/c' }, { value: '/c/c' }, { value: '/d' }]);
 });
 
