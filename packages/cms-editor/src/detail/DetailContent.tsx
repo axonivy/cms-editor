@@ -1,4 +1,10 @@
-import type { CmsData, CmsDeleteValueArgs, CmsUpdateValueArgs, ContentObject, MapStringString } from '@axonivy/cms-editor-protocol';
+import type {
+  CmsData,
+  CmsDeleteValueArgs,
+  CmsStringDataObject,
+  CmsUpdateStringValueArgs,
+  MapStringString
+} from '@axonivy/cms-editor-protocol';
 import { BasicField, BasicInput, Flex, PanelMessage, Spinner, type Unary } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,7 +33,7 @@ export const DetailContent = () => {
 
   const updateValuesInReadQuery = useCallback(
     (uri: string, valueUpdater: Unary<MapStringString>) =>
-      queryClient.setQueryData<ContentObject>(readKey({ context, uri }), data => {
+      queryClient.setQueryData<CmsStringDataObject>(readKey({ context, uri }), data => {
         if (!data) {
           return;
         }
@@ -47,14 +53,14 @@ export const DetailContent = () => {
     [context, dataKey, defaultLanguageTags, queryClient]
   );
 
-  const updateMutation = useMutation({
-    mutationFn: async (args: CmsUpdateValueArgs) => {
+  const updateStringValueMutation = useMutation({
+    mutationFn: async (args: CmsUpdateStringValueArgs) => {
       const changeValueUpdater = (values: MapStringString) => ({ ...values, [args.updateObject.languageTag]: args.updateObject.value });
       updateValuesInReadQuery(args.updateObject.uri, changeValueUpdater);
       if (defaultLanguageTags.includes(args.updateObject.languageTag)) {
         updateValuesInDataQuery(args.updateObject.uri, changeValueUpdater);
       }
-      return client.updateValue(args);
+      return client.updateStringValue(args);
     }
   });
 
