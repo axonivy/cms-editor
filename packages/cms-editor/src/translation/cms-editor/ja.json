@@ -1,9 +1,9 @@
 {
   "common": {
     "hotkey": {
-      "focusInscription": "",
-      "focusMain": "",
-      "focusToolbar": "",
+      "focusInscription": "焦点の徴候({{hotkey}})",
+      "focusMain": "焦点の本管({{hotkey}})",
+      "focusToolbar": "焦点のツールバー({{hotkey}})",
       "help": ""
     },
     "label": {
