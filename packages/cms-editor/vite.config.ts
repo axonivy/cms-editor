@@ -38,7 +38,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['src/context/test-utils/setup-tests.tsx'],
     css: false,
-    reporters: process.env.CI ? ['basic', 'junit'] : ['default'],
+    reporters: process.env.CI ? ['default', 'junit'] : ['default'],
     outputFile: 'report.xml'
   }
 });
