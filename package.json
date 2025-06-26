@@ -23,7 +23,7 @@
     "protocol": "npm run -w @axonivy/cms-editor-protocol",
     "dev": "npm run -w @axonivy/cms-editor-standalone dev",
     "test": "npm run -w @axonivy/cms-editor test",
-    "test:ci": "lerna run test:ci",
+    "test:ci": "npm run -w @axonivy/cms-editor test:ci",
     "webtest": "npm run -w @axonivy/cms-editor-playwright webtest",
     "webtest:screenshot": "npm run -w @axonivy/cms-editor-playwright webtest:screenshots",
     "update:axonivy:next": "npx --yes npm-check-updates @axonivy* -ws -t semver -u",
