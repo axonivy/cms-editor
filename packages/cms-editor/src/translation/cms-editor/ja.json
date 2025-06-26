@@ -67,6 +67,7 @@
   "value": {
     "delete": "",
     "lastValue": "",
-    "noValue": ""
+    "noValue": "",
+    "openFile": ""
   }
 }

@@ -68,6 +68,7 @@
   "value": {
     "delete": "Wert löschen",
     "lastValue": "Der letzte Wert kann nicht gelöscht werden",
-    "noValue": "[kein Wert]"
+    "noValue": "[kein Wert]",
+    "openFile": "Datei öffnen"
   }
 }
