@@ -71,13 +71,23 @@ describe('default languages', () => {
 
 test('open, edit, and save using keyboard', async () => {
   const languageTool = editor.main.control.languageTool;
+  const add = editor.main.control.add;
   const keyboard = editor.page.keyboard;
 
   await expect(editor.main.table.header(1).content).toHaveText('English');
   await expect(languageTool.locator).toBeHidden();
 
+  await keyboard.press('a');
+  await expect(add.locator.getByText('Add Content Object')).toBeVisible();
+  await add.locator.focus();
+
   await keyboard.press('l');
-  await expect(languageTool.locator).toBeVisible();
+  await expect(add.locator.getByText('Add Content Object')).toBeVisible();
+  await expect(languageTool.locator.getByText('Language Tool')).toBeHidden();
+  await keyboard.press('Escape');
+
+  await keyboard.press('l');
+  await expect(languageTool.locator.getByText('Language Tool')).toBeVisible();
 
   await keyboard.press('Tab');
   await keyboard.press('ArrowDown');
@@ -148,6 +158,10 @@ describe('languages', () => {
     const keyboard = editor.page.keyboard;
 
     await languageTool.trigger.click();
+    await keyboard.press('a');
+    await expect(languageTool.add.locator.getByText('Language Browser')).toBeVisible();
+    await keyboard.press('Escape');
+
     await languageTool.expectToHaveLanguages('English', 'German');
 
     await keyboard.press('Tab');

@@ -8,7 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Flex
+  Flex,
+  useHotkeyLocalScopes
 } from '@axonivy/ui-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,7 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
   const { context, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
 
+  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['languageToolSaveDialog']);
   const [open, setOpen] = useState(false);
 
   const amountOfValuesToDelete = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
@@ -34,6 +36,11 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
       save(localesToDelete);
     } else {
       setOpen(open);
+      if (open) {
+        activateLocalScopes();
+      } else {
+        restoreLocalScopes();
+      }
     }
   };
 

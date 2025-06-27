@@ -10,6 +10,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useHotkeyLocalScopes,
   useHotkeys
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
@@ -27,14 +28,22 @@ type AddLanguageProps = {
 
 export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
   const { t } = useTranslation();
-
+  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['addLanguageDialog']);
   const [open, setOpen] = useState(false);
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+    if (open) {
+      activateLocalScopes();
+    } else {
+      restoreLocalScopes();
+    }
+  };
 
   const { addLanguage: shortcut } = useKnownHotkeys();
-  useHotkeys(shortcut.hotkey, () => setOpen(true), { scopes: ['global'], keyup: true, enabled: !open });
+  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['languageToolDialog'], keyup: true, enabled: !open });
 
   return (
-    <Dialog open={open} onOpenChange={open => setOpen(open)}>
+    <Dialog open={open} onOpenChange={open => onOpenChange(open)}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

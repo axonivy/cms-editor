@@ -18,6 +18,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useHotkeyLocalScopes,
   useHotkeys,
   useTableKeyHandler,
   useTableSelect
@@ -42,11 +43,15 @@ export const LanguageTool = () => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
 
+  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['languageToolDialog']);
   const [open, setOpen] = useState(false);
   const onOpenChange = (open: boolean) => {
     setOpen(open);
     if (open) {
+      activateLocalScopes();
       initializeDialog();
+    } else {
+      restoreLocalScopes();
     }
   };
 
@@ -152,7 +157,7 @@ export const LanguageTool = () => {
 
   const hotkeys = useKnownHotkeys();
   useHotkeys(hotkeys.languageTool.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
-  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), { scopes: ['global'] });
+  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), { scopes: ['languageToolDialog'] });
 
   const onKeyDown = (event: KeyboardEvent<HTMLTableElement>) => {
     if (event.code === 'Space') {
