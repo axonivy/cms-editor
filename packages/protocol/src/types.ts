@@ -2,7 +2,8 @@ import type {
   CmsActionArgs,
   CmsAddLocalesArgs,
   CmsCountLocaleValuesArgs,
-  CmsCreateArgs,
+  CmsCreateFileArgs,
+  CmsCreateStringArgs,
   CmsData,
   CmsDataArgs,
   CmsDataObject,
@@ -11,20 +12,27 @@ import type {
   CmsEditorDataContext,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
-  CmsUpdateValueArgs,
+  CmsUpdateFileValueArgs,
+  CmsUpdateStringValueArgs,
+  MapStringByte,
   MapStringLong,
+  MapStringString,
   Void
 } from './editor';
 
 export type EditorProps = { context: CmsEditorDataContext };
 
-export type { CmsDataObject as ContentObject };
+export type CmsDataObjectValues = MapStringString | MapStringByte;
+export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;
+export type CmsUpdateValueArgs = CmsUpdateStringValueArgs | CmsUpdateFileValueArgs;
 
 export interface Client {
   data(args: CmsDataArgs): Promise<CmsData>;
-  create(args: CmsCreateArgs): Promise<Void>;
+  createString(args: CmsCreateStringArgs): Promise<Void>;
+  createFile(args: CmsCreateFileArgs): Promise<Void>;
   read(args: CmsReadArgs): Promise<CmsDataObject>;
-  updateValue(args: CmsUpdateValueArgs): void;
+  updateStringValue(args: CmsUpdateStringValueArgs): void;
+  updateFileValue(args: CmsUpdateFileValueArgs): void;
   deleteValue(args: CmsDeleteValueArgs): void;
   delete(args: CmsDeleteArgs): void;
   addLocales(args: CmsAddLocalesArgs): void;
@@ -45,9 +53,11 @@ export interface MetaRequestTypes {
 
 export interface RequestTypes extends MetaRequestTypes {
   data: [CmsDataArgs, CmsData];
-  create: [CmsCreateArgs, Void];
+  createString: [CmsCreateStringArgs, Void];
+  createFile: [CmsCreateFileArgs, Void];
   read: [CmsReadArgs, CmsDataObject];
-  updateValue: [CmsUpdateValueArgs, Void];
+  updateStringValue: [CmsUpdateStringValueArgs, Void];
+  updateFileValue: [CmsUpdateFileValueArgs, Void];
   deleteValue: [CmsDeleteValueArgs, Void];
   delete: [CmsDeleteArgs, Void];
   addLocales: [CmsAddLocalesArgs, Void];

@@ -3,9 +3,9 @@ import type { CmsData } from '@axonivy/cms-editor-protocol';
 export const contentObjects: CmsData = {
   context: { app: '', pmv: '', file: '' },
   data: [
-    { uri: '/Dialogs', type: 'FOLDER', values: {} },
-    { uri: '/Dialogs/agileBPM', type: 'FOLDER', values: {} },
-    { uri: '/Dialogs/agileBPM/define_WF', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs', type: 'FOLDER' },
+    { uri: '/Dialogs/agileBPM', type: 'FOLDER' },
+    { uri: '/Dialogs/agileBPM/define_WF', type: 'FOLDER' },
     {
       uri: '/Dialogs/agileBPM/define_WF/AddTask',
       type: 'STRING',
@@ -54,7 +54,7 @@ export const contentObjects: CmsData = {
     { uri: '/Dialogs/agileBPM/define_WF/WFUser', type: 'STRING', values: { de: 'WF Benutzer', en: 'WF User' } },
     { uri: '/Dialogs/agileBPM/define_WF/Workflow', type: 'STRING', values: { de: 'Workflow', en: 'Workflow' } },
     { uri: '/Dialogs/agileBPM/define_WF/YourComment', type: 'STRING', values: { de: 'Ihr Kommentar', en: 'Your comment' } },
-    { uri: '/Dialogs/agileBPM/task_Form', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs/agileBPM/task_Form', type: 'FOLDER' },
     { uri: '/Dialogs/agileBPM/task_Form/AddAdHocTask', type: 'STRING', values: { de: 'Ad-Hoc Aufgabe hinzufügen', en: 'Add ad-hoc task' } },
     { uri: '/Dialogs/agileBPM/task_Form/Append', type: 'STRING', values: { de: 'Anfügen', en: 'Append' } },
     {
@@ -97,11 +97,11 @@ export const contentObjects: CmsData = {
     { uri: '/Dialogs/agileBPM/task_Form/YesOK', type: 'STRING', values: { de: 'Ja, ok', en: 'Yes, its ok' } },
     { uri: '/Dialogs/agileBPM/task_Form/YourComment', type: 'STRING', values: { de: 'Ihr Kommentar', en: 'Your comment' } },
     { uri: '/Dialogs/agileBPM/task_Form/YourDecision', type: 'STRING', values: { de: 'Ihre Entscheidung', en: 'Your decision' } },
-    { uri: '/Dialogs/general', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs/general', type: 'FOLDER' },
     { uri: '/Dialogs/general/locale', type: 'STRING', values: { en: 'de_CH' } },
     { uri: '/Dialogs/general/name', type: 'STRING', values: { de: 'Name', en: 'Name' } },
     { uri: '/Dialogs/general/proceed', type: 'STRING', values: { de: 'Durchführen', en: 'Proceed' } },
-    { uri: '/Dialogs/procurementRequest', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs/procurementRequest', type: 'FOLDER' },
     { uri: '/Dialogs/procurementRequest/accept', type: 'STRING', values: { de: 'Akzeptieren', en: 'Accept' } },
     {
       uri: '/Dialogs/procurementRequest/acceptDescription',
@@ -154,7 +154,7 @@ export const contentObjects: CmsData = {
       type: 'STRING',
       values: { de: 'Beschaffungsantrag prüfen', en: 'Verify Procurement Request' }
     },
-    { uri: '/Dialogs/signal', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs/signal', type: 'FOLDER' },
     { uri: '/Dialogs/signal/city', type: 'STRING', values: { de: 'Stadt', en: 'City' } },
     { uri: '/Dialogs/signal/createProcesses', type: 'STRING', values: { de: 'Prozesse erstellen', en: 'Create Processes' } },
     {
@@ -182,7 +182,7 @@ export const contentObjects: CmsData = {
     { uri: '/Dialogs/signal/reason', type: 'STRING', values: { de: 'Begründung', en: 'Reason' } },
     { uri: '/Dialogs/signal/street', type: 'STRING', values: { de: 'Strasse', en: 'Street' } },
     { uri: '/Dialogs/signal/userKey', type: 'STRING', values: { de: 'Benutzerkennung', en: 'User Key' } },
-    { uri: '/Dialogs/trigger', type: 'FOLDER', values: {} },
+    { uri: '/Dialogs/trigger', type: 'FOLDER' },
     { uri: '/Dialogs/trigger/dateOfBirth', type: 'STRING', values: { de: 'Geburtsdatum', en: 'Date Of Birth' } },
     { uri: '/Dialogs/trigger/email', type: 'STRING', values: { de: 'E-Mail', en: 'E-Mail' } },
     { uri: '/Dialogs/trigger/employee', type: 'STRING', values: { de: 'Mitarbeiter', en: 'Employee' } },
@@ -195,8 +195,16 @@ export const contentObjects: CmsData = {
     { uri: '/Dialogs/trigger/parkingLotNeeded', type: 'STRING', values: { de: 'Parkplatz benötigt', en: 'Parking Lot needed' } },
     { uri: '/Dialogs/trigger/parkingLotNr', type: 'STRING', values: { de: 'Parkplatznr.', en: 'Parking Lot Nr.' } },
     { uri: '/Dialogs/trigger/selectParkingLot', type: 'STRING', values: { de: 'Parkplatz auswählen', en: 'Select parking lot' } },
-    { uri: '/Files', type: 'FOLDER', values: {} },
-    { uri: '/Files/TextFile', type: 'FILE', values: { de: 'SW5oYWx0', en: 'Q29udGVudA==' }, meta: { fileExtension: 'txt' } }
+    { uri: '/Files', type: 'FOLDER' },
+    {
+      uri: '/Files/TextFile',
+      type: 'FILE',
+      values: {
+        de: Array.from('Inhalt').map(c => c.charCodeAt(0)),
+        en: Array.from('Content').map(c => c.charCodeAt(0))
+      },
+      fileExtension: 'txt'
+    }
   ],
   helpUrl: 'https://dev.axonivy.com'
 };

@@ -1,4 +1,4 @@
-import type { ContentObject, EditorProps } from '@axonivy/cms-editor-protocol';
+import type { CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
 import { Flex, PanelMessage, ResizableHandle, ResizablePanel, ResizablePanelGroup, Spinner, useHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +14,7 @@ import { useClient } from './protocol/ClientContextProvider';
 import { useAction } from './protocol/use-action';
 import { useQueryKeys } from './query/query-client';
 import { useLanguages } from './use-languages';
+import { isCmsValueDataObject } from './utils/cms-utils';
 import { useKnownHotkeys } from './utils/hotkeys';
 
 function CmsEditor(props: EditorProps) {
@@ -53,7 +54,7 @@ function CmsEditor(props: EditorProps) {
     return <PanelMessage icon={IvyIcons.ErrorXMark} message={t('message.error', { error })} />;
   }
 
-  const contentObjects = data.data.filter((contentObject: ContentObject) => contentObject.type !== 'FOLDER');
+  const contentObjects = data.data.filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject));
   const contentObject = selectedContentObject !== undefined ? contentObjects[selectedContentObject] : undefined;
   const { mainTitle, detailTitle } = toolbarTitles(context.pmv, contentObject);
 
@@ -96,7 +97,7 @@ function CmsEditor(props: EditorProps) {
 
 export default CmsEditor;
 
-export const toolbarTitles = (pmv: string, contentObject?: ContentObject) => {
+export const toolbarTitles = (pmv: string, contentObject?: CmsDataObject) => {
   const mainTitle = `CMS - ${pmv}`;
   let detailTitle = mainTitle;
   if (contentObject) {

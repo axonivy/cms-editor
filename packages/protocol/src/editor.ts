@@ -7,12 +7,14 @@
  */
 
 export type ContentObjectType = ("STRING" | "FILE" | "FOLDER")
+export type CmsDataObject = CmsFolderDataObject | CmsStringDataObject | CmsFileDataObject;
 
 export interface CMS {
   cmsActionArgs: CmsActionArgs;
   cmsAddLocalesArgs: CmsAddLocalesArgs;
   cmsCountLocaleValuesArgs: CmsCountLocaleValuesArgs;
-  cmsCreateArgs: CmsCreateArgs;
+  cmsCreateFileArgs: CmsCreateFileArgs;
+  cmsCreateStringArgs: CmsCreateStringArgs;
   cmsData: CmsData;
   cmsDataArgs: CmsDataArgs;
   cmsDataObject: CmsDataObject;
@@ -21,7 +23,8 @@ export interface CMS {
   cmsEditorDataContext: CmsEditorDataContext;
   cmsReadArgs: CmsReadArgs;
   cmsRemoveLocalesArgs: CmsRemoveLocalesArgs;
-  cmsUpdateValueArgs: CmsUpdateValueArgs;
+  cmsUpdateFileValueArgs: CmsUpdateFileValueArgs;
+  cmsUpdateStringValueArgs: CmsUpdateStringValueArgs;
   long: MapStringLong;
   string: string[];
   void: Void;
@@ -45,26 +48,39 @@ export interface CmsCountLocaleValuesArgs {
   context: CmsEditorDataContext;
   locales: string[];
 }
-export interface CmsCreateArgs {
-  contentObject: CmsDataObject;
+export interface CmsCreateFileArgs {
+  contentObject: CmsFileDataObject;
   context: CmsEditorDataContext;
 }
-export interface CmsDataObject {
-  meta?: Meta;
+export interface CmsFileDataObject {
+  fileExtension: string;
+  type: ContentObjectType;
+  uri: string;
+  values: MapStringByte;
+}
+export interface MapStringByte {
+  [k: string]: Array<number>;
+}
+export interface CmsCreateStringArgs {
+  contentObject: CmsStringDataObject;
+  context: CmsEditorDataContext;
+}
+export interface CmsStringDataObject {
   type: ContentObjectType;
   uri: string;
   values: MapStringString;
-}
-export interface Meta {
-  fileExtension: string;
 }
 export interface MapStringString {
   [k: string]: string;
 }
 export interface CmsData {
   context: CmsEditorDataContext;
-  data: CmsDataObject[];
+  data: (CmsFolderDataObject | CmsStringDataObject | CmsFileDataObject)[];
   helpUrl: string;
+}
+export interface CmsFolderDataObject {
+  type: ContentObjectType;
+  uri: string;
 }
 export interface CmsDataArgs {
   context: CmsEditorDataContext;
@@ -90,11 +106,20 @@ export interface CmsRemoveLocalesArgs {
   context: CmsEditorDataContext;
   locales: string[];
 }
-export interface CmsUpdateValueArgs {
+export interface CmsUpdateFileValueArgs {
   context: CmsEditorDataContext;
-  updateObject: CmsUpdateValueObject;
+  updateObject: CmsUpdateFileValueObject;
 }
-export interface CmsUpdateValueObject {
+export interface CmsUpdateFileValueObject {
+  languageTag: string;
+  uri: string;
+  value: Array<number>;
+}
+export interface CmsUpdateStringValueArgs {
+  context: CmsEditorDataContext;
+  updateObject: CmsUpdateStringValueObject;
+}
+export interface CmsUpdateStringValueObject {
   languageTag: string;
   uri: string;
   value: string;

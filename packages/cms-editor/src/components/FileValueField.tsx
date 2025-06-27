@@ -1,10 +1,11 @@
+import type { MapStringByte } from '@axonivy/cms-editor-protocol';
 import { Input } from '@axonivy/ui-components';
 import { useRef } from 'react';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 import { ValueFieldTextArea } from './ValueFieldTextArea';
 
-type FileValueFieldProps = BaseValueFieldProps & {
-  updateValue: (languageTag: string, value: string) => void;
+type FileValueFieldProps = BaseValueFieldProps<MapStringByte> & {
+  updateValue: (languageTag: string, value: Array<number>) => void;
   deleteValue: (languageTag: string) => void;
   fileExtension?: string;
   setFileExtension?: (fileExtension?: string) => void;
@@ -26,7 +27,7 @@ export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFil
   const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      updateValue(baseProps.languageTag, await fileValue(file));
+      updateValue(baseProps.languageTag, Array.from(new Uint8Array(await file.arrayBuffer())));
       setFileExtension?.(file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.') + 1) : '');
     }
   };
@@ -42,19 +43,7 @@ export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFil
         disabled={baseProps.disabled}
         ref={inputRef}
       />
-      <ValueFieldTextArea value={value !== undefined ? window.atob(value) : undefined} disabled />
+      <ValueFieldTextArea value={value ? String.fromCharCode(...value) : undefined} disabled />
     </BaseValueField>
   );
-};
-
-export const fileValue = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      resolve(result.slice(result.indexOf(',') + 1));
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
 };

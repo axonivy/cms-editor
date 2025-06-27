@@ -1,8 +1,10 @@
 import {
-  type CmsCreateArgs,
   type CmsData,
-  type ContentObject,
+  type CmsDataObject,
+  type CmsDataObjectValues,
+  type CmsEditorDataContext,
   type ContentObjectType,
+  type MapStringByte,
   type MapStringString
 } from '@axonivy/cms-editor-protocol';
 import {
@@ -38,7 +40,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useClient } from '../../protocol/ClientContextProvider';
 import { useMeta } from '../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../query/query-client';
-import { removeValue } from '../../utils/cms-utils';
+import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
@@ -69,7 +71,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const [namespace, setNamespace] = useState('');
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
-  const [values, setValues] = useState<MapStringString>({});
+  const [values, setValues] = useState<CmsDataObjectValues>({});
 
   const { languageTags, languageTagsMessage } = useLanguageTags();
 
@@ -98,19 +100,34 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const { dataKey } = useQueryKeys();
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: async (args: CmsCreateArgs) => client.create(args),
+    mutationFn: async (args: {
+      context: CmsEditorDataContext;
+      uri: string;
+      type: ContentObjectType;
+      values: CmsDataObjectValues;
+      fileExtension?: string;
+    }) => {
+      const contentObject = { uri: args.uri, type: args.type, values: args.values };
+      if (isCmsStringDataObject(contentObject)) {
+        return client.createString({ context, contentObject });
+      } else if (isCmsFileDataObject(contentObject)) {
+        contentObject.fileExtension = args.fileExtension ?? '';
+        return client.createFile({ context, contentObject });
+      }
+      return;
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: genQueryKey('data') })
   });
 
   const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
     const uri = `${namespace}/${name}`;
     mutate(
-      { context, contentObject: { uri, type, values, meta: { fileExtension: fileExtension ?? '' } } },
+      { context, uri, type, values, fileExtension },
       {
         onSuccess: () => {
           const data: CmsData | undefined = queryClient.getQueryData(dataKey({ context, languageTags: defaultLanguageTags }));
           const selectedContentObject = data?.data
-            .filter((contentObject: ContentObject) => contentObject.type !== 'FOLDER')
+            .filter((contentObject: CmsDataObject) => contentObject.type !== 'FOLDER')
             .findIndex(co => co.uri === uri);
           setSelectedContentObject(selectedContentObject);
           selectRow(String(selectedContentObject));
@@ -182,8 +199,6 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
           </BasicField>
           {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
             const props = {
-              values,
-              updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
               deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
               label: language.label,
               languageTag: language.value,
@@ -191,9 +206,25 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
               message: valuesMessage ?? languageTagsMessage
             };
             return type === 'FILE' ? (
-              <FileValueField key={language.value} fileExtension={fileExtension} setFileExtension={setFileExtension} {...props} />
+              <FileValueField
+                key={language.value}
+                values={values as MapStringByte}
+                updateValue={(languageTag: string, value: Array<number>) =>
+                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
+                }
+                fileExtension={fileExtension}
+                setFileExtension={setFileExtension}
+                {...props}
+              />
             ) : (
-              <StringValueField key={language.value} {...props} />
+              <StringValueField
+                key={language.value}
+                values={values as MapStringString}
+                updateValue={(languageTag: string, value: string) =>
+                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
+                }
+                {...props}
+              />
             );
           })}
           {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
@@ -223,7 +254,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   );
 };
 
-export const initialNamespace = (contentObjects: Array<ContentObject>, selectedContentObject?: number) => {
+export const initialNamespace = (contentObjects: Array<CmsDataObject>, selectedContentObject?: number) => {
   if (selectedContentObject === undefined) {
     return '';
   }
@@ -252,7 +283,7 @@ export const useLanguageTags = () => {
   }, [defaultLanguageTags, locales, t]);
 };
 
-export const namespaceOptions = (contentObjects: Array<ContentObject>) => {
+export const namespaceOptions = (contentObjects: Array<CmsDataObject>) => {
   return [...new Set(contentObjects.map(co => co.uri.substring(0, co.uri.lastIndexOf('/'))))].map(option => ({ value: option }));
 };
 

@@ -1,4 +1,4 @@
-import type { ContentObject, MapStringString } from '@axonivy/cms-editor-protocol';
+import type { CmsDataObject, CmsDataObjectValues } from '@axonivy/cms-editor-protocol';
 import type { MessageData } from '@axonivy/ui-components';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 export const useValidateAddContentObject = (
   name: string,
   namespace: string,
-  values: MapStringString,
-  contentObjects: Array<ContentObject>
+  values: CmsDataObjectValues,
+  contentObjects: Array<CmsDataObject>
 ) => {
   const { t } = useTranslation();
 
