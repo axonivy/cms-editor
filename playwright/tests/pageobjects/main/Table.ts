@@ -142,7 +142,7 @@ export class Cell {
 
   async expectToHaveFileValues(uri: string, ...values: Array<boolean>) {
     for (let i = 0; i < values.length; i++) {
-      const button = this.values.nth(i).getByRole('button');
+      const button = this.values.nth(i).locator('i');
       if (values[i]) {
         await expect(button).toBeVisible();
       } else {
