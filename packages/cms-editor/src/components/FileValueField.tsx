@@ -1,8 +1,10 @@
 import type { MapStringByte } from '@axonivy/cms-editor-protocol';
-import { Button, Flex, Input } from '@axonivy/ui-components';
+import { Button, Flex, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppContext } from '../context/AppContext';
+import { useAction } from '../protocol/use-action';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 
 type FileValueFieldProps = BaseValueFieldProps<MapStringByte> & {
@@ -22,6 +24,7 @@ export const FileValueField = ({
   ...baseProps
 }: FileValueFieldProps) => {
   const { t } = useTranslation();
+  const { context } = useAppContext();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,6 +46,8 @@ export const FileValueField = ({
     }
   };
 
+  const openUrl = useAction('openUrl');
+
   return (
     <BaseValueField deleteValue={deleteFileValue} {...baseProps}>
       <Flex gap={2} alignItems='center'>
@@ -53,7 +58,20 @@ export const FileValueField = ({
           disabled={baseProps.disabled}
           ref={inputRef}
         />
-        {allowOpenFile && baseProps.values[baseProps.languageTag] && <Button icon={IvyIcons.File} aria-label={t('value.openFile')} />}
+        {allowOpenFile && baseProps.values[baseProps.languageTag] && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  icon={IvyIcons.File}
+                  aria-label={t('value.openFile')}
+                  onClick={() => openUrl(`http://localhost:8080/designer/cm/${context.pmv}/files/File`)}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{t('value.openFile')}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </Flex>
     </BaseValueField>
   );
