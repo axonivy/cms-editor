@@ -6,14 +6,14 @@ test('load data', async ({ page }) => {
   await expect(editor.main.table.rows).toHaveCount(3);
 
   await editor.main.table.row(0).locator.click();
-  await editor.main.table.row(0).expectToHaveColumns(['/files/File'], ['Content']);
-  await editor.detail.expectToHaveValues('/files/File', { English: 'Content\n', German: '' });
+  await editor.main.table.row(0).expectToHaveFileColumns('/files/File', [true]);
+  await editor.detail.expectToHaveFileValues('/files/File', { English: true, German: false });
 
   await editor.main.table.row(1).locator.click();
-  await editor.main.table.row(1).expectToHaveColumns(['/folder/stringOne'], ['valueOne']);
-  await editor.detail.expectToHaveValues('/folder/stringOne', { English: 'valueOne', German: 'wertEins' });
+  await editor.main.table.row(1).expectToHaveStringColumns(['/folder/stringOne'], ['valueOne']);
+  await editor.detail.expectToHaveStringValues('/folder/stringOne', { English: 'valueOne', German: 'wertEins' });
 
   await editor.main.table.row(2).locator.click();
-  await editor.main.table.row(2).expectToHaveColumns(['/folder/stringTwo'], ['valueTwo']);
-  await editor.detail.expectToHaveValues('/folder/stringTwo', { English: 'valueTwo', German: '' });
+  await editor.main.table.row(2).expectToHaveStringColumns(['/folder/stringTwo'], ['valueTwo']);
+  await editor.detail.expectToHaveStringValues('/folder/stringTwo', { English: 'valueTwo', German: '' });
 });

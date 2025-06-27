@@ -81,19 +81,17 @@ test.describe('delete value', () => {
 
     await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
 
-    await expect(englishValue.textbox.locator).toHaveValue('TestContent\n');
-    await englishValue.textbox.expectToHaveNoPlaceholder();
+    await expect(englishValue.fileButton).toBeVisible();
     const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
     expect(fileName).toEqual('TestFile.txt');
-    await expect(row.column(1).value(0)).toHaveText('TestContent');
+    await expect(row.column(1).value(0).getByRole('button')).toBeVisible();
 
     await englishValue.delete.click();
 
-    await expect(englishValue.textbox.locator).toHaveValue('');
-    await englishValue.textbox.expectToHavePlaceholder('[no value]');
+    await expect(englishValue.fileButton).toBeHidden();
     const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
     expect(fileCount).toEqual(0);
-    await expect(row.column(1).value(0)).toHaveText('');
+    await expect(row.column(1).value(0).getByRole('button')).toBeHidden();
   });
 });
 
@@ -116,15 +114,13 @@ test.describe('update value', () => {
     await editor.main.table.locator.focus();
     await editor.page.keyboard.press('ArrowUp');
 
-    const row = editor.main.table.row(-1);
-
     const englishValue = editor.detail.value('English');
 
-    await expect(englishValue.textbox.locator).toHaveValue('Content');
-    await expect(row.column(1).value(0)).toHaveText('Content');
+    const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
+    expect(fileCount).toEqual(0);
 
     await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
-    await expect(englishValue.textbox.locator).toHaveValue('TestContent\n');
-    await expect(row.column(1).value(0)).toHaveText('TestContent');
+    const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
+    expect(fileName).toEqual('TestFile.txt');
   });
 });

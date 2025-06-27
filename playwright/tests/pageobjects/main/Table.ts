@@ -50,7 +50,7 @@ export class Table {
 
   async expectToHaveRows(...rows: Array<Array<Array<string>>>) {
     for (let i = 0; i < rows.length; i++) {
-      await this.row(i).expectToHaveColumns(...rows[i]);
+      await this.row(i).expectToHaveStringColumns(...rows[i]);
     }
   }
 }
@@ -107,9 +107,16 @@ export class Row {
     await expect(this.expandCollapseButton).toHaveAttribute('data-state', 'collapsed');
   }
 
-  async expectToHaveColumns(...values: Array<Array<string>>) {
+  async expectToHaveStringColumns(...values: Array<Array<string>>) {
     for (let i = 0; i < values.length; i++) {
-      await this.column(i).expectToHaveValues(...values[i]);
+      await this.column(i).expectToHaveStringValues(...values[i]);
+    }
+  }
+
+  async expectToHaveFileColumns(uri: string, ...values: Array<Array<boolean>>) {
+    await expect(this.column(0).value(0)).toHaveText(uri);
+    for (let i = 0; i < values.length; i++) {
+      await this.column(i + 1).expectToHaveFileValues(uri, ...values[i]);
     }
   }
 }
@@ -127,9 +134,20 @@ export class Cell {
     return this.values.nth(index);
   }
 
-  async expectToHaveValues(...values: Array<string>) {
+  async expectToHaveStringValues(...values: Array<string>) {
     for (let i = 0; i < values.length; i++) {
       await expect(this.values.nth(i)).toHaveText(values[i]);
+    }
+  }
+
+  async expectToHaveFileValues(uri: string, ...values: Array<boolean>) {
+    for (let i = 0; i < values.length; i++) {
+      const button = this.values.nth(i).getByRole('button');
+      if (values[i]) {
+        await expect(button).toBeVisible();
+      } else {
+        await expect(button).toBeHidden();
+      }
     }
   }
 }

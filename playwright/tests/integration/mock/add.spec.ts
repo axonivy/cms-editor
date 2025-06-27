@@ -12,22 +12,21 @@ test.describe('add', () => {
   test('string', async () => {
     await editor.main.control.add.addString('TestContentObject', '/A/TestNamespace', { English: 'TestValue' });
     await editor.main.table.row(0).expectToBeSelected();
-    await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
-    await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+    await editor.main.table.row(0).expectToHaveStringColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
+    await editor.detail.expectToHaveStringValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
 
     await editor.main.control.add.addString('TestContentObject', '/Z/TestNamespace', { English: 'TestValue' });
     await editor.main.table.locator.locator('../..').evaluate((el: HTMLElement) => (el.scrollTop = el.scrollHeight));
     await editor.main.table.row(-1).expectToBeSelected();
-    await editor.main.table.row(-1).expectToHaveColumns(['/Z/TestNamespace/TestContentObject'], ['TestValue']);
-    await editor.detail.expectToHaveValues('/Z/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+    await editor.main.table.row(-1).expectToHaveStringColumns(['/Z/TestNamespace/TestContentObject'], ['TestValue']);
+    await editor.detail.expectToHaveStringValues('/Z/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
   });
 
   test('file', async () => {
     await editor.main.control.add.addFile('TestContentObject', '/A/TestNamespace', { English: path.join('test-files', 'TestFile.txt') });
     await editor.main.table.row(0).expectToBeSelected();
-    await editor.main.table.row(0).expectToHaveColumns(['/A/TestNamespace/TestContentObject'], ['TestContent']);
-    await editor.detail.expectToHaveValues('/A/TestNamespace/TestContentObject', { English: 'TestContent\n', German: '' });
-    await expect(editor.detail.value('English').filePicker).toBeVisible();
+    await editor.main.table.row(0).expectToHaveFileColumns('/A/TestNamespace/TestContentObject', [true]);
+    await editor.detail.expectToHaveFileValues('/A/TestNamespace/TestContentObject', { English: true, German: false });
   });
 });
 
@@ -76,20 +75,23 @@ test('default values', async () => {
 
 test('type', async () => {
   const add = editor.main.control.add;
+  const englishValue = add.value('English');
 
   await add.trigger.click();
-  await expect(add.value('English').filePicker).toBeHidden();
+  await expect(englishValue.textbox.locator).toBeVisible();
+  await expect(englishValue.filePicker).toBeHidden();
 
   await add.type.select('File');
-  await expect(add.value('English').filePicker).toBeVisible();
-  await expect(add.value('English').textbox.locator).toBeDisabled();
-  await expect(add.value('English').textbox.locator).toHaveValue('');
-  await add.value('English').textbox.expectToHavePlaceholder('[no value]');
+  await expect(englishValue.textbox.locator).toBeHidden();
+  await expect(englishValue.filePicker).toBeVisible();
+
+  await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
+  await expect(englishValue.fileButton).toBeHidden();
 
   await add.type.select('String');
-  await expect(add.value('English').filePicker).toBeHidden();
-  await expect(add.value('English').textbox.locator).toHaveValue('');
-  await add.value('English').textbox.expectToHaveNoPlaceholder();
+  await expect(englishValue.textbox.locator).toBeVisible();
+  await expect(englishValue.textbox.locator).toHaveValue('');
+  await expect(englishValue.filePicker).toBeHidden();
 });
 
 test('file extension', async ({ page }) => {

@@ -24,10 +24,23 @@ export class DetailPanel {
     return new CmsValueField(this.page, this.locator, { label });
   }
 
-  async expectToHaveValues(uri: string, values: Record<string, string>) {
+  async expectToHaveStringValues(uri: string, values: Record<string, string>) {
     await expect(this.uri.locator).toHaveValue(uri);
     for (const [language, value] of Object.entries(values)) {
       await expect(this.value(language).textbox.locator).toHaveValue(value);
+    }
+  }
+
+  async expectToHaveFileValues(uri: string, values: Record<string, boolean>) {
+    await expect(this.uri.locator).toHaveValue(uri);
+    for (const [language, value] of Object.entries(values)) {
+      await expect(this.value(language).filePicker).toBeVisible();
+      const button = this.value(language).fileButton;
+      if (value) {
+        await expect(button).toBeVisible();
+      } else {
+        await expect(button).toBeHidden();
+      }
     }
   }
 }
