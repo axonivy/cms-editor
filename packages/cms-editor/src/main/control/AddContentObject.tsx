@@ -27,6 +27,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useHotkeyLocalScopes,
   useHotkeys,
   type MessageData
 } from '@axonivy/ui-components';
@@ -55,6 +56,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { context, contentObjects, selectedContentObject, setSelectedContentObject, defaultLanguageTags, languageDisplayName } =
     useAppContext();
+  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['addContentObjectDialog']);
 
   const [open, setOpen] = useState(false);
   const onOpenChange = (open: boolean) => {
@@ -63,7 +65,10 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
     }
     setOpen(open);
     if (open) {
+      activateLocalScopes();
       initializeDialog();
+    } else {
+      restoreLocalScopes();
     }
   };
 
@@ -132,7 +137,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
           setSelectedContentObject(selectedContentObject);
           selectRow(String(selectedContentObject));
           if (!event.ctrlKey && !event.metaKey) {
-            setOpen(false);
+            onOpenChange(false);
           } else {
             setName('');
             nameInputRef.current?.focus();
@@ -157,7 +162,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
       }
       addContentObject(e);
     },
-    { scopes: ['global'], enabled: open, enableOnFormTags: true }
+    { scopes: ['addContentObjectDialog'], enabled: open, enableOnFormTags: true }
   );
 
   return (
