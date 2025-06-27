@@ -1,17 +1,28 @@
 import type { MapStringByte } from '@axonivy/cms-editor-protocol';
-import { Input } from '@axonivy/ui-components';
+import { Button, Flex, Input } from '@axonivy/ui-components';
+import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
-import { ValueFieldTextArea } from './ValueFieldTextArea';
 
 type FileValueFieldProps = BaseValueFieldProps<MapStringByte> & {
   updateValue: (languageTag: string, value: Array<number>) => void;
   deleteValue: (languageTag: string) => void;
   fileExtension?: string;
   setFileExtension?: (fileExtension?: string) => void;
+  allowOpenFile?: boolean;
 };
 
-export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFileExtension, ...baseProps }: FileValueFieldProps) => {
+export const FileValueField = ({
+  updateValue,
+  deleteValue,
+  fileExtension,
+  setFileExtension,
+  allowOpenFile,
+  ...baseProps
+}: FileValueFieldProps) => {
+  const { t } = useTranslation();
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const deleteFileValue = (languageTag: string) => {
@@ -32,18 +43,18 @@ export const FileValueField = ({ updateValue, deleteValue, fileExtension, setFil
     }
   };
 
-  const value = baseProps.values[baseProps.languageTag];
-
   return (
     <BaseValueField deleteValue={deleteFileValue} {...baseProps}>
-      <Input
-        type='file'
-        accept={fileExtension ? `.${fileExtension}` : undefined}
-        onChange={onChange}
-        disabled={baseProps.disabled}
-        ref={inputRef}
-      />
-      <ValueFieldTextArea value={value ? String.fromCharCode(...value) : undefined} disabled />
+      <Flex gap={2} alignItems='center'>
+        <Input
+          type='file'
+          accept={fileExtension ? `.${fileExtension}` : undefined}
+          onChange={onChange}
+          disabled={baseProps.disabled}
+          ref={inputRef}
+        />
+        {allowOpenFile && baseProps.values[baseProps.languageTag] && <Button icon={IvyIcons.File} aria-label={t('value.openFile')} />}
+      </Flex>
     </BaseValueField>
   );
 };

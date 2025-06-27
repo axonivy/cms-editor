@@ -23,7 +23,7 @@ test('save data', async () => {
   await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
-  await editor.detail.expectToHaveValues('/TestNamespace/TestContentObject', { Afrikaans: 'AfrikaansValue', Akan: '', Albanian: '' });
+  await editor.detail.expectToHaveStringValues('/TestNamespace/TestContentObject', { Afrikaans: 'AfrikaansValue', Akan: '', Albanian: '' });
   await editor.detail.value('Akan').textbox.expectToHavePlaceholder('[no value]');
   await editor.detail.value('Albanian').textbox.expectToHavePlaceholder('[no value]');
 
@@ -33,7 +33,7 @@ test('save data', async () => {
   await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
-  await editor.detail.expectToHaveValues('/TestNamespace/TestContentObject', { Afrikaans: '', Akan: 'AkanValue', Albanian: 'AlbanianValue' });
+  await editor.detail.expectToHaveStringValues('/TestNamespace/TestContentObject', { Afrikaans: '', Akan: 'AkanValue', Albanian: 'AlbanianValue' });
   await editor.detail.value('Afrikaans').textbox.expectToHavePlaceholder('[no value]');
 
   await editor.main.control.languageTool.trigger.click();
@@ -66,7 +66,7 @@ test('add file', async () => {
   await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
-  await editor.detail.expectToHaveValues('/TestNamespace/TestFile', { Afrikaans: 'TestContent\n' });
+  await editor.detail.expectToHaveFileValues('/TestNamespace/TestFile', { Afrikaans: true });
   await expect(editor.detail.value('Afrikaans').filePicker).toBeVisible();
   await expect(editor.detail.value('Afrikaans').filePicker).toHaveAttribute('accept', '.txt');
 });

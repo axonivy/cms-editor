@@ -136,6 +136,7 @@ export const DetailContent = () => {
                 updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
               }
               fileExtension={contentObject.fileExtension}
+              allowOpenFile
               {...props}
             />
           ) : (

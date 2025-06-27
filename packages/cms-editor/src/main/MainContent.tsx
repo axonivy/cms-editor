@@ -3,6 +3,7 @@ import {
   adjustSelectionAfterDeletionOfRow,
   BasicField,
   Flex,
+  IvyIcon,
   SelectRow,
   selectRow,
   SortableHeader,
@@ -17,10 +18,11 @@ import {
   useTableSelect,
   useTableSort
 } from '@axonivy/ui-components';
+import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
@@ -63,7 +65,7 @@ export const MainContent = () => {
   const globalFilter = useTableGlobalFilter();
 
   const columns = useMemo(() => {
-    const columns: Array<ColumnDef<CmsValueDataObject, string>> = [
+    const columns: Array<ColumnDef<CmsValueDataObject, ReactNode>> = [
       {
         accessorKey: 'uri',
         header: ({ column }) => <SortableHeader column={column} name='URI' />,
@@ -78,8 +80,7 @@ export const MainContent = () => {
         id: language.value,
         accessorFn: co => {
           if (isCmsFileDataObject(co)) {
-            const value = co.values[language.value];
-            return value ? String.fromCharCode(...value) : '';
+            return co.values[language.value] ? <IvyIcon icon={IvyIcons.File} /> : '';
           }
           return co.values[language.value];
         },

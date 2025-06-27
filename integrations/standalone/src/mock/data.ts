@@ -196,15 +196,7 @@ export const contentObjects: CmsData = {
     { uri: '/Dialogs/trigger/parkingLotNr', type: 'STRING', values: { de: 'Parkplatznr.', en: 'Parking Lot Nr.' } },
     { uri: '/Dialogs/trigger/selectParkingLot', type: 'STRING', values: { de: 'Parkplatz auswählen', en: 'Select parking lot' } },
     { uri: '/Files', type: 'FOLDER' },
-    {
-      uri: '/Files/TextFile',
-      type: 'FILE',
-      values: {
-        de: Array.from('Inhalt').map(c => c.charCodeAt(0)),
-        en: Array.from('Content').map(c => c.charCodeAt(0))
-      },
-      fileExtension: 'txt'
-    }
+    { uri: '/Files/TextFile', type: 'FILE', values: { de: true, en: true }, fileExtension: 'txt' }
   ],
   helpUrl: 'https://dev.axonivy.com'
 };
