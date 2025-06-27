@@ -28,6 +28,7 @@ type ContextHelperProps = {
     defaultLanguageTags?: Array<string>;
     setDefaultLanguageTags?: (languageTags: Array<string>) => void;
     languageDisplayName?: Intl.DisplayNames;
+    cmUrl?: string;
   };
 };
 
@@ -62,7 +63,8 @@ const ContextHelper = ({
     setDetail: appContext?.setDetail ?? (() => {}),
     defaultLanguageTags: appContext?.defaultLanguageTags ?? [],
     setDefaultLanguageTags: appContext?.setDefaultLanguageTags ?? (() => {}),
-    languageDisplayName: appContext?.languageDisplayName ?? ({} as Intl.DisplayNames)
+    languageDisplayName: appContext?.languageDisplayName ?? ({} as Intl.DisplayNames),
+    cmUrl: appContext?.cmUrl ?? ''
   };
 
   initTranslation(clientLanguage);

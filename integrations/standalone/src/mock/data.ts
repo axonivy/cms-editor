@@ -198,5 +198,6 @@ export const contentObjects: CmsData = {
     { uri: '/Files', type: 'FOLDER' },
     { uri: '/Files/TextFile', type: 'FILE', values: { de: true, en: true }, fileExtension: 'txt' }
   ],
-  helpUrl: 'https://dev.axonivy.com'
+  helpUrl: 'https://dev.axonivy.com',
+  cmUrl: 'http://localhost:8080/cm'
 };

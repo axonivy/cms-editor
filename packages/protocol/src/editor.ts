@@ -74,6 +74,7 @@ export interface MapStringString {
   [k: string]: string;
 }
 export interface CmsData {
+  cmUrl: string;
   context: CmsEditorDataContext;
   data: (CmsFolderDataObject | CmsStringDataObject | CmsFileDataObject | CmsReadFileDataObject)[];
   helpUrl: string;
