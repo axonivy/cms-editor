@@ -15,7 +15,7 @@ export class DetailPanel {
     this.page = page;
     this.locator = this.page.locator('.cms-editor-detail-panel');
     this.toolbar = new DetailToolbar(this.locator);
-    this.uri = new Textbox(this.locator, { name: 'URI' });
+    this.uri = new Textbox(this.locator, { name: 'Path' });
     this.values = this.locator.locator('.cms-editor-value-field');
     this.message = this.locator.locator('p');
   }

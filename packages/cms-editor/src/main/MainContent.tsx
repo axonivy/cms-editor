@@ -68,7 +68,7 @@ export const MainContent = () => {
     const columns: Array<ColumnDef<CmsValueDataObject, ReactNode>> = [
       {
         accessorKey: 'uri',
-        header: ({ column }) => <SortableHeader column={column} name='URI' />,
+        header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
         cell: cell => <span>{cell.getValue()}</span>,
         minSize: 200,
         size: 500,
@@ -92,7 +92,7 @@ export const MainContent = () => {
       })
     );
     return columns;
-  }, [defaultLanguageTags, languageDisplayName]);
+  }, [defaultLanguageTags, languageDisplayName, t]);
 
   const table = useReactTable({
     ...selection.options,
