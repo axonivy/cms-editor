@@ -4,7 +4,6 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
-import './FileValueField.css';
 
 type FileValueFieldProps = BaseValueFieldProps<MapStringByte> & {
   updateValue: (languageTag: string, value: Array<number>) => void;
@@ -46,7 +45,7 @@ export const FileValueField = ({
 
   return (
     <BaseValueField deleteValue={deleteFileValue} {...baseProps}>
-      <Flex gap={2} className='cms-editor-file-value-field'>
+      <Flex gap={2} alignItems='center'>
         <Input
           type='file'
           accept={fileExtension ? `.${fileExtension}` : undefined}

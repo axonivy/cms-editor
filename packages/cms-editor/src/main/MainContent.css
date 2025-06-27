@@ -39,10 +39,6 @@
   overflow: hidden;
 }
 
-.cms-editor-main-table tbody tr {
-  align-items: center;
-}
-
 .cms-editor-main-table span {
   display: block;
   white-space: nowrap;
