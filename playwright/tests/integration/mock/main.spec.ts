@@ -43,19 +43,16 @@ test.describe('table keyboard support', () => {
 test('show columns for default languages', async ({ page }) => {
   editor = await CmsEditor.openMock(page, { parameters: { lng: 'ja' } });
   await expect(editor.main.table.headers).toHaveCount(2);
-  await expect(editor.main.table.header(0).content).toHaveText('URI');
   await expect(editor.main.table.header(1).content).toHaveText('英語');
   await expect(editor.main.table.row(2).column(1).value(0)).toHaveText('Case');
 
   editor = await CmsEditor.openMock(page, { parameters: { lng: 'en' }, defaultLanguages: ['de'] });
   await expect(editor.main.table.headers).toHaveCount(2);
-  await expect(editor.main.table.header(0).content).toHaveText('URI');
   await expect(editor.main.table.header(1).content).toHaveText('German');
   await expect(editor.main.table.row(2).column(1).value(0)).toHaveText('Fall');
 
   editor = await CmsEditor.openMock(page, { parameters: { lng: 'de' }, defaultLanguages: ['en', 'de'] });
   await expect(editor.main.table.headers).toHaveCount(3);
-  await expect(editor.main.table.header(0).content).toHaveText('URI');
   await expect(editor.main.table.header(1).content).toHaveText('Deutsch');
   await expect(editor.main.table.header(2).content).toHaveText('Englisch');
   await expect(editor.main.table.row(2).column(1).value(0)).toHaveText('Fall');

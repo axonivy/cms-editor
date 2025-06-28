@@ -116,7 +116,7 @@ export const DetailContent = () => {
 
   return (
     <Flex direction='column' gap={4} className='cms-editor-detail-content'>
-      <BasicField label='URI'>
+      <BasicField label={t('common.label.path')}>
         <BasicInput value={contentObject.uri} disabled />
       </BasicField>
       <Flex direction='column' gap={4}>
