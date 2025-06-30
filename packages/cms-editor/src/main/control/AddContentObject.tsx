@@ -10,16 +10,11 @@ import {
   type MapStringString
 } from '@axonivy/cms-editor-protocol';
 import {
+  BasicDialog,
   BasicField,
   BasicSelect,
   Button,
   Combobox,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
   Flex,
   hotkeyText,
@@ -168,81 +163,21 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <Button icon={IvyIcons.Plus} aria-label={shortcut.label} disabled={locales.length === 0} />
-            </DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DialogContent
-        onCloseAutoFocus={e => e.preventDefault()}
-        style={{ display: 'flex', flexDirection: 'column' }}
-        className='cms-editor-add-content-object-content'
-      >
-        <DialogHeader>
-          <DialogTitle>{t('dialog.addContentObject.title')}</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>{t('dialog.addContentObject.description')}</DialogDescription>
-        <Flex direction='column' gap={3} ref={enter} tabIndex={-1} className='cms-editor-add-content-object-content-fields'>
-          <BasicField label={t('common.label.name')} message={nameMessage}>
-            <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
-          </BasicField>
-          <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
-            <Combobox
-              value={namespace}
-              onChange={setNamespace}
-              onInput={event => setNamespace(event.currentTarget.value)}
-              options={namespaceOptions(contentObjects)}
-              disabled={isPending}
-            />
-          </BasicField>
-          <BasicField label={t('common.label.type')}>
-            <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
-          </BasicField>
-          {type === 'FILE' && (
-            <Message
-              variant='info'
-              message={t('dialog.addContentObject.fileFormatInfo')}
-              className='cms-editor-add-dialog-file-format-info'
-            />
-          )}
-          {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
-            const props = {
-              deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
-              language,
-              disabled: isPending,
-              message: valuesMessage ?? languageTagsMessage
-            };
-            const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
-            return isCmsFileDataObject(contentObject) ? (
-              <FileValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: Array<number>) =>
-                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
-                }
-                setFileExtension={setFileExtension}
-                {...props}
-              />
-            ) : (
-              <StringValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: string) =>
-                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
-                }
-                {...props}
-              />
-            );
-          })}
-          {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
-        </Flex>
-        <DialogFooter>
+    <BasicDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      contentProps={{
+        title: t('dialog.addContentObject.title'),
+        description: t('dialog.addContentObject.description'),
+        onCloseAutoFocus: e => e.preventDefault(),
+        style: { display: 'flex', flexDirection: 'column' },
+        className: 'cms-editor-add-content-object-content',
+        buttonClose: (
+          <Button variant='outline' size='large' aria-label={t('common.label.cancel')}>
+            {t('common.label.cancel')}
+          </Button>
+        ),
+        buttonCustom: (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -261,9 +196,70 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
               <TooltipContent>{t('dialog.addContentObject.createTooltip', { modifier: hotkeyText('mod') })}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        )
+      }}
+      dialogTrigger={
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <Button icon={IvyIcons.Plus} aria-label={shortcut.label} disabled={locales.length === 0} />
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      }
+    >
+      <Flex direction='column' gap={3} ref={enter} tabIndex={-1} className='cms-editor-add-content-object-content-fields'>
+        <BasicField label={t('common.label.name')} message={nameMessage}>
+          <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
+        </BasicField>
+        <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
+          <Combobox
+            value={namespace}
+            onChange={setNamespace}
+            onInput={event => setNamespace(event.currentTarget.value)}
+            options={namespaceOptions(contentObjects)}
+            disabled={isPending}
+          />
+        </BasicField>
+        <BasicField label={t('common.label.type')}>
+          <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
+        </BasicField>
+        {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
+          const props = {
+            deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
+            label: language.label,
+            languageTag: language.value,
+            disabled: isPending,
+            message: valuesMessage ?? languageTagsMessage
+          };
+          return type === 'FILE' ? (
+            <FileValueField
+              key={language.value}
+              values={values as MapStringByte}
+              updateValue={(languageTag: string, value: Array<number>) =>
+                setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
+              }
+              fileExtension={fileExtension}
+              setFileExtension={setFileExtension}
+              {...props}
+            />
+          ) : (
+            <StringValueField
+              key={language.value}
+              values={values as MapStringString}
+              updateValue={(languageTag: string, value: string) =>
+                setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
+              }
+              {...props}
+            />
+          );
+        })}
+        {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
+      </Flex>
+    </BasicDialog>
   );
 };
 
