@@ -1,16 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  Flex,
-  useHotkeyLocalScopes
-} from '@axonivy/ui-components';
+import { BasicDialog, Button, DialogContent, DialogTrigger, Flex, useHotkeyLocalScopes } from '@axonivy/ui-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
@@ -50,17 +38,40 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant='primary' size='large' aria-label={t('common.label.save')}>
-          {t('common.label.save')}
-        </Button>
-      </DialogTrigger>
+    <BasicDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      contentProps={{
+        title: t('dialog.languageTool.saveConfirmation.title'),
+        description: t('dialog.languageTool.saveConfirmation.description'),
+        buttonClose: (
+          <Button
+            variant='outline'
+            size='large'
+            aria-label={t('common.label.cancel')}
+            // workaround since prop `autoFocus` is broken in dialogs (https://github.com/facebook/react/issues/23301)
+            ref={button => {
+              setTimeout(() => button?.focus(), 0);
+            }}
+          >
+            {t('common.label.cancel')}
+          </Button>
+        ),
+        buttonCustom: (
+          <Button variant='primary' size='large' aria-label={t('common.label.save')} onClick={() => save(localesToDelete)}>
+            {t('common.label.save')}
+          </Button>
+        )
+      }}
+      dialogTrigger={
+        <DialogTrigger asChild>
+          <Button variant='primary' size='large' aria-label={t('common.label.save')}>
+            {t('common.label.save')}
+          </Button>
+        </DialogTrigger>
+      }
+    >
       <DialogContent style={{ display: 'flex', flexDirection: 'column' }} className='cms-editor-language-tool-save-confirmation-content'>
-        <DialogHeader>
-          <DialogTitle>{t('dialog.languageTool.saveConfirmation.title')}</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>{t('dialog.languageTool.saveConfirmation.description')}</DialogDescription>
         <Flex direction='column' gap={1} className='cms-editor-language-tool-save-confirmation-language-values'>
           {Object.entries(amountOfValuesToDelete)
             .filter(([, amount]) => amount > 0)
@@ -68,27 +79,7 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
               <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
             ))}
         </Flex>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant='primary' size='large' aria-label={t('common.label.save')} onClick={() => save(localesToDelete)}>
-              {t('common.label.save')}
-            </Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button
-              variant='outline'
-              size='large'
-              aria-label={t('common.label.cancel')}
-              // workaround since prop `autoFocus` is broken in dialogs (https://github.com/facebook/react/issues/23301)
-              ref={button => {
-                setTimeout(() => button?.focus(), 0);
-              }}
-            >
-              {t('common.label.cancel')}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </BasicDialog>
   );
 };
