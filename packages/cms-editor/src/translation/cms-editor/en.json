@@ -14,6 +14,7 @@
       "languages": "Languages",
       "name": "Name",
       "namespace": "Namespace",
+      "path": "Path",
       "save": "Save",
       "search": "Search",
       "settings": "Settings",
