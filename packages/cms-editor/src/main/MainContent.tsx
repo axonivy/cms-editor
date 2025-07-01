@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
-import { isCmsFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
+import { isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import './MainContent.css';
 import { MainControl } from './control/MainControl';
@@ -79,7 +79,7 @@ export const MainContent = () => {
       columns.push({
         id: language.value,
         accessorFn: co => {
-          if (isCmsFileDataObject(co)) {
+          if (isCmsDataFileDataObject(co)) {
             return co.values[language.value] ? <IvyIcon icon={IvyIcons.File} /> : '';
           }
           return co.values[language.value];

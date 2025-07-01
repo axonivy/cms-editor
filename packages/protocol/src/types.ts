@@ -14,15 +14,17 @@ import type {
   CmsRemoveLocalesArgs,
   CmsUpdateFileValueArgs,
   CmsUpdateStringValueArgs,
+  MapStringBoolean,
   MapStringByte,
   MapStringLong,
   MapStringString,
+  MapStringURI,
   Void
 } from './editor';
 
 export type EditorProps = { context: CmsEditorDataContext };
 
-export type CmsDataObjectValues = MapStringString | MapStringByte;
+export type CmsDataObjectValues = MapStringString | MapStringByte | MapStringBoolean | MapStringURI;
 export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;
 export type CmsUpdateValueArgs = CmsUpdateStringValueArgs | CmsUpdateFileValueArgs;
 

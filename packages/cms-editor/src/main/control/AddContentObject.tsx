@@ -210,26 +210,31 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
               message: valuesMessage ?? languageTagsMessage
             };
             const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsValueDataObject;
-            return isCmsFileDataObject(contentObject) ? (
-              <FileValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: Array<number>) =>
-                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
-                }
-                setFileExtension={setFileExtension}
-                {...props}
-              />
-            ) : (
-              <StringValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: string) =>
-                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
-                }
-                {...props}
-              />
-            );
+            if (isCmsFileDataObject(contentObject)) {
+              return (
+                <FileValueField
+                  key={language.value}
+                  contentObject={contentObject}
+                  updateValue={(languageTag: string, value: Array<number>) =>
+                    setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
+                  }
+                  setFileExtension={setFileExtension}
+                  {...props}
+                />
+              );
+            } else if (isCmsStringDataObject(contentObject)) {
+              return (
+                <StringValueField
+                  key={language.value}
+                  contentObject={contentObject}
+                  updateValue={(languageTag: string, value: string) =>
+                    setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
+                  }
+                  {...props}
+                />
+              );
+            }
+            return null;
           })}
           {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
         </Flex>
