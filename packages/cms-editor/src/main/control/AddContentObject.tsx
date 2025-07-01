@@ -204,6 +204,13 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
           <BasicField label={t('common.label.type')}>
             <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
           </BasicField>
+          {type === 'FILE' && (
+            <Message
+              variant='info'
+              message={t('dialog.addContentObject.fileFormatInfo')}
+              className='cms-editor-add-dialog-file-format-info'
+            />
+          )}
           {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
             const props = {
               deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),

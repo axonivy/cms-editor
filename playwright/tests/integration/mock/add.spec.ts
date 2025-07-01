@@ -78,10 +78,12 @@ test('type', async () => {
   const englishValue = add.value('English');
 
   await add.trigger.click();
+  await expect(add.fileFormatInfo.locator).toBeHidden();
   await expect(englishValue.textbox.locator).toBeVisible();
   await expect(englishValue.filePicker).toBeHidden();
 
   await add.type.select('File');
+  await expect(add.fileFormatInfo.locator).toBeVisible();
   await expect(englishValue.textbox.locator).toBeHidden();
   await expect(englishValue.filePicker).toBeVisible();
 
@@ -89,6 +91,7 @@ test('type', async () => {
   await expect(englishValue.fileButton).toBeHidden();
 
   await add.type.select('String');
+  await expect(add.fileFormatInfo.locator).toBeHidden();
   await expect(englishValue.textbox.locator).toBeVisible();
   await expect(englishValue.textbox.locator).toHaveValue('');
   await expect(englishValue.filePicker).toBeHidden();

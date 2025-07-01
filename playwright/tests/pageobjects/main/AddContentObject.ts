@@ -12,6 +12,7 @@ export class AddContentObject {
   readonly name: Textbox;
   readonly namespace: Combobox;
   readonly type: Select;
+  readonly fileFormatInfo: Message;
   readonly error: Message;
   readonly create: Locator;
 
@@ -22,6 +23,7 @@ export class AddContentObject {
     this.name = new Textbox(this.locator, { name: 'Name' });
     this.namespace = new Combobox(this.locator, { name: 'Namespace' });
     this.type = new Select(this.page, this.locator, { name: 'Type' });
+    this.fileFormatInfo = new Message(this.locator, { className: 'cms-editor-add-dialog-file-format-info' });
     this.error = new Message(this.locator, { className: 'cms-editor-add-dialog-error-message' });
     this.create = this.locator.getByRole('button', { name: 'Create Content Object' });
   }
