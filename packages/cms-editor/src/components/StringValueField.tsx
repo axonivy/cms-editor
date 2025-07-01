@@ -1,8 +1,8 @@
-import type { MapStringString } from '@axonivy/cms-editor-protocol';
+import type { CmsStringDataObject } from '@axonivy/cms-editor-protocol';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 import { ValueFieldTextArea } from './ValueFieldTextArea';
 
-type StringValueFieldProps = BaseValueFieldProps<MapStringString> & {
+type StringValueFieldProps = BaseValueFieldProps<CmsStringDataObject> & {
   updateValue: (languageTag: string, value: string) => void;
 };
 
@@ -10,8 +10,8 @@ export const StringValueField = ({ updateValue, ...baseProps }: StringValueField
   return (
     <BaseValueField {...baseProps}>
       <ValueFieldTextArea
-        value={baseProps.values[baseProps.languageTag]}
-        onChange={event => updateValue(baseProps.languageTag, event.target.value)}
+        value={baseProps.contentObject.values[baseProps.language.value]}
+        onChange={event => updateValue(baseProps.language.value, event.target.value)}
         disabled={baseProps.disabled}
       />
     </BaseValueField>

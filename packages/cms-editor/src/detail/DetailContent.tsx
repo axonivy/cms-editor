@@ -123,26 +123,24 @@ export const DetailContent = () => {
         {toLanguages(locales, languageDisplayName).map(language => {
           const props = {
             deleteValue: (languageTag: string) => deleteMutation.mutate({ context, deleteObject: { uri, languageTag } }),
-            label: language.label,
-            languageTag: language.value,
+            language,
             disabledDelete: hasExactlyOneValue,
             deleteTooltip: hasExactlyOneValue && contentObject.values[language.value] !== undefined ? t('value.lastValue') : undefined
           };
           return isCmsFileDataObject(contentObject) ? (
             <FileValueField
               key={language.value}
-              values={contentObject.values}
+              contentObject={contentObject}
               updateValue={(languageTag: string, value: Array<number>) =>
                 updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
               }
-              fileExtension={contentObject.fileExtension}
-              openFile={{ coUri: contentObject.uri }}
+              allowOpenFile
               {...props}
             />
           ) : (
             <StringValueField
               key={language.value}
-              values={contentObject.values}
+              contentObject={contentObject}
               updateValue={(languageTag: string, value: string) =>
                 updateStringValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
               }
