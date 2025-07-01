@@ -110,7 +110,7 @@ export const DetailContent = () => {
 
   const locales = useMeta('meta/locales', context, []).data;
 
-  if (!uri || !isCmsValueDataObject(contentObject)) {
+  if (!uri || !(isCmsStringDataObject(contentObject) || isCmsReadFileDataObject(contentObject))) {
     return <PanelMessage message={t('message.emptyDetail')} />;
   }
 
@@ -141,31 +141,26 @@ export const DetailContent = () => {
             disabledDelete: hasExactlyOneValue,
             deleteTooltip: hasExactlyOneValue && contentObject.values[language.value] !== undefined ? t('value.lastValue') : undefined
           };
-          if (isCmsReadFileDataObject(contentObject)) {
-            return (
-              <FileValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: Array<number>) =>
-                  updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
-                }
-                allowOpenFile
-                {...props}
-              />
-            );
-          } else if (isCmsStringDataObject(contentObject)) {
-            return (
-              <StringValueField
-                key={language.value}
-                contentObject={contentObject}
-                updateValue={(languageTag: string, value: string) =>
-                  updateStringValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
-                }
-                {...props}
-              />
-            );
-          }
-          return null;
+          return isCmsReadFileDataObject(contentObject) ? (
+            <FileValueField
+              key={language.value}
+              contentObject={contentObject}
+              updateValue={(languageTag: string, value: Array<number>) =>
+                updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
+              }
+              allowOpenFile
+              {...props}
+            />
+          ) : (
+            <StringValueField
+              key={language.value}
+              contentObject={contentObject}
+              updateValue={(languageTag: string, value: string) =>
+                updateStringValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
+              }
+              {...props}
+            />
+          );
         })}
       </Flex>
     </Flex>

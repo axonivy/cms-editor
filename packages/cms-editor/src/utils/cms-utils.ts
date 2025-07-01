@@ -7,10 +7,10 @@ import type {
   CmsStringDataObject
 } from '@axonivy/cms-editor-protocol';
 
-export const removeValue = (values: CmsDataObjectValues, languageTag: string): CmsDataObjectValues => {
+export const removeValue = <V extends CmsDataObjectValues>(values: V, languageTag: string) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { [languageTag]: _, ...newValues } = values;
-  return newValues;
+  return newValues as V;
 };
 
 export const isCmsStringDataObject = (object?: CmsDataObject): object is CmsStringDataObject => object?.type === 'STRING';

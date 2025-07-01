@@ -3,6 +3,8 @@ import {
   type CmsDataObject,
   type CmsDataObjectValues,
   type CmsEditorDataContext,
+  type CmsFileDataObject,
+  type CmsStringDataObject,
   type ContentObjectType,
   type MapStringByte,
   type MapStringString
@@ -41,7 +43,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useClient } from '../../protocol/ClientContextProvider';
 import { useMeta } from '../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../query/query-client';
-import { isCmsFileDataObject, isCmsStringDataObject, removeValue, type CmsValueDataObject } from '../../utils/cms-utils';
+import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
@@ -76,7 +78,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
   const [namespace, setNamespace] = useState('');
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
-  const [values, setValues] = useState<CmsDataObjectValues>({});
+  const [values, setValues] = useState<MapStringString | MapStringByte>({});
 
   const { languageTags, languageTagsMessage } = useLanguageTags();
 
@@ -209,32 +211,27 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
               disabled: isPending,
               message: valuesMessage ?? languageTagsMessage
             };
-            const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsValueDataObject;
-            if (isCmsFileDataObject(contentObject)) {
-              return (
-                <FileValueField
-                  key={language.value}
-                  contentObject={contentObject}
-                  updateValue={(languageTag: string, value: Array<number>) =>
-                    setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
-                  }
-                  setFileExtension={setFileExtension}
-                  {...props}
-                />
-              );
-            } else if (isCmsStringDataObject(contentObject)) {
-              return (
-                <StringValueField
-                  key={language.value}
-                  contentObject={contentObject}
-                  updateValue={(languageTag: string, value: string) =>
-                    setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
-                  }
-                  {...props}
-                />
-              );
-            }
-            return null;
+            const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
+            return isCmsFileDataObject(contentObject) ? (
+              <FileValueField
+                key={language.value}
+                contentObject={contentObject}
+                updateValue={(languageTag: string, value: Array<number>) =>
+                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
+                }
+                setFileExtension={setFileExtension}
+                {...props}
+              />
+            ) : (
+              <StringValueField
+                key={language.value}
+                contentObject={contentObject}
+                updateValue={(languageTag: string, value: string) =>
+                  setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
+                }
+                {...props}
+              />
+            );
           })}
           {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
         </Flex>
