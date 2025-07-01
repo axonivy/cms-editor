@@ -12,7 +12,6 @@ type AppContext = {
   defaultLanguageTags: Array<string>;
   setDefaultLanguageTags: (languageTags: Array<string>) => void;
   languageDisplayName: Intl.DisplayNames;
-  cmUrl: string;
 };
 
 const appContext = createContext<AppContext>({
@@ -24,8 +23,7 @@ const appContext = createContext<AppContext>({
   setDetail: () => {},
   defaultLanguageTags: [],
   setDefaultLanguageTags: () => {},
-  languageDisplayName: new Intl.DisplayNames(undefined, { type: 'language' }),
-  cmUrl: ''
+  languageDisplayName: new Intl.DisplayNames(undefined, { type: 'language' })
 });
 
 export const AppProvider = appContext.Provider;

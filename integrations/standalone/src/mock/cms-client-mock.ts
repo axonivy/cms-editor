@@ -1,5 +1,6 @@
 import {
   isCmsFileDataObject,
+  isCmsReadFileDataObject,
   isCmsStringDataObject,
   isCmsValueDataObject,
   removeValue,
@@ -56,7 +57,11 @@ export class CmsClientMock implements Client {
   }
 
   read(args: CmsReadArgs): Promise<CmsDataObject> {
-    return Promise.resolve(this.findContentObject(args.uri) ?? ({} as CmsDataObject));
+    const co = this.findContentObject(args.uri);
+    if (isCmsReadFileDataObject(co)) {
+      co.values = Object.fromEntries(Object.keys(co.values).map(key => [key, `http://localhost:8080/test/cm/test$1${co.uri}?l=${key}`]));
+    }
+    return Promise.resolve(co ?? ({} as CmsDataObject));
   }
 
   updateStringValue = (args: CmsUpdateStringValueArgs): void => {

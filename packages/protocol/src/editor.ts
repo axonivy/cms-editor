@@ -7,7 +7,12 @@
  */
 
 export type ContentObjectType = ("STRING" | "FILE" | "FOLDER")
-export type CmsDataObject = CmsFolderDataObject | CmsStringDataObject | CmsFileDataObject | CmsReadFileDataObject;
+export type CmsDataObject =
+  | CmsFolderDataObject
+  | CmsStringDataObject
+  | CmsFileDataObject
+  | CmsDataFileDataObject
+  | CmsReadFileDataObject;
 
 export interface CMS {
   cmsActionArgs: CmsActionArgs;
@@ -74,16 +79,21 @@ export interface MapStringString {
   [k: string]: string;
 }
 export interface CmsData {
-  cmUrl: string;
   context: CmsEditorDataContext;
-  data: (CmsFolderDataObject | CmsStringDataObject | CmsFileDataObject | CmsReadFileDataObject)[];
+  data: (
+    | CmsFolderDataObject
+    | CmsStringDataObject
+    | CmsFileDataObject
+    | CmsDataFileDataObject
+    | CmsReadFileDataObject
+  )[];
   helpUrl: string;
 }
 export interface CmsFolderDataObject {
   type: ContentObjectType;
   uri: string;
 }
-export interface CmsReadFileDataObject {
+export interface CmsDataFileDataObject {
   fileExtension: string;
   type: ContentObjectType;
   uri: string;
@@ -91,6 +101,15 @@ export interface CmsReadFileDataObject {
 }
 export interface MapStringBoolean {
   [k: string]: boolean;
+}
+export interface CmsReadFileDataObject {
+  fileExtension: string;
+  type: ContentObjectType;
+  uri: string;
+  values: MapStringURI;
+}
+export interface MapStringURI {
+  [k: string]: string;
 }
 export interface CmsDataArgs {
   context: CmsEditorDataContext;

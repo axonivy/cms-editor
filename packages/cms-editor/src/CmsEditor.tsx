@@ -69,8 +69,7 @@ function CmsEditor(props: EditorProps) {
         setDetail,
         defaultLanguageTags,
         setDefaultLanguageTags,
-        languageDisplayName,
-        cmUrl: data.cmUrl
+        languageDisplayName
       }}
     >
       <ResizablePanelGroup direction='horizontal'>

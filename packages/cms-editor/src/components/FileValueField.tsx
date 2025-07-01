@@ -1,13 +1,12 @@
-import type { CmsFileDataObject } from '@axonivy/cms-editor-protocol';
+import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-editor-protocol';
 import { Button, Flex, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../context/AppContext';
 import { useAction } from '../protocol/use-action';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 
-type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject> & {
+type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
   updateValue: (languageTag: string, value: Array<number>) => void;
   deleteValue: (languageTag: string) => void;
   setFileExtension?: (fileExtension?: string) => void;
@@ -16,7 +15,6 @@ type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject> & {
 
 export const FileValueField = ({ updateValue, deleteValue, setFileExtension, allowOpenFile, ...baseProps }: FileValueFieldProps) => {
   const { t } = useTranslation();
-  const { cmUrl } = useAppContext();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,6 +36,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
     }
   };
 
+  const url = baseProps.contentObject.values[baseProps.language.value];
   const openUrl = useAction('openUrl');
 
   return (
@@ -50,15 +49,11 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           disabled={baseProps.disabled}
           ref={inputRef}
         />
-        {allowOpenFile && baseProps.contentObject.values[baseProps.language.value] && (
+        {allowOpenFile && url && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  icon={IvyIcons.File}
-                  aria-label={t('value.openFile')}
-                  onClick={() => openUrl(`${cmUrl}${baseProps.contentObject.uri}?l=${baseProps.language.value}`)}
-                />
+                <Button icon={IvyIcons.File} aria-label={t('value.openFile')} onClick={() => openUrl(url as string)} />
               </TooltipTrigger>
               <TooltipContent>{t('value.openFile')}</TooltipContent>
             </Tooltip>
