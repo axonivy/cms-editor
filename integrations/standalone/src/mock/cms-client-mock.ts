@@ -1,6 +1,6 @@
 import {
+  isCmsDataFileDataObject,
   isCmsFileDataObject,
-  isCmsReadFileDataObject,
   isCmsStringDataObject,
   isCmsValueDataObject,
   removeValue,
@@ -51,15 +51,26 @@ export class CmsClientMock implements Client {
     } else if (uri.endsWith('IsError')) {
       throw Error('error message');
     }
-    this.cmsData.data.push(args.contentObject);
+
+    if (isCmsFileDataObject(args.contentObject)) {
+      this.cmsData.data.push({
+        ...args.contentObject,
+        values: Object.fromEntries(Object.keys(args.contentObject.values).map(key => [key, true]))
+      });
+    } else {
+      this.cmsData.data.push(args.contentObject);
+    }
     this.cmsData.data.sort((co1, co2) => co1.uri.localeCompare(co2.uri));
     return Promise.resolve({});
   }
 
   read(args: CmsReadArgs): Promise<CmsDataObject> {
-    const co = this.findContentObject(args.uri);
-    if (isCmsReadFileDataObject(co)) {
-      co.values = Object.fromEntries(Object.keys(co.values).map(key => [key, `http://localhost:8080/test/cm/test$1${co.uri}?l=${key}`]));
+    let co = this.findContentObject(args.uri);
+    if (isCmsDataFileDataObject(co)) {
+      co = {
+        ...co,
+        values: Object.fromEntries(Object.keys(co.values).map(key => [key, `http://localhost:8080/test/cm/test$1${co?.uri}?l=${key}`]))
+      };
     }
     return Promise.resolve(co ?? ({} as CmsDataObject));
   }
@@ -72,16 +83,16 @@ export class CmsClientMock implements Client {
     this.updateValue(args, isCmsFileDataObject);
   };
 
-  private updateValue<T extends CmsValueDataObject>(args: CmsUpdateValueArgs, typeCheck: (co: CmsDataObject) => co is T) {
+  private updateValue<T extends CmsValueDataObject>(args: CmsUpdateValueArgs, typeCheck: (co?: CmsDataObject) => co is T) {
     const co = this.findContentObject(args.updateObject.uri);
-    if (co && typeCheck(co)) {
+    if (typeCheck(co)) {
       co.values = { ...co.values, [args.updateObject.languageTag]: args.updateObject.value } as T['values'];
     }
   }
 
   deleteValue(args: CmsDeleteValueArgs): void {
     const co = this.findContentObject(args.deleteObject.uri);
-    if (co && isCmsValueDataObject(co)) {
+    if (isCmsValueDataObject(co)) {
       co.values = removeValue(co.values, args.deleteObject.languageTag);
     }
   }
