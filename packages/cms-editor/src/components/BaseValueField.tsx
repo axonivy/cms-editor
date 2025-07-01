@@ -44,14 +44,14 @@ export const BaseValueField = ({
     <BasicField
       label={language.label}
       control={
-        readonly ? null : (
+        readonly || !isValuePresent ? null : (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   icon={IvyIcons.Trash}
                   onClick={() => deleteValue(language.value)}
-                  disabled={disabled || disabledDelete || !isValuePresent}
+                  disabled={disabled || disabledDelete}
                   aria-label={t('value.delete')}
                 />
               </TooltipTrigger>
