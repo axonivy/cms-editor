@@ -5,6 +5,9 @@
       "focusMain": "焦点の本管({{hotkey}})",
       "focusToolbar": "焦点のツールバー({{hotkey}})",
       "help": "オープンヘルプ({{hotkey}})"
+    },
+    "label": {
+      "cancel": "キャンセル"
     }
   }
 }
