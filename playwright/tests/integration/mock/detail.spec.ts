@@ -124,3 +124,18 @@ test.describe('update value', () => {
     expect(fileName).toEqual('TestFile.txt');
   });
 });
+
+test('openFile', async () => {
+  await editor.main.table.locator.focus();
+  await editor.page.keyboard.press('ArrowUp');
+
+  const msg0 = editor.consoleLog();
+  await editor.detail.value('English').fileButton.click();
+  expect(await msg0).toContain('openUrl');
+  expect(await msg0).toContain('http://localhost:8080/test/cm/test$1/Files/TextFile?l=en');
+
+  const msg1 = editor.consoleLog();
+  await editor.detail.value('German').fileButton.click();
+  expect(await msg1).toContain('openUrl');
+  expect(await msg1).toContain('http://localhost:8080/test/cm/test$1/Files/TextFile?l=de');
+});

@@ -1,4 +1,4 @@
-import type { MapStringString } from '@axonivy/cms-editor-protocol';
+import type { CmsStringDataObject, MapStringString } from '@axonivy/cms-editor-protocol';
 import { screen } from '@testing-library/react';
 import { customRender } from '../context/test-utils/test-utils';
 import { StringValueField } from './StringValueField';
@@ -19,7 +19,12 @@ test('state', () => {
 
 const renderStringValueField = (values: MapStringString, readonly?: boolean) => {
   const ui = (values: MapStringString) => (
-    <StringValueField values={values} updateValue={() => {}} deleteValue={() => {}} label='English' languageTag='en' />
+    <StringValueField
+      contentObject={{ values } as CmsStringDataObject}
+      updateValue={() => {}}
+      deleteValue={() => {}}
+      language={{ label: 'English', value: 'en' }}
+    />
   );
   const view = customRender(ui(values), {
     wrapperProps: {

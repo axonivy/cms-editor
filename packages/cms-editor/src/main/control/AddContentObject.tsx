@@ -41,7 +41,7 @@ import { useAppContext } from '../../context/AppContext';
 import { useClient } from '../../protocol/ClientContextProvider';
 import { useMeta } from '../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../query/query-client';
-import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
+import { isCmsFileDataObject, isCmsStringDataObject, removeValue, type CmsValueDataObject } from '../../utils/cms-utils';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
@@ -205,26 +205,25 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
           {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
             const props = {
               deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
-              label: language.label,
-              languageTag: language.value,
+              language,
               disabled: isPending,
               message: valuesMessage ?? languageTagsMessage
             };
-            return type === 'FILE' ? (
+            const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsValueDataObject;
+            return isCmsFileDataObject(contentObject) ? (
               <FileValueField
                 key={language.value}
-                values={values as MapStringByte}
+                contentObject={contentObject}
                 updateValue={(languageTag: string, value: Array<number>) =>
                   setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
                 }
-                fileExtension={fileExtension}
                 setFileExtension={setFileExtension}
                 {...props}
               />
             ) : (
               <StringValueField
                 key={language.value}
-                values={values as MapStringString}
+                contentObject={contentObject}
                 updateValue={(languageTag: string, value: string) =>
                   setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
                 }

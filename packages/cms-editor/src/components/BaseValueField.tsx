@@ -1,4 +1,3 @@
-import type { CmsDataObjectValues } from '@axonivy/cms-editor-protocol';
 import {
   BasicField,
   Button,
@@ -12,12 +11,13 @@ import {
 import { IvyIcons } from '@axonivy/ui-icons';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Language } from '../main/control/language-tool/language-utils';
+import type { CmsValueDataObject } from '../utils/cms-utils';
 
-export type BaseValueFieldProps<T extends CmsDataObjectValues> = {
-  values: T;
+export type BaseValueFieldProps<T extends CmsValueDataObject> = {
+  contentObject: T;
   deleteValue: (languageTag: string) => void;
-  label: string;
-  languageTag: string;
+  language: Language;
   disabled?: boolean;
   disabledDelete?: boolean;
   deleteTooltip?: string;
@@ -26,24 +26,23 @@ export type BaseValueFieldProps<T extends CmsDataObjectValues> = {
 };
 
 export const BaseValueField = ({
-  values,
+  contentObject,
   deleteValue,
-  label,
-  languageTag,
+  language,
   disabled,
   disabledDelete,
   deleteTooltip,
   message,
   children
-}: BaseValueFieldProps<CmsDataObjectValues>) => {
+}: BaseValueFieldProps<CmsValueDataObject>) => {
   const { t } = useTranslation();
   const readonly = useReadonly();
 
-  const isValuePresent = values[languageTag] !== undefined;
+  const isValuePresent = contentObject.values[language.value] !== undefined;
 
   return (
     <BasicField
-      label={label}
+      label={language.label}
       control={
         readonly ? null : (
           <TooltipProvider>
@@ -51,7 +50,7 @@ export const BaseValueField = ({
               <TooltipTrigger asChild>
                 <Button
                   icon={IvyIcons.Trash}
-                  onClick={() => deleteValue(languageTag)}
+                  onClick={() => deleteValue(language.value)}
                   disabled={disabled || disabledDelete || !isValuePresent}
                   aria-label={t('value.delete')}
                 />
