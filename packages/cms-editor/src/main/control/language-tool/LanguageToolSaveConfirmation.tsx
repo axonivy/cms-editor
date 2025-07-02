@@ -1,4 +1,4 @@
-import { BasicDialog, Button, DialogContent, DialogTrigger, Flex, useHotkeyLocalScopes } from '@axonivy/ui-components';
+import { BasicDialog, Button, DialogTrigger, Flex, useHotkeyLocalScopes } from '@axonivy/ui-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
@@ -44,23 +44,29 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
       contentProps={{
         title: t('dialog.languageTool.saveConfirmation.title'),
         description: t('dialog.languageTool.saveConfirmation.description'),
+        style: { display: 'flex', flexDirection: 'column' },
+        className: 'cms-editor-language-tool-save-confirmation-content',
         buttonClose: (
-          <Button
-            variant='outline'
-            size='large'
-            aria-label={t('common.label.cancel')}
-            // workaround since prop `autoFocus` is broken in dialogs (https://github.com/facebook/react/issues/23301)
-            ref={button => {
-              setTimeout(() => button?.focus(), 0);
-            }}
-          >
-            {t('common.label.cancel')}
-          </Button>
+          <>
+            <Button
+              variant='outline'
+              size='large'
+              aria-label={t('common.label.cancel')}
+              // workaround since prop `autoFocus` is broken in dialogs (https://github.com/facebook/react/issues/23301)
+              ref={button => {
+                setTimeout(() => button?.focus(), 0);
+              }}
+            >
+              {t('common.label.cancel')}
+            </Button>
+          </>
         ),
         buttonCustom: (
-          <Button variant='primary' size='large' aria-label={t('common.label.save')} onClick={() => save(localesToDelete)}>
-            {t('common.label.save')}
-          </Button>
+          <>
+            <Button variant='primary' size='large' aria-label={t('common.label.save')} onClick={() => save(localesToDelete)}>
+              {t('common.label.save')}
+            </Button>
+          </>
         )
       }}
       dialogTrigger={
@@ -71,15 +77,13 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
         </DialogTrigger>
       }
     >
-      <DialogContent style={{ display: 'flex', flexDirection: 'column' }} className='cms-editor-language-tool-save-confirmation-content'>
-        <Flex direction='column' gap={1} className='cms-editor-language-tool-save-confirmation-language-values'>
-          {Object.entries(amountOfValuesToDelete)
-            .filter(([, amount]) => amount > 0)
-            .map(([languageTag, amount]) => (
-              <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
-            ))}
-        </Flex>
-      </DialogContent>
+      <Flex direction='column' gap={1} className='cms-editor-language-tool-save-confirmation-language-values'>
+        {Object.entries(amountOfValuesToDelete)
+          .filter(([, amount]) => amount > 0)
+          .map(([languageTag, amount]) => (
+            <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
+          ))}
+      </Flex>
     </BasicDialog>
   );
 };
