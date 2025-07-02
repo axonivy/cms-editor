@@ -53,9 +53,7 @@ test.describe('delete value', () => {
 
     await englishValue.delete.click();
 
-    await expect(englishValue.delete).toBeDisabled();
-    await englishValue.delete.hover();
-    await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+    await expect(englishValue.delete).toBeHidden();
     await expect(englishValue.textbox.locator).toHaveValue('');
     await englishValue.textbox.expectToHavePlaceholder('[no value]');
     await expect(row.column(1).value(0)).toHaveText('');
@@ -138,4 +136,28 @@ test('openFile', async () => {
   await editor.detail.value('German').fileButton.click();
   expect(await msg1).toContain('openUrl');
   expect(await msg1).toContain('http://localhost:8080/test/cm/test$1/Files/TextFile?l=de');
+});
+
+test('deleteValueButtonState', async () => {
+  await editor.main.table.row(0).locator.click();
+  const englishValue = editor.detail.value('English');
+  const germanValue = editor.detail.value('German');
+
+  await expect(englishValue.delete).toBeVisible();
+  await expect(englishValue.delete).toBeEnabled();
+  await englishValue.delete.hover();
+  await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+
+  await expect(germanValue.delete).toBeVisible();
+  await expect(germanValue.delete).toBeEnabled();
+  await germanValue.delete.hover();
+  await expect(editor.page.getByRole('tooltip')).toHaveText('Delete value');
+
+  await englishValue.delete.click();
+  await expect(englishValue.delete).toBeHidden();
+
+  await expect(germanValue.delete).toBeVisible();
+  await expect(germanValue.delete).toBeDisabled();
+  await germanValue.delete.hover();
+  await expect(editor.page.getByRole('tooltip')).toHaveText('The last value cannot be deleted');
 });

@@ -6,7 +6,7 @@ import { BaseValueField } from './BaseValueField';
 
 test('state', () => {
   const view = renderBaseValueField({});
-  expect(screen.getByRole('button')).toBeDisabled();
+  expect(screen.queryByRole('button')).not.toBeInTheDocument();
 
   view.rerenderWithValues({ en: '' });
   expect(screen.getByRole('button')).toBeEnabled();
