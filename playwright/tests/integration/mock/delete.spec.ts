@@ -26,12 +26,12 @@ test('delete', async () => {
   await firstRow.locator.click();
   await editor.page.keyboard.press('ArrowUp');
   const lastRow = editor.main.table.row(-1);
-  await lastRow.expectToHaveFileColumns('/Files/TextFile', [true]);
-  await editor.detail.expectToHaveFileValues('/Files/TextFile', { English: true });
+  await lastRow.expectToHaveFileColumns('/Files/ImageFile', { type: 'IMAGE', fileExtension: 'PNG' }, [true]);
+  await editor.detail.expectToHaveFileValues('/Files/ImageFile', { English: true, German: false });
   await deleteButton.click();
   await lastRow.expectToBeSelected();
-  await lastRow.expectToHaveStringColumns(['/Dialogs/trigger/selectParkingLot'], ['Select parking lot']);
-  await editor.detail.expectToHaveStringValues('/Dialogs/trigger/selectParkingLot', { English: 'Select parking lot' });
+  await lastRow.expectToHaveFileColumns('/Files/TextFile', { type: 'FILE', fileExtension: 'TXT' }, [true]);
+  await editor.detail.expectToHaveFileValues('/Files/TextFile', { English: true, German: true });
 });
 
 test('keyboard', async () => {

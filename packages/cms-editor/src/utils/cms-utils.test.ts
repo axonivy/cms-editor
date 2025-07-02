@@ -1,5 +1,7 @@
 import type { CmsDataObject } from '@axonivy/cms-editor-protocol';
+import { IvyIcons } from '@axonivy/ui-icons';
 import {
+  fileIcon,
   isCmsDataFileDataObject,
   isCmsFileDataObject,
   isCmsReadFileDataObject,
@@ -67,4 +69,11 @@ test('CmsDataObject type guards', () => {
   expect(isCmsValueDataObject(fileData)).toBeTruthy();
   expect(isCmsValueDataObject(dataFileData)).toBeTruthy();
   expect(isCmsValueDataObject(readFileData)).toBeTruthy();
+});
+
+test('fileIcon', () => {
+  expect(fileIcon('')).toEqual(IvyIcons.File);
+  expect(fileIcon('txt')).toEqual(IvyIcons.File);
+  expect(fileIcon('jpg')).toEqual(IvyIcons.CustomImage);
+  expect(fileIcon('png')).toEqual(IvyIcons.CustomImage);
 });

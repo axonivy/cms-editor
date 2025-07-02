@@ -18,7 +18,6 @@ import {
   useTableSelect,
   useTableSort
 } from '@axonivy/ui-components';
-import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -27,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
-import { isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
+import { fileIcon, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import './MainContent.css';
 import { MainControl } from './control/MainControl';
@@ -78,12 +77,15 @@ export const MainContent = () => {
     toLanguages(defaultLanguageTags, languageDisplayName).forEach(language =>
       columns.push({
         id: language.value,
-        accessorFn: co => {
-          if (isCmsDataFileDataObject(co)) {
-            return co.values[language.value] ? <IvyIcon icon={IvyIcons.File} /> : '';
-          }
-          return co.values[language.value];
-        },
+        accessorFn: co =>
+          isCmsDataFileDataObject(co) && co.values[language.value] ? (
+            <Flex alignItems='center' gap={1}>
+              <IvyIcon icon={fileIcon(co.fileExtension)} />
+              {`(${co.fileExtension.toUpperCase()})`}
+            </Flex>
+          ) : (
+            co.values[language.value]
+          ),
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
         cell: cell => <span>{cell.getValue()}</span>,
         minSize: 200,

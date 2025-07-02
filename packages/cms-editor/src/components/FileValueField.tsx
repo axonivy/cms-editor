@@ -1,9 +1,9 @@
 import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-editor-protocol';
 import { Button, Flex, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
-import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAction } from '../protocol/use-action';
+import { fileIcon } from '../utils/cms-utils';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 
 type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
@@ -53,7 +53,11 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button icon={IvyIcons.File} aria-label={t('value.openFile')} onClick={() => openUrl(url as string)} />
+                <Button
+                  icon={fileIcon(baseProps.contentObject.fileExtension)}
+                  aria-label={t('value.openFile')}
+                  onClick={() => openUrl(url as string)}
+                />
               </TooltipTrigger>
               <TooltipContent>{t('value.openFile')}</TooltipContent>
             </Tooltip>

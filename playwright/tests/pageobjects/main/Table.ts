@@ -113,10 +113,10 @@ export class Row {
     }
   }
 
-  async expectToHaveFileColumns(uri: string, ...values: Array<Array<boolean>>) {
+  async expectToHaveFileColumns(uri: string, fileValue: FileValue, ...values: Array<Array<boolean>>) {
     await expect(this.column(0).value(0)).toHaveText(uri);
     for (let i = 0; i < values.length; i++) {
-      await this.column(i + 1).expectToHaveFileValues(uri, ...values[i]);
+      await this.column(i + 1).expectToHaveFileValues(fileValue, ...values[i]);
     }
   }
 }
@@ -140,14 +140,17 @@ export class Cell {
     }
   }
 
-  async expectToHaveFileValues(uri: string, ...values: Array<boolean>) {
+  async expectToHaveFileValues(fileValue: FileValue, ...values: Array<boolean>) {
     for (let i = 0; i < values.length; i++) {
-      const button = this.values.nth(i).locator('i');
+      const value = this.values.nth(i);
       if (values[i]) {
-        await expect(button).toBeVisible();
+        await expect(value.locator('i')).toHaveClass(fileValue.type === 'IMAGE' ? /ivy-custom-image/ : /ivy-file/);
+        await expect(value).toHaveText(`(${fileValue.fileExtension})`);
       } else {
-        await expect(button).toBeHidden();
+        await expect(value).toBeHidden();
       }
     }
   }
 }
+
+type FileValue = { type: 'FILE' | 'IMAGE'; fileExtension: string };

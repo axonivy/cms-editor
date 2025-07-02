@@ -278,7 +278,7 @@ describe('save confirmation', () => {
     await languageTool.delete.click();
     await languageTool.delete.click();
     await languageTool.save.trigger.click();
-    await expect(languageTool.save.valueAmounts.nth(0)).toHaveText('English: 100 values');
+    await expect(languageTool.save.valueAmounts.nth(0)).toHaveText('English: 101 values');
     await expect(languageTool.save.valueAmounts.nth(1)).toHaveText('German: 100 values');
     await expect(languageTool.save.valueAmounts.nth(2)).toHaveText('French: 1 value');
   });
@@ -398,10 +398,9 @@ describe('table updates after save', () => {
 
     await table.row(0).locator.click();
     await editor.page.keyboard.press('ArrowUp');
-    await editor.detail.value('English').delete.click();
 
     await languageTool.trigger.click();
-    await languageTool.languages.row(1).locator.click();
+    await languageTool.languages.row(0).locator.click();
     await languageTool.delete.click();
     await languageTool.save.trigger.click();
     await languageTool.save.save.click();
