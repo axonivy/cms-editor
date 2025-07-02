@@ -1,6 +1,8 @@
 import {
   BasicField,
   Button,
+  Flex,
+  Separator,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -18,6 +20,7 @@ export type BaseValueFieldProps<T extends CmsValueDataObject> = {
   contentObject: T;
   deleteValue: (languageTag: string) => void;
   language: Language;
+  customControl?: ReactNode;
   disabled?: boolean;
   disabledDelete?: boolean;
   deleteTooltip?: string;
@@ -29,6 +32,7 @@ export const BaseValueField = ({
   contentObject,
   deleteValue,
   language,
+  customControl,
   disabled,
   disabledDelete,
   deleteTooltip,
@@ -44,21 +48,25 @@ export const BaseValueField = ({
     <BasicField
       label={language.label}
       control={
-        readonly || !isValuePresent ? null : (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  icon={IvyIcons.Trash}
-                  onClick={() => deleteValue(language.value)}
-                  disabled={disabled || disabledDelete}
-                  aria-label={t('value.delete')}
-                />
-              </TooltipTrigger>
-              <TooltipContent>{deleteTooltip ?? t('value.delete')}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )
+        <Flex gap={2}>
+          {customControl}
+          {customControl && !readonly && <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />}
+          {readonly || !isValuePresent ? null : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    icon={IvyIcons.Trash}
+                    onClick={() => deleteValue(language.value)}
+                    disabled={disabled || disabledDelete}
+                    aria-label={t('value.delete')}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>{deleteTooltip ?? t('value.delete')}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </Flex>
       }
       className='cms-editor-value-field'
       message={message}
