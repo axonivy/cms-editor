@@ -1,14 +1,9 @@
 import {
   BasicCheckbox,
+  BasicDialog,
   BasicField,
   Button,
   deleteFirstSelectedRow,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
   SelectRow,
   Table,
@@ -169,57 +164,64 @@ export const LanguageTool = () => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
-            </DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DialogContent
-        onClick={() => table.resetRowSelection()}
-        style={{ display: 'flex', flexDirection: 'column' }}
-        className='cms-editor-language-tool-content'
-      >
-        <DialogHeader>
-          <DialogTitle>{t('dialog.languageTool.title')}</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>{t('dialog.languageTool.description')}</DialogDescription>
-        <BasicField
-          className='cms-editor-language-tool-languages-field'
-          label={t('common.label.languages')}
-          control={
-            <LanguageToolControl
-              languages={languages}
-              addLanguage={addLanguage}
-              deleteSelectedLanguage={deleteSelectedLanguage}
-              hasSelection={table.getSelectedRowModel().flatRows.length !== 0}
-            />
-          }
-        >
-          <Table onKeyDown={onKeyDown} onClick={event => event.stopPropagation()} ref={deleteRef}>
-            <TableBody>
-              {table.getRowModel().rows.map(row => (
-                <SelectRow key={row.id} row={row}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-                  ))}
-                </SelectRow>
-              ))}
-            </TableBody>
-          </Table>
-        </BasicField>
-        <DialogFooter>
+    <BasicDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      contentProps={{
+        title: t('dialog.languageTool.title'),
+        description: t('dialog.languageTool.description'),
+        onClick: () => table.resetRowSelection(),
+        style: { display: 'flex', flexDirection: 'column' },
+        className: 'cms-editor-language-tool-content',
+        buttonClose: (
+          <Button variant='outline' size='large' aria-label={t('common.label.cancel')}>
+            {t('common.label.cancel')}
+          </Button>
+        ),
+        buttonCustom: (
           <LanguageToolSaveConfirmation
             localesToDelete={locales.filter(locale => !languages.some(language => language.value === locale))}
             save={save}
           />
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        )
+      }}
+      dialogTrigger={
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      }
+    >
+      <BasicField
+        className='cms-editor-language-tool-languages-field'
+        label={t('common.label.languages')}
+        control={
+          <LanguageToolControl
+            languages={languages}
+            addLanguage={addLanguage}
+            deleteSelectedLanguage={deleteSelectedLanguage}
+            hasSelection={table.getSelectedRowModel().flatRows.length !== 0}
+          />
+        }
+      >
+        <Table onKeyDown={onKeyDown} onClick={event => event.stopPropagation()} ref={deleteRef}>
+          <TableBody>
+            {table.getRowModel().rows.map(row => (
+              <SelectRow key={row.id} row={row}>
+                {row.getVisibleCells().map(cell => (
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                ))}
+              </SelectRow>
+            ))}
+          </TableBody>
+        </Table>
+      </BasicField>
+    </BasicDialog>
   );
 };
