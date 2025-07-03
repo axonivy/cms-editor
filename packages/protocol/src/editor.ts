@@ -95,6 +95,7 @@ export interface CmsFolderDataObject {
 }
 export interface CmsDataFileDataObject {
   fileExtension: string;
+  mimeType: string;
   type: ContentObjectType;
   uri: string;
   values: MapStringBoolean;
@@ -104,6 +105,7 @@ export interface MapStringBoolean {
 }
 export interface CmsReadFileDataObject {
   fileExtension: string;
+  mimeType: string;
   type: ContentObjectType;
   uri: string;
   values: MapStringURI;

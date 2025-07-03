@@ -73,7 +73,7 @@ test('CmsDataObject type guards', () => {
 
 test('fileIcon', () => {
   expect(fileIcon('')).toEqual(IvyIcons.File);
-  expect(fileIcon('txt')).toEqual(IvyIcons.File);
-  expect(fileIcon('jpg')).toEqual(IvyIcons.CustomImage);
-  expect(fileIcon('png')).toEqual(IvyIcons.CustomImage);
+  expect(fileIcon('text/plain')).toEqual(IvyIcons.File);
+  expect(fileIcon('image/jpeg')).toEqual(IvyIcons.CustomImage);
+  expect(fileIcon('image/png')).toEqual(IvyIcons.CustomImage);
 });

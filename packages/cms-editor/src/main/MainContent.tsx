@@ -80,8 +80,8 @@ export const MainContent = () => {
         accessorFn: co =>
           isCmsDataFileDataObject(co) && co.values[language.value] ? (
             <Flex alignItems='center' gap={1}>
-              <IvyIcon icon={fileIcon(co.fileExtension)} />
-              {`(${co.fileExtension.toUpperCase()})`}
+              <IvyIcon icon={fileIcon(co.mimeType)} />
+              {`(${co.fileExtension})`}
             </Flex>
           ) : (
             co.values[language.value]

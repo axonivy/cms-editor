@@ -7,7 +7,6 @@ import type {
   CmsStringDataObject
 } from '@axonivy/cms-editor-protocol';
 import { IvyIcons } from '@axonivy/ui-icons';
-import mime from 'mime';
 
 export const removeValue = <V extends CmsDataObjectValues>(values: V, languageTag: string) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,7 +29,4 @@ export type CmsValueDataObject = CmsStringDataObject | CmsFileDataObject | CmsDa
 export const isCmsValueDataObject = (object?: CmsDataObject): object is CmsValueDataObject =>
   isCmsStringDataObject(object) || isCmsFileDataObject(object) || isCmsDataFileDataObject(object) || isCmsReadFileDataObject(object);
 
-export const fileIcon = (fileExtension: string) => {
-  const mimeType = mime.getType(fileExtension);
-  return mimeType && mimeType.startsWith('image') ? IvyIcons.CustomImage : IvyIcons.File;
-};
+export const fileIcon = (mimeType: string) => (mimeType.startsWith('image') ? IvyIcons.CustomImage : IvyIcons.File);
