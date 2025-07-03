@@ -43,6 +43,22 @@ export const BaseValueField = ({
   const readonly = useReadonly();
 
   const isValuePresent = contentObject.values[language.value] !== undefined;
+  const deleteButton =
+    readonly || !isValuePresent ? null : (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              icon={IvyIcons.Trash}
+              onClick={() => deleteValue(language.value)}
+              disabled={disabled || disabledDelete}
+              aria-label={t('value.delete')}
+            />
+          </TooltipTrigger>
+          <TooltipContent>{deleteTooltip ?? t('value.delete')}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
 
   return (
     <BasicField
@@ -50,22 +66,8 @@ export const BaseValueField = ({
       control={
         <Flex gap={2}>
           {customControl}
-          {customControl && !readonly && <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />}
-          {readonly || !isValuePresent ? null : (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    icon={IvyIcons.Trash}
-                    onClick={() => deleteValue(language.value)}
-                    disabled={disabled || disabledDelete}
-                    aria-label={t('value.delete')}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>{deleteTooltip ?? t('value.delete')}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {customControl && deleteButton && <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />}
+          {deleteButton}
         </Flex>
       }
       className='cms-editor-value-field'
