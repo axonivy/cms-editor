@@ -58,3 +58,12 @@ test('show columns for default languages', async ({ page }) => {
   await expect(editor.main.table.row(2).column(1).value(0)).toHaveText('Fall');
   await expect(editor.main.table.row(2).column(2).value(0)).toHaveText('Case');
 });
+
+test('fileValues', async ({ page }) => {
+  editor = await CmsEditor.openMock(page, { defaultLanguages: ['en', 'de'] });
+  await editor.main.table.locator.focus();
+  await editor.page.keyboard.press('ArrowUp');
+
+  await editor.main.table.row(-1).expectToHaveFileColumns('/Files/ImageFile', { type: 'IMAGE', fileExtension: 'png' }, [true], [false]);
+  await editor.main.table.row(-2).expectToHaveFileColumns('/Files/TextFile', { type: 'FILE', fileExtension: 'txt' }, [true], [true]);
+});

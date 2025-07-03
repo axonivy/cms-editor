@@ -1,9 +1,9 @@
 import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-editor-protocol';
 import { Button, Flex, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
-import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAction } from '../protocol/use-action';
+import { fileIcon, isCmsReadFileDataObject } from '../utils/cms-utils';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 
 type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
@@ -16,10 +16,12 @@ type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDa
 export const FileValueField = ({ updateValue, deleteValue, setFileExtension, allowOpenFile, ...baseProps }: FileValueFieldProps) => {
   const { t } = useTranslation();
 
+  const contentObject = baseProps.contentObject;
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const deleteFileValue = (languageTag: string) => {
-    if (setFileExtension && Object.keys(baseProps.contentObject.values).length === 1) {
+    if (setFileExtension && Object.keys(contentObject.values).length === 1) {
       setFileExtension(undefined);
     }
     deleteValue(languageTag);
@@ -36,7 +38,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
     }
   };
 
-  const url = baseProps.contentObject.values[baseProps.language.value];
+  const url = contentObject.values[baseProps.language.value];
   const openUrl = useAction('openUrl');
 
   return (
@@ -44,16 +46,16 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       <Flex gap={2} alignItems='center'>
         <Input
           type='file'
-          accept={baseProps.contentObject.fileExtension ? `.${baseProps.contentObject.fileExtension}` : undefined}
+          accept={contentObject.fileExtension ? `.${contentObject.fileExtension}` : undefined}
           onChange={onChange}
           disabled={baseProps.disabled}
           ref={inputRef}
         />
-        {allowOpenFile && url && (
+        {allowOpenFile && url && isCmsReadFileDataObject(contentObject) && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button icon={IvyIcons.File} aria-label={t('value.openFile')} onClick={() => openUrl(url as string)} />
+                <Button icon={fileIcon(contentObject.mimeType)} aria-label={t('value.openFile')} onClick={() => openUrl(url as string)} />
               </TooltipTrigger>
               <TooltipContent>{t('value.openFile')}</TooltipContent>
             </Tooltip>

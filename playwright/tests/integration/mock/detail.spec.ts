@@ -68,8 +68,9 @@ test.describe('delete value', () => {
   test('file', async () => {
     await editor.main.table.locator.focus();
     await editor.page.keyboard.press('ArrowUp');
+    await editor.page.keyboard.press('ArrowUp');
 
-    const row = editor.main.table.row(-1);
+    const row = editor.main.table.row(-2);
 
     const englishValue = editor.detail.value('English');
     const germanValue = editor.detail.value('German');
@@ -126,6 +127,7 @@ test.describe('update value', () => {
 test('openFile', async () => {
   await editor.main.table.locator.focus();
   await editor.page.keyboard.press('ArrowUp');
+  await editor.page.keyboard.press('ArrowUp');
 
   const msg0 = editor.consoleLog();
   await editor.detail.value('English').fileButton.click();
@@ -160,4 +162,14 @@ test('deleteValueButtonState', async () => {
   await expect(germanValue.delete).toBeDisabled();
   await germanValue.delete.hover();
   await expect(editor.page.getByRole('tooltip')).toHaveText('The last value cannot be deleted');
+});
+
+test('openFileButton', async () => {
+  await editor.main.table.locator.focus();
+  await editor.page.keyboard.press('ArrowUp');
+
+  await expect(editor.detail.value('English').fileButton.locator('i')).toHaveClass(/ivy-custom-image/);
+
+  await editor.page.keyboard.press('ArrowUp');
+  await expect(editor.detail.value('English').fileButton.locator('i')).toHaveClass(/ivy-file/);
 });

@@ -55,7 +55,8 @@ export class CmsClientMock implements Client {
     if (isCmsFileDataObject(args.contentObject)) {
       this.cmsData.data.push({
         ...args.contentObject,
-        values: Object.fromEntries(Object.keys(args.contentObject.values).map(key => [key, true]))
+        values: Object.fromEntries(Object.keys(args.contentObject.values).map(key => [key, true])),
+        mimeType: ''
       });
     } else {
       this.cmsData.data.push(args.contentObject);
