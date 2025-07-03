@@ -1,5 +1,5 @@
 import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-editor-protocol';
-import { Button, Flex, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
+import { Button, Input, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAction } from '../protocol/use-action';
@@ -42,16 +42,12 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
   const openUrl = useAction('openUrl');
 
   return (
-    <BaseValueField deleteValue={deleteFileValue} {...baseProps}>
-      <Flex gap={2} alignItems='center'>
-        <Input
-          type='file'
-          accept={contentObject.fileExtension ? `.${contentObject.fileExtension}` : undefined}
-          onChange={onChange}
-          disabled={baseProps.disabled}
-          ref={inputRef}
-        />
-        {allowOpenFile && url && isCmsReadFileDataObject(contentObject) && (
+    <BaseValueField
+      deleteValue={deleteFileValue}
+      customControl={
+        allowOpenFile &&
+        url &&
+        isCmsReadFileDataObject(contentObject) && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -60,8 +56,17 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
               <TooltipContent>{t('value.openFile')}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
-      </Flex>
+        )
+      }
+      {...baseProps}
+    >
+      <Input
+        type='file'
+        accept={baseProps.contentObject.fileExtension ? `.${baseProps.contentObject.fileExtension}` : undefined}
+        onChange={onChange}
+        disabled={baseProps.disabled}
+        ref={inputRef}
+      />
     </BaseValueField>
   );
 };
