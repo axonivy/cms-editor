@@ -37,36 +37,36 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
     return this.sendRequest('read', args);
   }
 
-  updateStringValue = (args: CmsUpdateStringValueArgs): void => {
-    this.sendRequest('updateStringValue', args);
+  updateStringValue = (args: CmsUpdateStringValueArgs): Promise<Void> => {
+    return this.sendRequest('updateStringValue', args);
   };
 
   updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
     return this.sendRequest('updateFileValue', args);
   };
 
-  deleteValue(args: CmsDeleteValueArgs): void {
-    this.sendRequest('deleteValue', args);
+  deleteValue(args: CmsDeleteValueArgs): Promise<Void> {
+    return this.sendRequest('deleteValue', args);
   }
 
-  delete(args: CmsDeleteArgs): void {
-    this.sendRequest('delete', args);
+  delete(args: CmsDeleteArgs): Promise<Void> {
+    return this.sendRequest('delete', args);
   }
 
-  addLocales(args: CmsAddLocalesArgs): void {
-    this.sendRequest('addLocales', args);
+  addLocales(args: CmsAddLocalesArgs): Promise<Void> {
+    return this.sendRequest('addLocales', args);
   }
 
-  removeLocales(args: CmsRemoveLocalesArgs): void {
-    this.sendRequest('removeLocales', args);
+  removeLocales(args: CmsRemoveLocalesArgs): Promise<Void> {
+    return this.sendRequest('removeLocales', args);
   }
 
   meta<TMeta extends keyof MetaRequestTypes>(path: TMeta, args: MetaRequestTypes[TMeta][0]): Promise<MetaRequestTypes[TMeta][1]> {
     return this.sendRequest(path, args);
   }
 
-  action(action: CmsActionArgs): void {
-    this.sendNotification('action', action);
+  action(action: CmsActionArgs): Promise<void> {
+    return this.sendNotification('action', action);
   }
 
   sendRequest<K extends keyof RequestTypes>(command: K, args: RequestTypes[K][0]): Promise<RequestTypes[K][1]> {
