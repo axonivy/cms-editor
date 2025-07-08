@@ -80,8 +80,9 @@ export class CmsClientMock implements Client {
     this.updateValue(args, isCmsStringDataObject);
   };
 
-  updateFileValue = (args: CmsUpdateFileValueArgs): void => {
+  updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
     this.updateValue(args, isCmsFileDataObject);
+    return Promise.resolve({});
   };
 
   private updateValue<T extends CmsValueDataObject>(args: CmsUpdateValueArgs, typeCheck: (co?: CmsDataObject) => co is T) {

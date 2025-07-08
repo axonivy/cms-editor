@@ -41,8 +41,8 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
     this.sendRequest('updateStringValue', args);
   };
 
-  updateFileValue = (args: CmsUpdateFileValueArgs): void => {
-    this.sendRequest('updateFileValue', args);
+  updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
+    return this.sendRequest('updateFileValue', args);
   };
 
   deleteValue(args: CmsDeleteValueArgs): void {

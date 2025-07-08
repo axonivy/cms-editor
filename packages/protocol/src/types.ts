@@ -34,7 +34,7 @@ export interface Client {
   createFile(args: CmsCreateFileArgs): Promise<Void>;
   read(args: CmsReadArgs): Promise<CmsDataObject>;
   updateStringValue(args: CmsUpdateStringValueArgs): void;
-  updateFileValue(args: CmsUpdateFileValueArgs): void;
+  updateFileValue(args: CmsUpdateFileValueArgs): Promise<Void>;
   deleteValue(args: CmsDeleteValueArgs): void;
   delete(args: CmsDeleteArgs): void;
   addLocales(args: CmsAddLocalesArgs): void;
