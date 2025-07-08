@@ -8,6 +8,8 @@
     },
     "label": {
       "cancel": "Cancel",
+      "changeFile": "Change File",
+      "chooseFile": "Choose File",
       "details": "Details",
       "info": "Info",
       "language": "Language",
@@ -71,6 +73,7 @@
     "delete": "Delete value",
     "lastValue": "The last value cannot be deleted",
     "noValue": "[no value]",
-    "openFile": "Open File"
+    "openFile": "Open File",
+    "orDragAndDrop": "or drag and drop to upload"
   }
 }

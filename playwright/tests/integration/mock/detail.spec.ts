@@ -75,21 +75,19 @@ test.describe('delete value', () => {
     const englishValue = editor.detail.value('English');
     const germanValue = editor.detail.value('German');
 
-    await expect(englishValue.filePicker).toHaveAttribute('accept', '.txt');
-    await expect(germanValue.filePicker).toHaveAttribute('accept', '.txt');
+    await expect(englishValue.fileInput).toHaveAttribute('accept', '.txt');
+    await expect(germanValue.fileInput).toHaveAttribute('accept', '.txt');
 
     await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
 
     await expect(englishValue.fileButton).toBeVisible();
-    const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
-    expect(fileName).toEqual('TestFile.txt');
+    await expect(englishValue.filePicker).toContainText('TestFile.txt');
     await expect(row.column(1).value(0)).toHaveText('TextFile.txt');
 
     await englishValue.delete.click();
 
     await expect(englishValue.fileButton).toBeHidden();
-    const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
-    expect(fileCount).toEqual(0);
+    await expect(englishValue.filePicker).toContainText('Choose File');
     await expect(row.column(1).value(0)).toHaveText('');
   });
 });
@@ -109,18 +107,37 @@ test.describe('update value', () => {
     await expect(row.column(1).value(0)).toHaveText('New Value');
   });
 
-  test('file', async () => {
-    await editor.main.table.locator.focus();
-    await editor.page.keyboard.press('ArrowUp');
+  test.describe('file', () => {
+    test('file picker', async () => {
+      await editor.main.table.locator.focus();
+      await editor.page.keyboard.press('ArrowUp');
+      await editor.page.keyboard.press('ArrowUp');
 
-    const englishValue = editor.detail.value('English');
+      const englishValue = editor.detail.value('English');
 
-    const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
-    expect(fileCount).toEqual(0);
+      await expect(englishValue.filePicker).toContainText('TextFile.txt');
 
-    await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
-    const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
-    expect(fileName).toEqual('TestFile.txt');
+      await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
+      await expect(englishValue.filePicker).toContainText('TestFile.txt');
+    });
+
+    test('drag and drop', async () => {
+      await editor.main.table.locator.focus();
+      await editor.page.keyboard.press('ArrowUp');
+      await editor.page.keyboard.press('ArrowUp');
+
+      const englishValue = editor.detail.value('English');
+
+      await expect(englishValue.filePicker).toContainText('TextFile.txt');
+
+      const dataTransfer = await editor.page.evaluateHandle(() => {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(new File(['content'], 'TestFile.txt'));
+        return dataTransfer;
+      });
+      await englishValue.filePicker.dispatchEvent('drop', { dataTransfer });
+      await expect(englishValue.filePicker).toContainText('TestFile.txt');
+    });
   });
 });
 
@@ -162,14 +179,4 @@ test('deleteValueButtonState', async () => {
   await expect(germanValue.delete).toBeDisabled();
   await germanValue.delete.hover();
   await expect(editor.page.getByRole('tooltip')).toHaveText('The last value cannot be deleted');
-});
-
-test('openFileButton', async () => {
-  await editor.main.table.locator.focus();
-  await editor.page.keyboard.press('ArrowUp');
-
-  await expect(editor.detail.value('English').fileButton.locator('i')).toHaveClass(/ivy-custom-image/);
-
-  await editor.page.keyboard.press('ArrowUp');
-  await expect(editor.detail.value('English').fileButton.locator('i')).toHaveClass(/ivy-file/);
 });

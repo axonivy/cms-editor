@@ -68,5 +68,5 @@ test('add file', async () => {
   await editor.main.table.row(0).locator.click();
   await editor.detail.expectToHaveFileValues('/TestNamespace/TestFile', { Afrikaans: true });
   await expect(editor.detail.value('Afrikaans').filePicker).toBeVisible();
-  await expect(editor.detail.value('Afrikaans').filePicker).toHaveAttribute('accept', '.txt');
+  await expect(editor.detail.value('Afrikaans').fileInput).toHaveAttribute('accept', '.txt');
 });
