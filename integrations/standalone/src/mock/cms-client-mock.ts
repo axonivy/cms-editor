@@ -76,8 +76,9 @@ export class CmsClientMock implements Client {
     return Promise.resolve(co ?? ({} as CmsDataObject));
   }
 
-  updateStringValue = (args: CmsUpdateStringValueArgs): void => {
+  updateStringValue = (args: CmsUpdateStringValueArgs): Promise<Void> => {
     this.updateValue(args, isCmsStringDataObject);
+    return Promise.resolve({});
   };
 
   updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
@@ -92,24 +93,27 @@ export class CmsClientMock implements Client {
     }
   }
 
-  deleteValue(args: CmsDeleteValueArgs): void {
+  deleteValue(args: CmsDeleteValueArgs): Promise<Void> {
     const co = this.findContentObject(args.deleteObject.uri);
     if (isCmsValueDataObject(co)) {
       co.values = removeValue(co.values, args.deleteObject.languageTag);
     }
+    return Promise.resolve({});
   }
 
   private findContentObject = (uri: string) => this.cmsData.data.find(co => co.uri === uri);
 
-  delete(args: CmsDeleteArgs): void {
+  delete(args: CmsDeleteArgs): Promise<Void> {
     this.cmsData = { ...this.cmsData, data: this.cmsData.data.filter(co => co.uri !== args.uri) };
+    return Promise.resolve({});
   }
 
-  addLocales(args: CmsAddLocalesArgs): void {
+  addLocales(args: CmsAddLocalesArgs): Promise<Void> {
     this.localesData = [...this.localesData, ...(args as CmsAddLocalesArgs).locales];
+    return Promise.resolve({});
   }
 
-  removeLocales(args: CmsRemoveLocalesArgs): void {
+  removeLocales(args: CmsRemoveLocalesArgs): Promise<Void> {
     this.localesData = this.localesData.filter(locale => !(args as CmsRemoveLocalesArgs).locales.includes(locale));
     this.cmsData = {
       ...this.cmsData,
@@ -118,6 +122,7 @@ export class CmsClientMock implements Client {
         .map(co => this.removeLocaleValues(co, args.locales))
         .filter(co => Object.entries(co.values).length !== 0)
     };
+    return Promise.resolve({});
   }
 
   private removeLocaleValues = (co: CmsValueDataObject, locales: Array<string>) => ({
@@ -154,7 +159,8 @@ export class CmsClientMock implements Client {
       );
   };
 
-  action(action: CmsActionArgs): void {
+  action(action: CmsActionArgs): Promise<void> {
     console.log(`Action: ${JSON.stringify(action)}`);
+    return Promise.resolve();
   }
 }

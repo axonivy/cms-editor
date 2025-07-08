@@ -33,14 +33,14 @@ export interface Client {
   createString(args: CmsCreateStringArgs): Promise<Void>;
   createFile(args: CmsCreateFileArgs): Promise<Void>;
   read(args: CmsReadArgs): Promise<CmsDataObject>;
-  updateStringValue(args: CmsUpdateStringValueArgs): void;
+  updateStringValue(args: CmsUpdateStringValueArgs): Promise<Void>;
   updateFileValue(args: CmsUpdateFileValueArgs): Promise<Void>;
-  deleteValue(args: CmsDeleteValueArgs): void;
-  delete(args: CmsDeleteArgs): void;
-  addLocales(args: CmsAddLocalesArgs): void;
-  removeLocales(args: CmsRemoveLocalesArgs): void;
+  deleteValue(args: CmsDeleteValueArgs): Promise<Void>;
+  delete(args: CmsDeleteArgs): Promise<Void>;
+  addLocales(args: CmsAddLocalesArgs): Promise<Void>;
+  removeLocales(args: CmsRemoveLocalesArgs): Promise<Void>;
   meta<TMeta extends keyof MetaRequestTypes>(path: TMeta, args: MetaRequestTypes[TMeta][0]): Promise<MetaRequestTypes[TMeta][1]>;
-  action(action: CmsActionArgs): void;
+  action(action: CmsActionArgs): Promise<void>;
 }
 
 export interface ClientContext {
