@@ -83,14 +83,14 @@ test.describe('delete value', () => {
     await expect(englishValue.fileButton).toBeVisible();
     const fileName = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.[0]?.name);
     expect(fileName).toEqual('TestFile.txt');
-    await expect(row.column(1).value(0).locator('i')).toBeVisible();
+    await expect(row.column(1).value(0)).toHaveText('TextFile.txt');
 
     await englishValue.delete.click();
 
     await expect(englishValue.fileButton).toBeHidden();
     const fileCount = await englishValue.filePicker.evaluate((input: HTMLInputElement) => input.files?.length);
     expect(fileCount).toEqual(0);
-    await expect(row.column(1).value(0).locator('i')).toBeHidden();
+    await expect(row.column(1).value(0)).toHaveText('');
   });
 });
 

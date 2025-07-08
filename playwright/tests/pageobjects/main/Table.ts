@@ -50,7 +50,7 @@ export class Table {
 
   async expectToHaveRows(...rows: Array<Array<Array<string>>>) {
     for (let i = 0; i < rows.length; i++) {
-      await this.row(i).expectToHaveStringColumns(...rows[i]);
+      await this.row(i).expectToHaveColumns(...rows[i]);
     }
   }
 }
@@ -108,25 +108,30 @@ export class Row {
   }
 
   async expectToHaveStringColumns(...values: Array<Array<string>>) {
-    for (let i = 0; i < values.length; i++) {
-      await this.column(i).expectToHaveStringValues(...values[i]);
-    }
+    await this.column(0).expectToHaveIcon('ivy-quote');
+    await this.expectToHaveColumns(...values);
   }
 
-  async expectToHaveFileColumns(uri: string, fileValue: FileValue, ...values: Array<Array<boolean>>) {
-    await expect(this.column(0).value(0)).toHaveText(uri);
+  async expectToHaveFileColumns(type: 'FILE' | 'IMAGE', ...values: Array<Array<string>>) {
+    await this.column(0).expectToHaveIcon(type === 'FILE' ? 'ivy-file' : 'ivy-custom-image');
+    await this.expectToHaveColumns(...values);
+  }
+
+  async expectToHaveColumns(...values: Array<Array<string>>) {
     for (let i = 0; i < values.length; i++) {
-      await this.column(i + 1).expectToHaveFileValues(fileValue, ...values[i]);
+      await this.column(i).expectToHaveValues(...values[i]);
     }
   }
 }
 
 export class Cell {
   readonly locator: Locator;
+  readonly icon: Locator;
   readonly values: Locator;
 
   constructor(row: Locator, index: number) {
     this.locator = row.getByRole('cell').nth(index);
+    this.icon = this.locator.locator('i');
     this.values = this.locator.locator('span');
   }
 
@@ -134,23 +139,13 @@ export class Cell {
     return this.values.nth(index);
   }
 
-  async expectToHaveStringValues(...values: Array<string>) {
+  async expectToHaveIcon(icon: string) {
+    await expect(this.icon).toContainClass(icon);
+  }
+
+  async expectToHaveValues(...values: Array<string>) {
     for (let i = 0; i < values.length; i++) {
       await expect(this.values.nth(i)).toHaveText(values[i]);
     }
   }
-
-  async expectToHaveFileValues(fileValue: FileValue, ...values: Array<boolean>) {
-    for (let i = 0; i < values.length; i++) {
-      const value = this.values.nth(i);
-      if (values[i]) {
-        await expect(value.locator('i')).toHaveClass(fileValue.type === 'IMAGE' ? /ivy-custom-image/ : /ivy-file/);
-        await expect(value).toHaveText(`(${fileValue.fileExtension})`);
-      } else {
-        await expect(value).toBeHidden();
-      }
-    }
-  }
 }
-
-type FileValue = { type: 'FILE' | 'IMAGE'; fileExtension: string };

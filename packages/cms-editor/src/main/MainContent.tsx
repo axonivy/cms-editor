@@ -18,6 +18,7 @@ import {
   useTableSelect,
   useTableSort
 } from '@axonivy/ui-components';
+import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -26,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
-import { fileIcon, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
+import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import './MainContent.css';
 import { MainControl } from './control/MainControl';
@@ -68,7 +69,12 @@ export const MainContent = () => {
       {
         accessorKey: 'uri',
         header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
-        cell: cell => <span>{cell.getValue()}</span>,
+        cell: cell => (
+          <Flex alignItems='center' gap={1}>
+            {<IvyIcon icon={isCmsDataFileDataObject(cell.row.original) ? fileIcon(cell.row.original.mimeType) : IvyIcons.Quote} />}
+            <span>{cell.getValue()}</span>
+          </Flex>
+        ),
         minSize: 200,
         size: 500,
         maxSize: 1000
@@ -77,15 +83,7 @@ export const MainContent = () => {
     toLanguages(defaultLanguageTags, languageDisplayName).forEach(language =>
       columns.push({
         id: language.value,
-        accessorFn: co =>
-          isCmsDataFileDataObject(co) && co.values[language.value] ? (
-            <Flex alignItems='center' gap={1}>
-              <IvyIcon icon={fileIcon(co.mimeType)} />
-              {`(${co.fileExtension})`}
-            </Flex>
-          ) : (
-            co.values[language.value]
-          ),
+        accessorFn: co => (isCmsDataFileDataObject(co) && co.values[language.value] ? fileName(co) : co.values[language.value]),
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
         cell: cell => <span>{cell.getValue()}</span>,
         minSize: 200,
