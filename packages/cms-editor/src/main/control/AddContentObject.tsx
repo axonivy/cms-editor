@@ -172,6 +172,11 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
         onCloseAutoFocus: e => e.preventDefault(),
         style: { display: 'flex', flexDirection: 'column' },
         className: 'cms-editor-add-content-object-content',
+        buttonClose: (
+          <Button variant='outline' size='large'>
+            {t('common.label.cancel')}
+          </Button>
+        ),
         buttonCustom: (
           <TooltipProvider>
             <Tooltip>
