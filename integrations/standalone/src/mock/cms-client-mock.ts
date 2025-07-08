@@ -70,7 +70,7 @@ export class CmsClientMock implements Client {
     if (isCmsDataFileDataObject(co)) {
       co = {
         ...co,
-        values: Object.fromEntries(Object.keys(co.values).map(key => [key, `http://localhost:8080/test/cm/test$1${co?.uri}?l=${key}`]))
+        values: Object.fromEntries(Object.keys(co.values).map(key => [key, `/test/cm/test$1${co?.uri}?l=${key}`]))
       };
     }
     return Promise.resolve(co ?? ({} as CmsDataObject));
