@@ -6,7 +6,7 @@ test('load data', async ({ page }) => {
   await expect(editor.main.table.rows).toHaveCount(3);
 
   await editor.main.table.row(0).locator.click();
-  await editor.main.table.row(0).expectToHaveFileColumns('/files/File', { type: 'FILE', fileExtension: 'txt' }, [true]);
+  await editor.main.table.row(0).expectToHaveFileColumns('FILE', ['/files/File'], ['File.txt']);
   await editor.detail.expectToHaveFileValues('/files/File', { English: true, German: false });
 
   await editor.main.table.row(1).locator.click();

@@ -30,3 +30,5 @@ export const isCmsValueDataObject = (object?: CmsDataObject): object is CmsValue
   isCmsStringDataObject(object) || isCmsFileDataObject(object) || isCmsDataFileDataObject(object) || isCmsReadFileDataObject(object);
 
 export const fileIcon = (mimeType: string) => (mimeType.startsWith('image') ? IvyIcons.CustomImage : IvyIcons.File);
+export const fileName = (co: CmsDataFileDataObject) =>
+  `${co.uri.substring(co.uri.lastIndexOf('/') + 1)}${co.fileExtension ? `.${co.fileExtension}` : ''}`;

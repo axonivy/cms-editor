@@ -25,7 +25,7 @@ test.describe('add', () => {
   test('file', async () => {
     await editor.main.control.add.addFile('TestContentObject', '/A/TestNamespace', { English: path.join('test-files', 'TestFile.txt') });
     await editor.main.table.row(0).expectToBeSelected();
-    await editor.main.table.row(0).expectToHaveFileColumns('/A/TestNamespace/TestContentObject', { type: 'FILE', fileExtension: 'txt' }, [true]);
+    await editor.main.table.row(0).expectToHaveFileColumns('FILE', ['/A/TestNamespace/TestContentObject'], ['TestContentObject.txt']);
     await editor.detail.expectToHaveFileValues('/A/TestNamespace/TestContentObject', { English: true, German: false });
   });
 });
