@@ -171,7 +171,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
         description: t('dialog.addContentObject.description'),
         onCloseAutoFocus: e => e.preventDefault(),
         style: { display: 'flex', flexDirection: 'column' },
-        className: 'cms-editor-add-content-object-content',
+        className: 'cms-editor-add-content-object-content-fields  cms-editor-add-content-object-content ui-flex',
         buttonClose: (
           <Button variant='outline' size='large'>
             {t('common.label.cancel')}
@@ -211,7 +211,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
         </TooltipProvider>
       }
     >
-      <Flex direction='column' gap={3} ref={enter} tabIndex={-1} className='cms-editor-add-content-object-content-fields'>
+      <Flex direction='column' gap={3} ref={enter} tabIndex={-1}>
         <BasicField label={t('common.label.name')} message={nameMessage}>
           <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
         </BasicField>
