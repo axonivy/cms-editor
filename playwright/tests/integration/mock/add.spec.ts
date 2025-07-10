@@ -103,21 +103,21 @@ test('file extension', async ({ page }) => {
 
   await add.trigger.click();
   await add.type.select('File');
-  await expect(add.value('English').filePicker).not.toHaveAttribute('accept');
-  await expect(add.value('German').filePicker).not.toHaveAttribute('accept');
+  await expect(add.value('English').fileInput).not.toHaveAttribute('accept');
+  await expect(add.value('German').fileInput).not.toHaveAttribute('accept');
 
   await add.value('English').selectFile(path.join('test-files', 'TestFile.txt'));
-  await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
-  await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
+  await expect(add.value('English').fileInput).toHaveAttribute('accept', '.txt');
+  await expect(add.value('German').fileInput).toHaveAttribute('accept', '.txt');
 
   await add.value('German').selectFile(path.join('test-files', 'TestFile.txt'));
   await add.value('English').delete.click();
-  await expect(add.value('English').filePicker).toHaveAttribute('accept', '.txt');
-  await expect(add.value('German').filePicker).toHaveAttribute('accept', '.txt');
+  await expect(add.value('English').fileInput).toHaveAttribute('accept', '.txt');
+  await expect(add.value('German').fileInput).toHaveAttribute('accept', '.txt');
 
   await add.value('German').delete.click();
-  await expect(add.value('English').filePicker).not.toHaveAttribute('accept');
-  await expect(add.value('German').filePicker).not.toHaveAttribute('accept');
+  await expect(add.value('English').fileInput).not.toHaveAttribute('accept');
+  await expect(add.value('German').fileInput).not.toHaveAttribute('accept');
 });
 
 test('show fields for values of default languages', async ({ page }) => {
@@ -188,7 +188,8 @@ test.describe('disable dialog while create request is pending', () => {
     await add.type.select('File');
     await add.value('English').selectFile(path.join('test-files', 'TestFile.txt'));
     await add.create.click();
-    await expect(add.value('English').filePicker).toBeDisabled();
+    await expect(add.value('English').filePicker).toHaveAttribute('aria-disabled', 'true');
+    await expect(add.value('English').fileInput).toBeDisabled();
   });
 });
 
@@ -202,44 +203,67 @@ test('show error if create request is error', async () => {
   await add.error.expectToBeError('An error has occurred: Error: error message');
 });
 
-test('validation', async ({ page }) => {
-  editor = await CmsEditor.openMock(page, { defaultLanguages: ['en', 'de'] });
-  const add = editor.main.control.add;
-  await add.trigger.click();
-  const nameMessage = await add.name.message();
-  const namespaceMessage = await add.namespace.message();
+test.describe('validation', () => {
+  test('string', async ({ page }) => {
+    editor = await CmsEditor.openMock(page, { defaultLanguages: ['en', 'de'] });
+    const add = editor.main.control.add;
+    await add.trigger.click();
+    const nameMessage = await add.name.message();
+    const namespaceMessage = await add.namespace.message();
 
-  await namespaceMessage.expectToBeInfo("Folder structure of Content Object (e.g. '/Dialog/Label').");
-  await expect(add.create).toBeEnabled();
+    await namespaceMessage.expectToBeInfo("Folder structure of Content Object (e.g. '/Dialog/Label').");
+    await expect(add.create).toBeEnabled();
 
-  await add.name.locator.clear();
-  await nameMessage.expectToBeError('Name cannot be empty.');
-  await expect(add.create).toBeDisabled();
-  await editor.page.keyboard.press('Enter');
-  await expect(add.locator).toBeVisible();
+    await add.name.locator.clear();
+    await nameMessage.expectToBeError('Name cannot be empty.');
+    await expect(add.create).toBeDisabled();
+    await editor.page.keyboard.press('Enter');
+    await expect(add.locator).toBeVisible();
 
-  await add.name.locator.fill('name');
-  const englishValue = add.value('English');
-  const englishValueMessage = await englishValue.textbox.message();
-  const germanValue = add.value('German');
-  const germanValueMessage = await germanValue.textbox.message();
-  await expect(englishValueMessage.locator).toBeHidden();
-  await expect(germanValueMessage.locator).toBeHidden();
+    await add.name.locator.fill('name');
+    const englishValue = add.value('English');
+    const englishValueMessage = await englishValue.textbox.message();
+    const germanValue = add.value('German');
+    const germanValueMessage = await germanValue.textbox.message();
+    await expect(englishValueMessage.locator).toBeHidden();
+    await expect(germanValueMessage.locator).toBeHidden();
 
-  await englishValue.delete.click();
-  await expect(englishValueMessage.locator).toBeHidden();
-  await expect(germanValueMessage.locator).toBeHidden();
+    await englishValue.delete.click();
+    await expect(englishValueMessage.locator).toBeHidden();
+    await expect(germanValueMessage.locator).toBeHidden();
 
-  await germanValue.delete.click();
-  await englishValueMessage.expectToBeError('At least one value must be present.');
-  await germanValueMessage.expectToBeError('At least one value must be present.');
+    await germanValue.delete.click();
+    await englishValueMessage.expectToBeError('At least one value must be present.');
+    await germanValueMessage.expectToBeError('At least one value must be present.');
 
-  await expect(add.create).toBeDisabled();
-  await editor.page.keyboard.press('Enter');
-  await expect(add.locator).toBeVisible();
+    await expect(add.create).toBeDisabled();
+    await editor.page.keyboard.press('Enter');
+    await expect(add.locator).toBeVisible();
 
-  await germanValue.textbox.locator.fill('value');
-  await expect(englishValueMessage.locator).toBeHidden();
-  await expect(germanValueMessage.locator).toBeHidden();
-  await expect(add.create).toBeEnabled();
+    await germanValue.textbox.locator.fill('value');
+    await expect(englishValueMessage.locator).toBeHidden();
+    await expect(germanValueMessage.locator).toBeHidden();
+    await expect(add.create).toBeEnabled();
+  });
+
+  test('file picker border', async () => {
+    const borderWithHexToRgb = (border: string) =>
+      border.replace(/#([0-9a-f]{6})/gi, (_, hex) => {
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        return `rgb(${r}, ${g}, ${b})`;
+      });
+    const border = async (name: string) => borderWithHexToRgb(await editor.page.evaluate(([name]) => getComputedStyle(document.body).getPropertyValue(name), [name]));
+
+    const add = editor.main.control.add;
+    const englishValue = add.value('English');
+
+    await add.trigger.click();
+    await add.type.select('File');
+    await expect(englishValue.filePicker).toHaveCSS('border', await border('--error-border'));
+
+    await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
+    await expect(englishValue.filePicker).toHaveCSS('border', await border('--dashed-border'));
+  });
 });

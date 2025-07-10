@@ -40,6 +40,8 @@ test('readonly', async () => {
   await expect(editor.main.control.locator).toBeVisible();
   editor = await CmsEditor.openCms(editor.page, { readonly: true });
   await expect(editor.main.control.locator).toBeHidden();
+  await editor.main.table.row(0).locator.click();
+  await expect(editor.detail.value('English').filePicker).toHaveAttribute('aria-disabled', 'true');
 });
 
 test('toolbar titles', async () => {

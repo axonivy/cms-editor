@@ -1,0 +1,24 @@
+.cms-editor-value-field[data-message-state='error'] {
+  --dashed-border: var(--error-border);
+}
+
+.cms-editor-file-picker {
+  border: var(--dashed-border);
+  border-radius: var(--border-r1);
+  padding: var(--input-padding);
+  background-color: var(--N25);
+  cursor: pointer;
+}
+
+.cms-editor-file-picker[aria-disabled='true'],
+.cms-editor-file-picker[aria-disabled='true'] a {
+  cursor: not-allowed;
+}
+
+.cms-editor-file-picker i {
+  color: var(--N600);
+}
+
+.cms-editor-file-picker input {
+  display: none;
+}

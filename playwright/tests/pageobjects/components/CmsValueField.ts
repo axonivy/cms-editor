@@ -7,6 +7,7 @@ export class CmsValueField {
   readonly label: Locator;
   readonly delete: Locator;
   readonly filePicker: Locator;
+  readonly fileInput: Locator;
   readonly fileButton: Locator;
   readonly textbox: Textbox;
 
@@ -21,7 +22,8 @@ export class CmsValueField {
     }
     this.label = this.locator.locator('label');
     this.delete = this.locator.getByRole('button', { name: 'Delete value' });
-    this.filePicker = this.locator.locator('input[type=file]');
+    this.filePicker = this.locator.locator('.cms-editor-file-picker');
+    this.fileInput = this.filePicker.locator('input[type=file]');
     this.fileButton = this.locator.getByRole('button', { name: 'Open File' });
     this.textbox = new Textbox(this.locator);
   }
