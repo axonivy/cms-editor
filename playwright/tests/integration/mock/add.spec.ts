@@ -267,3 +267,9 @@ test.describe('validation', () => {
     await expect(englishValue.filePicker).toHaveCSS('border', await border('--dashed-border'));
   });
 });
+
+test('namespace not starting with /', async () => {
+  await editor.main.control.add.addString('TestContentObject', 'A/TestNamespace', { English: 'TestValue' });
+  await editor.main.table.row(0).expectToHaveStringColumns(['/A/TestNamespace/TestContentObject'], ['TestValue']);
+  await editor.detail.expectToHaveStringValues('/A/TestNamespace/TestContentObject', { English: 'TestValue', German: '' });
+});
