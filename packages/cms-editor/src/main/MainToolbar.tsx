@@ -21,9 +21,9 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useKnownHotkeys } from '../utils/hotkeys';
-import { useTranslation } from 'react-i18next';
 
 type MainToolbarProps = {
   title: string;
