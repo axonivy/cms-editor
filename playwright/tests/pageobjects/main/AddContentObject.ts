@@ -31,7 +31,7 @@ export class AddContentObject {
   async addString(name: string, namespace: string, values: Record<string, string>) {
     await this.trigger.click();
     await this.name.locator.fill(name);
-    await this.namespace.locator.fill(namespace);
+    await this.namespace.fill(namespace);
     for (const [language, value] of Object.entries(values)) {
       await this.value(language).textbox.locator.fill(value);
     }
@@ -41,8 +41,7 @@ export class AddContentObject {
   async addFile(name: string, namespace: string, files: Record<string, string>) {
     await this.trigger.click();
     await this.name.locator.fill(name);
-    await this.namespace.locator.fill(namespace);
-    await this.namespace.locator.blur();
+    await this.namespace.fill(namespace);
     await this.type.select('File');
     for (const [language, file] of Object.entries(files)) {
       await this.value(language).selectFile(file);

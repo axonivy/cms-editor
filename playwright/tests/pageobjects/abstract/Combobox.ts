@@ -19,6 +19,11 @@ export class Combobox {
     this.toggleMenu = this.parent.getByRole('button', { name: 'toggle menu' });
   }
 
+  async fill(value: string) {
+    await this.locator.fill(value);
+    await this.locator.blur();
+  }
+
   async expectToHaveOptions(...options: Array<string>) {
     await this.toggleMenu.click();
     await expect(this.options).toHaveCount(options.length);
