@@ -30,7 +30,7 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileValueField } from '../../components/FileValueField';
 import { StringValueField } from '../../components/StringValueField';
@@ -46,9 +46,10 @@ import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 type AddContentObjectProps = {
   selectRow: (rowId: string) => void;
+  children: ReactNode;
 };
 
-export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
+export const AddContentObject = ({ selectRow, children }: AddContentObjectProps) => {
   const { t } = useTranslation();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { context, contentObjects, selectedContentObject, setSelectedContentObject, defaultLanguageTags, languageDisplayName } =
@@ -202,9 +203,7 @@ export const AddContentObject = ({ selectRow }: AddContentObjectProps) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                <Button icon={IvyIcons.Plus} aria-label={shortcut.label} disabled={locales.length === 0} />
-              </DialogTrigger>
+              <DialogTrigger asChild>{children}</DialogTrigger>
             </TooltipTrigger>
             <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
           </Tooltip>

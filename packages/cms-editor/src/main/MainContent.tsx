@@ -4,6 +4,7 @@ import {
   BasicField,
   Flex,
   IvyIcon,
+  PanelMessage,
   SelectRow,
   selectRow,
   SortableHeader,
@@ -30,7 +31,7 @@ import { useQueryKeys } from '../query/query-client';
 import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import './MainContent.css';
-import { MainControl } from './control/MainControl';
+import { EmptyMainControl, MainControl } from './control/MainControl';
 import { toLanguages } from './control/language-tool/language-utils';
 
 export const MainContent = () => {
@@ -156,6 +157,16 @@ export const MainContent = () => {
   };
 
   const ref = useHotkeys(hotkeys.deleteContentObject.hotkey, () => deleteContentObject(), { scopes: ['global'], enabled: !readonly });
+
+  if (contentObjects === undefined || contentObjects.length === 0) {
+    return (
+      <Flex direction='column' alignItems='center' justifyContent='center' style={{ height: '100%' }}>
+        <PanelMessage icon={IvyIcons.Tool} message={t('message.addFirstItem')} mode='column'>
+          <EmptyMainControl selectRow={(rowId: string) => selectRow(table, rowId)} />
+        </PanelMessage>
+      </Flex>
+    );
+  }
 
   return (
     <Flex direction='column' onClick={() => table.resetRowSelection()} className='cms-editor-main-content' ref={ref}>
