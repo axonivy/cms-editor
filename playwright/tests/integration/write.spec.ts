@@ -20,7 +20,6 @@ test('save data', async () => {
   await editor.main.control.languageTool.save.trigger.click();
 
   await editor.main.control.add.addString('TestContentObject', '/TestNamespace', { Afrikaans: 'AfrikaansValue' });
-  await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
   await editor.detail.expectToHaveStringValues('/TestNamespace/TestContentObject', { Afrikaans: 'AfrikaansValue', Akan: '', Albanian: '' });
@@ -30,11 +29,14 @@ test('save data', async () => {
   await editor.detail.value('Albanian').textbox.locator.fill('AlbanianValue');
   await editor.detail.value('Akan').textbox.locator.fill('AkanValue');
   await editor.detail.value('Afrikaans').delete.click();
-  await editor.page.reload();
 
   await editor.main.table.row(0).locator.click();
   await editor.detail.expectToHaveStringValues('/TestNamespace/TestContentObject', { Afrikaans: '', Akan: 'AkanValue', Albanian: 'AlbanianValue' });
   await editor.detail.value('Afrikaans').textbox.expectToHavePlaceholder('[no value]');
+
+  await editor.main.control.add.addString('TestEmptyNamespaceContentObject', '', { Afrikaans: 'AfrikaansValueWithEmptyNamespace' });
+  await editor.detail.expectToHaveStringValues('/TestEmptyNamespaceContentObject', { Afrikaans: 'AfrikaansValueWithEmptyNamespace', Akan: '', Albanian: '' });
+  await editor.main.control.delete.click();
 
   await editor.main.control.languageTool.trigger.click();
   await editor.main.control.languageTool.languages.row(0).locator.click();
@@ -43,7 +45,6 @@ test('save data', async () => {
   await editor.main.control.languageTool.save.trigger.click();
   await expect(editor.main.control.languageTool.save.valueAmounts).toHaveText('Akan: 1 value');
   await editor.main.control.languageTool.save.save.click();
-  await editor.page.reload();
 
   await editor.main.control.languageTool.trigger.click();
   await expect(editor.main.control.languageTool.languages.rows).toHaveCount(1);
@@ -52,7 +53,6 @@ test('save data', async () => {
 
   await editor.main.table.row(0).locator.click();
   await editor.main.control.delete.click();
-  await editor.page.reload();
 
   await expect(editor.main.table.rows).toHaveCount(0);
 });
