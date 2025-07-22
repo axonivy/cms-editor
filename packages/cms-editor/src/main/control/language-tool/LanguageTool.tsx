@@ -18,10 +18,9 @@ import {
   useTableKeyHandler,
   useTableSelect
 } from '@axonivy/ui-components';
-import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useState, type KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useClient } from '../../../protocol/ClientContextProvider';
@@ -34,7 +33,7 @@ import './LanguageTool.css';
 import { LanguageToolControl } from './LanguageToolControl';
 import { LanguageToolSaveConfirmation } from './LanguageToolSaveConfirmation';
 
-export const LanguageTool = () => {
+export const LanguageTool = ({ children }: { children: ReactNode }) => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
 
@@ -189,9 +188,7 @@ export const LanguageTool = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
-              </DialogTrigger>
+              <DialogTrigger asChild>{children}</DialogTrigger>
             </TooltipTrigger>
             <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
           </Tooltip>

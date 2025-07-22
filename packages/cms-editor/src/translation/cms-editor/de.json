@@ -61,6 +61,7 @@
     "contentObjects": "Inhaltsobjekte"
   },
   "message": {
+    "addFirstItem": "Fügen Sie Ihr erstes Inhaltsobjekt zum CMS hinzu",
     "emptyDetail": "Wähle ein Inhaltsobjekt aus um es zu bearbeiten.",
     "emptyName": "Name darf nicht leer sein.",
     "error": "Ein Fehler ist aufgetreten: {{- error}}",

@@ -61,6 +61,7 @@
     "contentObjects": "Content Objects"
   },
   "message": {
+    "addFirstItem": "Add your first Content Object to the CMS",
     "emptyDetail": "Select a Content Object to edit its values.",
     "emptyName": "Name cannot be empty.",
     "error": "An error has occurred: {{- error}}",
