@@ -123,7 +123,7 @@ export const AddContentObject = ({ selectRow, children }: AddContentObjectProps)
   });
 
   const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
-    const uri = `${namespace.startsWith('/') ? '' : '/'}${namespace}/${name}`;
+    const uri = `${namespace.startsWith('/') ? '' : '/'}${namespace}${namespace === '' ? '' : '/'}${name}`;
     mutate(
       { context, uri, type, values, fileExtension },
       {
