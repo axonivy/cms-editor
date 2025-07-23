@@ -1,9 +1,11 @@
 import {
   BasicCheckbox,
-  BasicDialog,
+  BasicDialogContent,
   BasicField,
   Button,
   deleteFirstSelectedRow,
+  Dialog,
+  DialogContent,
   DialogTrigger,
   SelectRow,
   Table,
@@ -13,7 +15,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useHotkeyLocalScopes,
+  useDialogHotkeys,
   useHotkeys,
   useTableKeyHandler,
   useTableSelect
@@ -33,46 +35,41 @@ import './LanguageTool.css';
 import { LanguageToolControl } from './LanguageToolControl';
 import { LanguageToolSaveConfirmation } from './LanguageToolSaveConfirmation';
 
+const DIALOG_HOTKEY_IDS = ['languageToolDialog'];
+
 export const LanguageTool = ({ children }: { children: ReactNode }) => {
+  const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
+  const hotkeys = useKnownHotkeys();
+  useHotkeys(hotkeys.languageTool.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DialogContent className='cms-editor-language-tool-content'>
+        <LanguageToolContent closeDialog={() => onOpenChange(false)} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
-
-  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['languageToolDialog']);
-  const [open, setOpen] = useState(false);
-  const onOpenChange = (open: boolean) => {
-    setOpen(open);
-    if (open) {
-      activateLocalScopes();
-      initializeDialog();
-    } else {
-      restoreLocalScopes();
-    }
-  };
-
-  const initialDefaultLanguages = () => {
-    const defaultLanguageTags = getDefaultLanguageTagsLocalStorage();
-    if (!defaultLanguageTags) {
-      return [];
-    }
-    return defaultLanguageTags;
-  };
-
-  const [defaultLanguages, setDefaultLanguages] = useState(initialDefaultLanguages());
-  const [languages, setLanguages] = useState<Array<Language>>([]);
+  const locales = useMeta('meta/locales', context, []).data;
+  const [defaultLanguages, setDefaultLanguages] = useState(getDefaultLanguageTagsLocalStorage() ?? []);
+  const [languages, setLanguages] = useState<Array<Language>>(toLanguages(locales, languageDisplayName));
 
   const addLanguage = (language: Language) => setLanguages(languages => sortLanguages([...languages, language]));
 
   const deleteSelectedLanguage = () => {
     const { newData } = deleteFirstSelectedRow(table, languages);
     setLanguages(newData);
-  };
-
-  const locales = useMeta('meta/locales', context, []).data;
-
-  const initializeDialog = () => {
-    setDefaultLanguages(initialDefaultLanguages());
-    setLanguages(toLanguages(locales, languageDisplayName));
-    table.resetRowSelection();
   };
 
   const addDefaultLanguage = (languageTag: string) => setDefaultLanguages(languages => [...languages, languageTag]);
@@ -143,15 +140,14 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
       {
         onSuccess: () => {
           setDefaultLanguageTags(defaultLanguages);
-          onOpenChange(false);
+          closeDialog();
         }
       }
     );
   };
 
   const hotkeys = useKnownHotkeys();
-  useHotkeys(hotkeys.languageTool.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
-  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), { scopes: ['languageToolDialog'] });
+  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), { scopes: DIALOG_HOTKEY_IDS });
 
   const onKeyDown = (event: KeyboardEvent<HTMLTableElement>) => {
     if (event.code === 'Space') {
@@ -163,37 +159,21 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <BasicDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      contentProps={{
-        title: t('dialog.languageTool.title'),
-        description: t('dialog.languageTool.description'),
-        onClick: () => table.resetRowSelection(),
-        style: { display: 'flex', flexDirection: 'column' },
-        className: 'cms-editor-language-tool-content',
-        buttonClose: (
-          <Button variant='outline' size='large'>
-            {t('common.label.cancel')}
-          </Button>
-        ),
-        buttonCustom: (
-          <LanguageToolSaveConfirmation
-            localesToDelete={locales.filter(locale => !languages.some(language => language.value === locale))}
-            save={save}
-          />
-        )
-      }}
-      dialogTrigger={
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DialogTrigger asChild>{children}</DialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <BasicDialogContent
+      title={t('dialog.languageTool.title')}
+      description={t('dialog.languageTool.description')}
+      submit={
+        <LanguageToolSaveConfirmation
+          localesToDelete={locales.filter(locale => !languages.some(language => language.value === locale))}
+          save={save}
+        />
       }
+      cancel={
+        <Button variant='outline' size='large'>
+          {t('common.label.cancel')}
+        </Button>
+      }
+      onClick={() => table.resetRowSelection()}
     >
       <BasicField
         className='cms-editor-language-tool-languages-field'
@@ -219,6 +199,6 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
           </TableBody>
         </Table>
       </BasicField>
-    </BasicDialog>
+    </BasicDialogContent>
   );
 };

@@ -10,13 +10,14 @@ import {
   type MapStringString
 } from '@axonivy/cms-editor-protocol';
 import {
-  BasicDialog,
+  BasicDialogContent,
   BasicField,
   BasicSelect,
   Button,
   Combobox,
+  Dialog,
+  DialogContent,
   DialogTrigger,
-  Flex,
   hotkeyText,
   Input,
   Message,
@@ -24,7 +25,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useHotkeyLocalScopes,
+  useDialogHotkeys,
   useHotkeys,
   type MessageData
 } from '@axonivy/ui-components';
@@ -44,6 +45,8 @@ import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
+const DIALOG_HOTKEY_IDS = ['addContentObjectDialog'];
+
 type AddContentObjectProps = {
   selectRow: (rowId: string) => void;
   children: ReactNode;
@@ -51,58 +54,202 @@ type AddContentObjectProps = {
 
 export const AddContentObject = ({ selectRow, children }: AddContentObjectProps) => {
   const { t } = useTranslation();
+  const { context } = useAppContext();
+  const locales = useMeta('meta/locales', context, []).data;
+  const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
+  const { addContentObject: shortcut } = useKnownHotkeys();
+  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: locales.length > 0 && !open });
+
+  const mutate = useMutateContentObject();
+  const onDialogOpenChange = (open: boolean) => {
+    if (mutate.isPending) {
+      return;
+    }
+    onOpenChange(open);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onDialogOpenChange}>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DialogContent onCloseAutoFocus={e => e.preventDefault()} className='cms-editor-add-content-object-content'>
+        <AddContentObjectContent selectRow={selectRow} closeDialog={() => onOpenChange(false)} mutate={mutate} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+type AddContentObjectContentProps = {
+  selectRow: (rowId: string) => void;
+  closeDialog: () => void;
+  mutate: ReturnType<typeof useMutateContentObject>;
+};
+
+export const AddContentObjectContent = ({
+  selectRow,
+  closeDialog,
+  mutate: { mutate, isPending, isError, error }
+}: AddContentObjectContentProps) => {
+  const { t } = useTranslation();
+  const { languageTags, languageTagsMessage } = useLanguageTags();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { context, contentObjects, selectedContentObject, setSelectedContentObject, defaultLanguageTags, languageDisplayName } =
     useAppContext();
-  const { restoreLocalScopes, activateLocalScopes } = useHotkeyLocalScopes(['addContentObjectDialog']);
 
-  const [open, setOpen] = useState(false);
-  const onOpenChange = (open: boolean) => {
-    if (isPending) {
-      return;
-    }
-    setOpen(open);
-    if (open) {
-      activateLocalScopes();
-      initializeDialog();
-    } else {
-      restoreLocalScopes();
-    }
-  };
+  const allValuesEmpty = () => Object.fromEntries(languageTags.map(tag => [tag, '']));
 
-  const [name, setName] = useState('');
-  const [namespace, setNamespace] = useState('');
+  const [name, setName] = useState('NewContentObject');
+  const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObject));
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
-  const [values, setValues] = useState<MapStringString | MapStringByte>({});
-
-  const { languageTags, languageTagsMessage } = useLanguageTags();
-
-  const setAllValuesEmpty = () => setValues(Object.fromEntries(languageTags.map(tag => [tag, ''])));
-
-  const initializeDialog = () => {
-    setName('NewContentObject');
-    setNamespace(initialNamespace(contentObjects, selectedContentObject));
-    setType('STRING');
-    setFileExtension(undefined);
-    setAllValuesEmpty();
-  };
+  const [values, setValues] = useState<MapStringString | MapStringByte>(() => allValuesEmpty());
 
   const changeType = (type: ContentObjectType) => {
     if (type === 'FILE') {
       setValues({});
     } else {
-      setAllValuesEmpty();
+      setValues(allValuesEmpty());
     }
     setFileExtension(undefined);
     setType(type);
   };
 
-  const client = useClient();
   const queryClient = useQueryClient();
   const { dataKey } = useQueryKeys();
 
-  const { mutate, isPending, isError, error } = useMutation({
+  const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
+    const uri = `${namespace.startsWith('/') ? '' : '/'}${namespace}${namespace === '' ? '' : '/'}${name}`;
+    mutate(
+      { context, uri, type, values, fileExtension },
+      {
+        onSuccess: () => {
+          const data: CmsData | undefined = queryClient.getQueryData(dataKey({ context, languageTags: defaultLanguageTags }));
+          const selectedContentObject = data?.data
+            .filter((contentObject: CmsDataObject) => contentObject.type !== 'FOLDER')
+            .findIndex(co => co.uri === uri);
+          setSelectedContentObject(selectedContentObject);
+          selectRow(String(selectedContentObject));
+          if (!event.ctrlKey && !event.metaKey) {
+            closeDialog();
+          } else {
+            setName('');
+            nameInputRef.current?.focus();
+          }
+        }
+      }
+    );
+  };
+
+  const { nameMessage, valuesMessage } = useValidateAddContentObject(name, namespace, values, contentObjects);
+  const allInputsValid = !nameMessage && !valuesMessage;
+
+  const enter = useHotkeys(
+    ['Enter', 'mod+Enter'],
+    e => {
+      if (!allInputsValid) {
+        return;
+      }
+      addContentObject(e);
+    },
+    { scopes: DIALOG_HOTKEY_IDS, enableOnFormTags: true }
+  );
+
+  return (
+    <BasicDialogContent
+      title={t('dialog.addContentObject.title')}
+      description={t('dialog.addContentObject.description')}
+      submit={
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='primary'
+                size='large'
+                aria-label={t('dialog.addContentObject.create')}
+                onClick={addContentObject}
+                disabled={!allInputsValid || isPending}
+                icon={isPending ? IvyIcons.Spinner : IvyIcons.Plus}
+                spin={isPending}
+              >
+                {t('dialog.addContentObject.create')}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('dialog.addContentObject.createTooltip', { modifier: hotkeyText('mod') })}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      }
+      cancel={
+        <Button variant='outline' size='large'>
+          {t('common.label.cancel')}
+        </Button>
+      }
+      ref={enter}
+      tabIndex={-1}
+      className='cms-editor-add-content-object-content-fields'
+    >
+      <BasicField label={t('common.label.name')} message={nameMessage}>
+        <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
+      </BasicField>
+      <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
+        <Combobox
+          value={namespace}
+          onChange={setNamespace}
+          onInput={event => setNamespace(event.currentTarget.value)}
+          options={namespaceOptions(contentObjects)}
+          disabled={isPending}
+        />
+      </BasicField>
+      <BasicField label={t('common.label.type')}>
+        <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
+      </BasicField>
+      {type === 'FILE' && (
+        <Message variant='info' message={t('dialog.addContentObject.fileFormatInfo')} className='cms-editor-add-dialog-file-format-info' />
+      )}
+      {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
+        const props = {
+          deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
+          language,
+          disabled: isPending,
+          message: valuesMessage ?? languageTagsMessage
+        };
+        const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
+        return isCmsFileDataObject(contentObject) ? (
+          <FileValueField
+            key={language.value}
+            contentObject={contentObject}
+            updateValue={(languageTag: string, value: Array<number>) =>
+              setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
+            }
+            setFileExtension={setFileExtension}
+            {...props}
+          />
+        ) : (
+          <StringValueField
+            key={language.value}
+            contentObject={contentObject}
+            updateValue={(languageTag: string, value: string) =>
+              setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
+            }
+            {...props}
+          />
+        );
+      })}
+      {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
+    </BasicDialogContent>
+  );
+};
+
+const useMutateContentObject = () => {
+  const { context } = useAppContext();
+  const client = useClient();
+  const queryClient = useQueryClient();
+  const mutate = useMutation({
     mutationFn: async (args: {
       context: CmsEditorDataContext;
       uri: string;
@@ -121,151 +268,7 @@ export const AddContentObject = ({ selectRow, children }: AddContentObjectProps)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: genQueryKey('data') })
   });
-
-  const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
-    const uri = `${namespace.startsWith('/') ? '' : '/'}${namespace}${namespace === '' ? '' : '/'}${name}`;
-    mutate(
-      { context, uri, type, values, fileExtension },
-      {
-        onSuccess: () => {
-          const data: CmsData | undefined = queryClient.getQueryData(dataKey({ context, languageTags: defaultLanguageTags }));
-          const selectedContentObject = data?.data
-            .filter((contentObject: CmsDataObject) => contentObject.type !== 'FOLDER')
-            .findIndex(co => co.uri === uri);
-          setSelectedContentObject(selectedContentObject);
-          selectRow(String(selectedContentObject));
-          if (!event.ctrlKey && !event.metaKey) {
-            onOpenChange(false);
-          } else {
-            setName('');
-            nameInputRef.current?.focus();
-          }
-        }
-      }
-    );
-  };
-
-  const { nameMessage, valuesMessage } = useValidateAddContentObject(name, namespace, values, contentObjects);
-  const allInputsValid = !nameMessage && !valuesMessage;
-
-  const locales = useMeta('meta/locales', context, []).data;
-
-  const { addContentObject: shortcut } = useKnownHotkeys();
-  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: locales.length > 0 && !open });
-  const enter = useHotkeys(
-    ['Enter', 'mod+Enter'],
-    e => {
-      if (!allInputsValid) {
-        return;
-      }
-      addContentObject(e);
-    },
-    { scopes: ['addContentObjectDialog'], enabled: open, enableOnFormTags: true }
-  );
-
-  return (
-    <BasicDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      contentProps={{
-        title: t('dialog.addContentObject.title'),
-        description: t('dialog.addContentObject.description'),
-        onCloseAutoFocus: e => e.preventDefault(),
-        style: { display: 'flex', flexDirection: 'column' },
-        className: 'cms-editor-add-content-object-content',
-        buttonClose: (
-          <Button variant='outline' size='large'>
-            {t('common.label.cancel')}
-          </Button>
-        ),
-        buttonCustom: (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='primary'
-                  size='large'
-                  aria-label={t('dialog.addContentObject.create')}
-                  onClick={addContentObject}
-                  disabled={!allInputsValid || isPending}
-                  icon={isPending ? IvyIcons.Spinner : undefined}
-                  spin
-                >
-                  {t('dialog.addContentObject.create')}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t('dialog.addContentObject.createTooltip', { modifier: hotkeyText('mod') })}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )
-      }}
-      dialogTrigger={
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DialogTrigger asChild>{children}</DialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      }
-    >
-      <Flex direction='column' gap={3} ref={enter} tabIndex={-1} className='cms-editor-add-content-object-content-fields'>
-        <BasicField label={t('common.label.name')} message={nameMessage}>
-          <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
-        </BasicField>
-        <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
-          <Combobox
-            value={namespace}
-            onChange={setNamespace}
-            onInput={event => setNamespace(event.currentTarget.value)}
-            options={namespaceOptions(contentObjects)}
-            disabled={isPending}
-          />
-        </BasicField>
-        <BasicField label={t('common.label.type')}>
-          <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
-        </BasicField>
-        {type === 'FILE' && (
-          <Message
-            variant='info'
-            message={t('dialog.addContentObject.fileFormatInfo')}
-            className='cms-editor-add-dialog-file-format-info'
-          />
-        )}
-        {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
-          const props = {
-            deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
-            language,
-            disabled: isPending,
-            message: valuesMessage ?? languageTagsMessage
-          };
-          const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
-          return isCmsFileDataObject(contentObject) ? (
-            <FileValueField
-              key={language.value}
-              contentObject={contentObject}
-              updateValue={(languageTag: string, value: Array<number>) =>
-                setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
-              }
-              setFileExtension={setFileExtension}
-              {...props}
-            />
-          ) : (
-            <StringValueField
-              key={language.value}
-              contentObject={contentObject}
-              updateValue={(languageTag: string, value: string) =>
-                setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
-              }
-              {...props}
-            />
-          );
-        })}
-        {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
-      </Flex>
-    </BasicDialog>
-  );
+  return mutate;
 };
 
 export const initialNamespace = (contentObjects: Array<CmsDataObject>, selectedContentObject?: number) => {
