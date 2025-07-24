@@ -5,9 +5,9 @@
   "dependencies": {
     "@axonivy/cms-editor": "~13.2.0-next",
     "@axonivy/cms-editor-protocol": "~13.2.0-next",
-    "@axonivy/jsonrpc": "~13.2.0-next.810.eda0f14",
-    "@axonivy/ui-components": "~13.2.0-next.810.eda0f14",
-    "@axonivy/ui-icons": "~13.2.0-next.810.eda0f14",
+    "@axonivy/jsonrpc": "~13.2.0-next.814.a00f0fe",
+    "@axonivy/ui-components": "~13.2.0-next.814.a00f0fe",
+    "@axonivy/ui-icons": "~13.2.0-next.814.a00f0fe",
     "@tanstack/react-query": "^5.64",
     "@tanstack/react-query-devtools": "^5.64",
     "i18next": "^25.0.0",

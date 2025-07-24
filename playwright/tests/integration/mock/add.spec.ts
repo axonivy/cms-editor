@@ -175,6 +175,8 @@ test.describe('disable dialog while create request is pending', () => {
     await expect(add.value('English').delete).toBeDisabled();
     await expect(add.value('English').textbox.locator).toBeDisabled();
     await expect(add.create).toBeDisabled();
+
+    // Not escapable until finished mutation (no longer pending)
     await editor.page.keyboard.press('Escape');
     await expect(add.locator).toBeVisible();
     await expect(add.locator).toBeHidden();

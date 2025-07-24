@@ -9,10 +9,10 @@ import { toLanguages, type Language } from './language-utils';
 type LanguageBrowserProps = {
   languages: Array<Language>;
   addLanguage: (language: Language) => void;
-  setOpen: (open: boolean) => void;
+  closeDialog: () => void;
 };
 
-export const LanguageBrowser = ({ languages, addLanguage, setOpen }: LanguageBrowserProps) => {
+export const LanguageBrowser = ({ languages, addLanguage, closeDialog }: LanguageBrowserProps) => {
   const { t } = useTranslation();
 
   const languageBrowser = useLanguageBrowser(languages);
@@ -40,7 +40,7 @@ export const LanguageBrowser = ({ languages, addLanguage, setOpen }: LanguageBro
         if (result) {
           addLanguage(result.data as Language);
         }
-        setOpen(false);
+        closeDialog();
       }}
       options={options}
     />

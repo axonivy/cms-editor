@@ -14,6 +14,6 @@ export const useMeta = <TMeta extends keyof MetaRequestTypes>(
   return useQuery({
     queryKey: genQueryKey(path, args),
     queryFn: () => client.meta(path, args),
-    initialData: initialData
+    initialData
   });
 };

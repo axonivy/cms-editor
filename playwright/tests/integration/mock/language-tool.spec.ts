@@ -6,6 +6,7 @@ let editor: CmsEditor;
 
 test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openMock(page);
+  await expect(editor.main.table.locator).toBeVisible();
 });
 
 describe('default languages', () => {
@@ -94,6 +95,7 @@ test('open, edit, and save using keyboard', async () => {
   await keyboard.press('Space');
   await keyboard.press('ArrowDown');
   await keyboard.press('Space');
+  await keyboard.press('Tab');
   await keyboard.press('Tab');
   await keyboard.press('Enter');
   await expect(languageTool.locator).toBeHidden();
@@ -283,7 +285,7 @@ describe('save confirmation', () => {
     await expect(languageTool.save.valueAmounts.nth(2)).toHaveText('French: 1 value');
   });
 
-  test('do not require confirmation when no values are deleted', async () => {
+  test('do require confirmation even when no values are deleted', async () => {
     const languageTool = editor.main.control.languageTool;
 
     await languageTool.trigger.click();
@@ -296,7 +298,7 @@ describe('save confirmation', () => {
     await languageTool.languages.row(1).locator.click();
     await languageTool.delete.click();
     await languageTool.save.trigger.click();
-    await expect(languageTool.locator).toBeHidden();
+    await expect(languageTool.save.locator).toBeVisible();
   });
 
   test('cancel', async () => {
@@ -331,6 +333,7 @@ describe('save confirmation', () => {
     await languageTool.languages.row(1).locator.click();
     await keyboard.press('Delete');
     await keyboard.press('Tab');
+    await keyboard.press('Tab');
     await keyboard.press('Enter');
     await expect(languageTool.save.locator).toBeVisible();
     await expect(languageTool.save.cancel).toBeFocused();
@@ -342,7 +345,7 @@ describe('save confirmation', () => {
     await keyboard.press('Enter');
     await expect(languageTool.save.locator).toBeVisible();
 
-    await keyboard.press('Shift+Tab');
+    await keyboard.press('Tab');
     await keyboard.press('Enter');
     await expect(languageTool.locator).toBeHidden();
   });
