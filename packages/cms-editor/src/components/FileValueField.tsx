@@ -19,7 +19,7 @@ import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
 import './FileValueField.css';
 
 export type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
-  updateValue: (languageTag: string, value: Array<number>) => void;
+  updateValue: (languageTag: string, value: string) => void;
   deleteValue: (languageTag: string) => void;
   setFileExtension?: (fileExtension?: string) => void;
   allowOpenFile?: boolean;
@@ -57,7 +57,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
     if (!file) {
       return;
     }
-    updateValue(baseProps.language.value, Array.from(new Uint8Array(await file.arrayBuffer())));
+    updateValue(baseProps.language.value, await fileValue(file));
     setFileNameValue(file.name);
     setFileExtension?.(file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.') + 1) : '');
   };
@@ -124,4 +124,16 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       </Flex>
     </BaseValueField>
   );
+};
+
+export const fileValue = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.slice(result.indexOf(',') + 1));
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 };

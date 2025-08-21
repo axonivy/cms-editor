@@ -19,8 +19,6 @@ import type {
   CmsDeleteValueArgs,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
-  CmsUpdateFileValueArgs,
-  CmsUpdateStringValueArgs,
   CmsUpdateValueArgs,
   MetaRequestTypes,
   Void
@@ -76,12 +74,12 @@ export class CmsClientMock implements Client {
     return Promise.resolve(co ?? ({} as CmsDataObject));
   }
 
-  updateStringValue = (args: CmsUpdateStringValueArgs): Promise<Void> => {
+  updateStringValue = (args: CmsUpdateValueArgs): Promise<Void> => {
     this.updateValue(args, isCmsStringDataObject);
     return Promise.resolve({});
   };
 
-  updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
+  updateFileValue = (args: CmsUpdateValueArgs): Promise<Void> => {
     this.updateValue(args, isCmsFileDataObject);
     return Promise.resolve({});
   };

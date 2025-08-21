@@ -6,7 +6,6 @@ import {
   type CmsFileDataObject,
   type CmsStringDataObject,
   type ContentObjectType,
-  type MapStringByte,
   type MapStringString
 } from '@axonivy/cms-editor-protocol';
 import {
@@ -108,7 +107,7 @@ export const AddContentObjectContent = ({
   const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObject));
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
-  const [values, setValues] = useState<MapStringString | MapStringByte>(() => allValuesEmpty());
+  const [values, setValues] = useState<MapStringString>(() => allValuesEmpty());
 
   const changeType = (type: ContentObjectType) => {
     if (type === 'FILE') {
@@ -213,6 +212,7 @@ export const AddContentObjectContent = ({
       )}
       {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
         const props = {
+          updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
           deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
           language,
           disabled: isPending,
@@ -220,24 +220,9 @@ export const AddContentObjectContent = ({
         };
         const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
         return isCmsFileDataObject(contentObject) ? (
-          <FileValueField
-            key={language.value}
-            contentObject={contentObject}
-            updateValue={(languageTag: string, value: Array<number>) =>
-              setValues(values => ({ ...values, [languageTag]: value }) as MapStringByte)
-            }
-            setFileExtension={setFileExtension}
-            {...props}
-          />
+          <FileValueField key={language.value} contentObject={contentObject} setFileExtension={setFileExtension} {...props} />
         ) : (
-          <StringValueField
-            key={language.value}
-            contentObject={contentObject}
-            updateValue={(languageTag: string, value: string) =>
-              setValues(values => ({ ...values, [languageTag]: value }) as MapStringString)
-            }
-            {...props}
-          />
+          <StringValueField key={language.value} contentObject={contentObject} {...props} />
         );
       })}
       {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}

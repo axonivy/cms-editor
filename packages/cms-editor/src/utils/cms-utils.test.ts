@@ -23,7 +23,7 @@ test('CmsDataObject type guards', () => {
   const file = { type: 'FILE' } as CmsDataObject;
   const fileData = {
     type: 'FILE',
-    values: { en: Array.from('value').map(c => c.charCodeAt(0)), de: Array.from('wert').map(c => c.charCodeAt(0)) }
+    values: { en: 'dGVzdA==', de: 'dGVzdA==' }
   } as unknown as CmsDataObject;
   const dataFileData = { type: 'FILE', values: { en: true, de: false } } as unknown as CmsDataObject;
   const readFileData = {
@@ -45,7 +45,7 @@ test('CmsDataObject type guards', () => {
   expect(isCmsFileDataObject(file)).toBeTruthy();
   expect(isCmsFileDataObject(fileData)).toBeTruthy();
   expect(isCmsFileDataObject(dataFileData)).toBeFalsy();
-  expect(isCmsFileDataObject(readFileData)).toBeFalsy();
+  expect(isCmsFileDataObject(readFileData)).toBeTruthy();
 
   expect(isCmsDataFileDataObject(undefined)).toBeFalsy();
   expect(isCmsDataFileDataObject(folder)).toBeFalsy();
@@ -59,7 +59,7 @@ test('CmsDataObject type guards', () => {
   expect(isCmsReadFileDataObject(folder)).toBeFalsy();
   expect(isCmsReadFileDataObject(string)).toBeFalsy();
   expect(isCmsReadFileDataObject(file)).toBeTruthy();
-  expect(isCmsReadFileDataObject(fileData)).toBeFalsy();
+  expect(isCmsReadFileDataObject(fileData)).toBeTruthy();
   expect(isCmsReadFileDataObject(dataFileData)).toBeFalsy();
   expect(isCmsReadFileDataObject(readFileData)).toBeTruthy();
 
