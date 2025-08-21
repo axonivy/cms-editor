@@ -11,8 +11,7 @@ import type {
   CmsDeleteValueArgs,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
-  CmsUpdateFileValueArgs,
-  CmsUpdateStringValueArgs,
+  CmsUpdateValueArgs,
   MetaRequestTypes,
   NotificationTypes,
   RequestTypes,
@@ -37,11 +36,11 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
     return this.sendRequest('read', args);
   }
 
-  updateStringValue = (args: CmsUpdateStringValueArgs): Promise<Void> => {
+  updateStringValue = (args: CmsUpdateValueArgs): Promise<Void> => {
     return this.sendRequest('updateStringValue', args);
   };
 
-  updateFileValue = (args: CmsUpdateFileValueArgs): Promise<Void> => {
+  updateFileValue = (args: CmsUpdateValueArgs): Promise<Void> => {
     return this.sendRequest('updateFileValue', args);
   };
 
