@@ -151,8 +151,10 @@ export const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }
 
   const onKeyDown = (event: KeyboardEvent<HTMLTableElement>) => {
     if (event.code === 'Space') {
-      const languageTag = table.getSelectedRowModel().flatRows[0].original.value;
-      onCheckedChange(!defaultLanguages.includes(languageTag), languageTag);
+      const languageTag = table.getSelectedRowModel().flatRows[0]?.original.value;
+      if (languageTag !== undefined) {
+        onCheckedChange(!defaultLanguages.includes(languageTag), languageTag);
+      }
     } else {
       handleKeyDown(event);
     }

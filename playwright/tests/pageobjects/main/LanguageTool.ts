@@ -23,7 +23,7 @@ export class LanguageTool {
   async expectToHaveLanguages(...languages: Array<string>) {
     await expect(this.languages.rows).toHaveCount(languages.length);
     for (let i = 0; i < languages.length; i++) {
-      await expect(this.languages.row(i).locator).toHaveText(languages[i]);
+      await expect(this.languages.row(i).locator).toHaveText(languages[i]!);
     }
   }
 
