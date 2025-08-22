@@ -23,7 +23,7 @@ export class Select {
     await this.locator.click();
     await expect(this.options).toHaveCount(options.length);
     for (let i = 0; i < options.length; i++) {
-      await expect(this.options.nth(i)).toHaveText(options[i]);
+      await expect(this.options.nth(i)).toHaveText(options[i]!);
     }
   }
 }

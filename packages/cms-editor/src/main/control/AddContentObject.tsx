@@ -39,6 +39,7 @@ import { useClient } from '../../protocol/ClientContextProvider';
 import { useMeta } from '../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../query/query-client';
 import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
+import { isNotUndefined } from '../../utils/guards';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
@@ -260,7 +261,7 @@ export const initialNamespace = (contentObjects: Array<CmsDataObject>, selectedC
   if (selectedContentObject === undefined) {
     return '';
   }
-  const uri = contentObjects[selectedContentObject].uri;
+  const uri = contentObjects[selectedContentObject]?.uri ?? '';
   return uri.substring(0, uri.lastIndexOf('/'));
 };
 
@@ -271,16 +272,16 @@ export const useLanguageTags = () => {
   const locales = useMeta('meta/locales', context, []).data;
 
   return useMemo(() => {
-    let languageTags: Array<string> = [];
-    let languageTagsMessage: MessageData | undefined;
+    let languageTags = [locales[0]].filter(isNotUndefined);
+    let languageTagsMessage: MessageData | undefined = { message: t('dialog.addContentObject.noDefaultLanguages'), variant: 'info' };
 
     if (defaultLanguageTags.length !== 0) {
       languageTags = defaultLanguageTags;
-    } else if (locales.length !== 0) {
-      languageTags = [locales[0]];
-      languageTagsMessage = { message: t('dialog.addContentObject.noDefaultLanguages'), variant: 'info' };
+      languageTagsMessage = undefined;
     }
-
+    if (locales.length === 0) {
+      languageTagsMessage = undefined;
+    }
     return { languageTags, languageTagsMessage };
   }, [defaultLanguageTags, locales, t]);
 };

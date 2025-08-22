@@ -184,7 +184,7 @@ describe('languages', () => {
     const subRows = (languageTags: Array<string>, displayName: Intl.DisplayNames) =>
       languageTags
         .map(languageTag => [[displayName.of(languageTag) as string, languageTag]])
-        .sort((row1: Array<Array<string>>, row2: Array<Array<string>>) => row1[0][0].localeCompare(row2[0][0]));
+        .sort((row1: Array<Array<string>>, row2: Array<Array<string>>) => row1[0]![0]!.localeCompare(row2[0]![0]!));
 
     test('options', async () => {
       const languageTool = editor.main.control.languageTool;

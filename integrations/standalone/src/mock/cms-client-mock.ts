@@ -148,7 +148,7 @@ export class CmsClientMock implements Client {
         (localeValuesAmount, co) => {
           locales.forEach(locale => {
             if (co.values[locale] !== undefined) {
-              localeValuesAmount[locale] = ++localeValuesAmount[locale];
+              localeValuesAmount[locale] = (localeValuesAmount[locale] ?? 0) + 1;
             }
           });
           return localeValuesAmount;
