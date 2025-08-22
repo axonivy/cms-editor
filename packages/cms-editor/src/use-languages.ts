@@ -21,7 +21,8 @@ export const useLanguages = (context: CmsEditorDataContext) => {
 };
 
 const defaultLanguages = (locales: Array<string>, clientLanguageTag: string): Array<string> => {
-  if (locales.length == 0) {
+  const firstLocale = locales[0];
+  if (firstLocale === undefined) {
     return [];
   }
   const defaultLanguageTags = getDefaultLanguageTagsLocalStorage();
@@ -34,7 +35,7 @@ const defaultLanguages = (locales: Array<string>, clientLanguageTag: string): Ar
   } else if (locales.includes('en')) {
     defaultLanguages.push('en');
   } else {
-    defaultLanguages.push(locales[0]);
+    defaultLanguages.push(firstLocale);
   }
   setDefaultLanguageTagsLocalStorage(defaultLanguages);
   return defaultLanguages;

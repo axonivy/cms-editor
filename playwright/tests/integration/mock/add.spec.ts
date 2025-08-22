@@ -256,7 +256,7 @@ test.describe('validation', () => {
         const b = parseInt(hex.substr(4, 2), 16);
         return `rgb(${r}, ${g}, ${b})`;
       });
-    const border = async (name: string) => borderWithHexToRgb(await editor.page.evaluate(([name]) => getComputedStyle(document.body).getPropertyValue(name), [name]));
+    const border = async (name: string) => borderWithHexToRgb(await editor.page.evaluate(([name]) => getComputedStyle(document.body).getPropertyValue(name!), [name]));
 
     const add = editor.main.control.add;
     const englishValue = add.value('English');
