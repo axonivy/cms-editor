@@ -5,8 +5,7 @@ import type {
   CmsDataObjectValues,
   CmsDeleteValueArgs,
   CmsStringDataObject,
-  CmsUpdateFileValueArgs,
-  CmsUpdateStringValueArgs,
+  CmsUpdateValueArgs,
   MapStringBoolean,
   MapStringString
 } from '@axonivy/cms-editor-protocol';
@@ -65,7 +64,7 @@ export const DetailContent = () => {
   );
 
   const updateStringValueMutation = useMutation({
-    mutationFn: async (args: CmsUpdateStringValueArgs) => {
+    mutationFn: async (args: CmsUpdateValueArgs) => {
       const changeValueUpdater = (values: MapStringString) => ({ ...values, [args.updateObject.languageTag]: args.updateObject.value });
       updateValuesInReadQuery<CmsStringDataObject>(args.updateObject.uri, changeValueUpdater);
       if (defaultLanguageTags.includes(args.updateObject.languageTag)) {
@@ -76,7 +75,7 @@ export const DetailContent = () => {
   });
 
   const updateFileValueMutation = useMutation({
-    mutationFn: async (args: CmsUpdateFileValueArgs) => {
+    mutationFn: async (args: CmsUpdateValueArgs) => {
       if (defaultLanguageTags.includes(args.updateObject.languageTag)) {
         const changeValueUpdater = (values: MapStringBoolean) => ({ ...values, [args.updateObject.languageTag]: true });
         updateValuesInDataQuery<CmsDataFileDataObject>(args.updateObject.uri, changeValueUpdater);
@@ -145,7 +144,7 @@ export const DetailContent = () => {
             <FileValueField
               key={language.value}
               contentObject={contentObject}
-              updateValue={(languageTag: string, value: Array<number>) =>
+              updateValue={(languageTag: string, value: string) =>
                 updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
               }
               allowOpenFile

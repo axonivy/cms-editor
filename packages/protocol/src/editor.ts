@@ -7,12 +7,12 @@
  */
 
 export type ContentObjectType = ("STRING" | "FILE" | "FOLDER")
-export type CmsDataObject =
-  | CmsFolderDataObject
+export type CmsValueDataObject =
   | CmsStringDataObject
   | CmsFileDataObject
   | CmsDataFileDataObject
   | CmsReadFileDataObject;
+export type CmsDataObject = CmsFolderDataObject | CmsValueDataObject;
 
 export interface CMS {
   cmsActionArgs: CmsActionArgs;
@@ -28,8 +28,7 @@ export interface CMS {
   cmsEditorDataContext: CmsEditorDataContext;
   cmsReadArgs: CmsReadArgs;
   cmsRemoveLocalesArgs: CmsRemoveLocalesArgs;
-  cmsUpdateFileValueArgs: CmsUpdateFileValueArgs;
-  cmsUpdateStringValueArgs: CmsUpdateStringValueArgs;
+  cmsUpdateValueArgs: CmsUpdateValueArgs;
   long: MapStringLong;
   string: string[];
   void: Void;
@@ -61,10 +60,10 @@ export interface CmsFileDataObject {
   fileExtension: string;
   type: ContentObjectType;
   uri: string;
-  values: MapStringByte;
+  values: MapStringString;
 }
-export interface MapStringByte {
-  [k: string]: Array<number>;
+export interface MapStringString {
+  [k: string]: string;
 }
 export interface CmsCreateStringArgs {
   contentObject: CmsStringDataObject;
@@ -75,18 +74,9 @@ export interface CmsStringDataObject {
   uri: string;
   values: MapStringString;
 }
-export interface MapStringString {
-  [k: string]: string;
-}
 export interface CmsData {
   context: CmsEditorDataContext;
-  data: (
-    | CmsFolderDataObject
-    | CmsStringDataObject
-    | CmsFileDataObject
-    | CmsDataFileDataObject
-    | CmsReadFileDataObject
-  )[];
+  data: (CmsFolderDataObject | CmsValueDataObject)[];
   helpUrl: string;
 }
 export interface CmsFolderDataObject {
@@ -137,20 +127,11 @@ export interface CmsRemoveLocalesArgs {
   context: CmsEditorDataContext;
   locales: string[];
 }
-export interface CmsUpdateFileValueArgs {
+export interface CmsUpdateValueArgs {
   context: CmsEditorDataContext;
-  updateObject: CmsUpdateFileValueObject;
+  updateObject: CmsUpdateValueObject;
 }
-export interface CmsUpdateFileValueObject {
-  languageTag: string;
-  uri: string;
-  value: Array<number>;
-}
-export interface CmsUpdateStringValueArgs {
-  context: CmsEditorDataContext;
-  updateObject: CmsUpdateStringValueObject;
-}
-export interface CmsUpdateStringValueObject {
+export interface CmsUpdateValueObject {
   languageTag: string;
   uri: string;
   value: string;
