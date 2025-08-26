@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { customRender } from '../context/test-utils/test-utils';
 import type { Language } from '../main/control/language-tool/language-utils';
-import { FileValueField, type FileValueFieldProps } from './FileValueField';
+import { fileValue, FileValueField, type FileValueFieldProps } from './FileValueField';
 
 test('open file button', () => {
   const contentObject = { type: 'FILE', uri: '/ContentObject', values: { en: 'url' } } as unknown as CmsReadFileDataObject;
@@ -46,6 +46,11 @@ describe('file pcker', () => {
     expect(screen.getByText('TestFile.txt')).toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveTextContent('Change File');
   });
+});
+
+test('fileValue', async () => {
+  const file = new File(['test'], 'test.txt', { type: 'text/plain' });
+  expect(await fileValue(file)).toEqual('dGVzdA==');
 });
 
 const renderFileValueField = (props?: Partial<FileValueFieldProps>) => {
