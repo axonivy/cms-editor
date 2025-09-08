@@ -144,17 +144,14 @@ export class CmsClientMock implements Client {
   private countLocaleValues = (locales: Array<string>) => {
     return this.cmsData.data
       .filter(co => isCmsValueDataObject(co))
-      .reduce(
-        (localeValuesAmount, co) => {
-          locales.forEach(locale => {
-            if (co.values[locale] !== undefined) {
-              localeValuesAmount[locale] = ++localeValuesAmount[locale];
-            }
-          });
-          return localeValuesAmount;
-        },
-        Object.fromEntries(locales.map(locale => [locale, 0]))
-      );
+      .reduce<Record<string, number>>((localeValuesAmount, co) => {
+        locales.forEach(locale => {
+          if (co.values[locale] !== undefined) {
+            localeValuesAmount[locale] = (localeValuesAmount[locale] ?? 0) + 1;
+          }
+        });
+        return localeValuesAmount;
+      }, {});
   };
 
   action(action: CmsActionArgs): Promise<void> {

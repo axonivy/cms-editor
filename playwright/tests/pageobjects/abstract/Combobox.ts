@@ -28,7 +28,7 @@ export class Combobox {
     await this.toggleMenu.click();
     await expect(this.options).toHaveCount(options.length);
     for (let i = 0; i < options.length; i++) {
-      await expect(this.options.nth(i)).toHaveText(options[i]);
+      await expect(this.options.nth(i)).toHaveText(options[i]!);
     }
     await this.toggleMenu.click();
   }
