@@ -38,10 +38,10 @@ export const DetailContent = () => {
   const queryClient = useQueryClient();
   const { dataKey, readKey } = useQueryKeys();
 
-  const uri =
-    selectedContentObject !== undefined && selectedContentObject < contentObjects.length
-      ? (contentObjects[selectedContentObject]?.uri ?? '')
-      : '';
+  let uri = '';
+  if (selectedContentObject !== undefined && selectedContentObject < contentObjects.length) {
+    uri = contentObjects[selectedContentObject]?.uri ?? '';
+  }
 
   const updateValuesInReadQuery = useCallback(
     <T extends CmsValueDataObject>(uri: string, valueUpdater: Unary<T['values']>) =>

@@ -197,7 +197,9 @@ export const MainContent = () => {
             <TableBody style={{ height: `${virtualizer.getTotalSize()}px` }}>
               {virtualizer.getVirtualItems().map(virtualRow => {
                 const row = rows[virtualRow.index];
-                if (row === undefined) return null;
+                if (row === undefined) {
+                  return null;
+                }
                 return (
                   <SelectRow key={row.id} row={row} style={{ transform: `translateY(${virtualRow.start}px)` }} vindex={virtualRow.index}>
                     {row.getVisibleCells().map(cell => (
