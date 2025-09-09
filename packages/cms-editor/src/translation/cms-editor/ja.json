@@ -1,14 +1,80 @@
 {
   "common": {
     "hotkey": {
-      "focusInscription": "焦点の徴候({{hotkey}})",
-      "focusMain": "焦点の本管({{hotkey}})",
-      "focusToolbar": "焦点のツールバー({{hotkey}})",
-      "help": "オープンヘルプ({{hotkey}})"
+      "focusInscription": "インスクリプションをフォーカス ({{hotkey}})",
+      "focusMain": "メインをフォーカス ({{hotkey}})",
+      "focusToolbar": "ツールバーをフォーカス ({{hotkey}})",
+      "help": "ヘルプを開く ({{hotkey}})"
     },
     "label": {
       "cancel": "キャンセル",
-      "details": "インフォメーション"
+      "details": "詳細",
+      "name": "名前",
+      "search": "検索",
+      "settings": "設定",
+      "type": "タイプ",
+      "changeFile": "ファイルを変更",
+      "chooseFile": "ファイルを選択",
+      "info": "情報",
+      "language": "言語",
+      "languages": "言語",
+      "namespace": "名前空間",
+      "path": "パス",
+      "save": "保存",
+      "theme": "テーマ",
+      "value": "値",
+      "values": "値"
     }
+  },
+  "dialog": {
+    "addContentObject": {
+      "create": "コンテンツオブジェクトを作成",
+      "createTooltip": "さらにコンテンツオブジェクトを追加するには、{{modifier}} を長押しします。",
+      "description": "追加したいコンテンツオブジェクトの名前、名前空間、値を選択してください。",
+      "fileFormatInfo": "すべてのファイルは同じタイプでなければなりません。 アップロードした最初のファイルがファイルの種類を決定します。",
+      "noDefaultLanguages": "言語ツールで表示する言語にチェックマークが付いていません。これは検出された最初の言語です。",
+      "noLanguages": "CMSでは言語が存在しません。 言語ツールを使用して言語を追加してください。",
+      "title": "コンテンツオブジェクトを追加"
+    },
+    "languageTool": {
+      "description": "CMSの言語を編集します。 表示したい言語を確認してください。",
+      "languageBrowser": {
+        "addLanguage": "言語を追加",
+        "description": "CMS に追加する言語を選択します。",
+        "title": "言語ブラウザ"
+      },
+      "saveConfirmation": {
+        "description": "保存すると、次の言語とそのすべての値が削除されます。本当に保存しますか?",
+        "title": "保存確認"
+      },
+      "title": "言語ツール"
+    }
+  },
+  "hotkey": {
+    "addContentObject": "コンテンツオブジェクトを追加 ({{hotkey}})",
+    "addLanguage": "言語を追加 ({{hotkey}})",
+    "deleteContentObject": "コンテンツオブジェクトを削除 ({{hotkey}})",
+    "deleteLanguage": "言語を削除 ({{hotkey}})",
+    "languageTool": "言語ツール ({{hotkey}})"
+  },
+  "message": {
+    "emptyName": "名前を空にすることはできません。",
+    "addFirstItem": "最初のコンテンツオブジェクトを CMS に追加する",
+    "emptyDetail": "値を編集するコンテンツオブジェクトを選択してください。",
+    "error": "エラーが発生しました: {{- error}}",
+    "nameIsTaken": "この名前空間にはすでに名前が存在します。",
+    "namespaceInfo": "コンテンツオブジェクトのフォルダ構造 (例: '/Dialog/Label')。",
+    "notAllowedChar": "文字 '{{- character}}' は使用できません。",
+    "noValues": "少なくとも 1 つの値が存在する必要があります。"
+  },
+  "label": {
+    "contentObjects": "コンテンツオブジェクト"
+  },
+  "value": {
+    "delete": "値を削除する",
+    "lastValue": "最後の値は削除できません",
+    "noValue": "[値なし]",
+    "openFile": "ファイルを開く",
+    "orDragAndDrop": "またはドラッグ & ドロップでアップロードする"
   }
 }
