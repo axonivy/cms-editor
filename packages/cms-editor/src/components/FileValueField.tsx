@@ -1,8 +1,8 @@
 import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-editor-protocol';
 import {
   Button,
-  Flex,
   Input,
+  InputGroup,
   IvyIcon,
   Tooltip,
   TooltipContent,
@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { useAction } from '../protocol/use-action';
 import { fileName, isCmsReadFileDataObject } from '../utils/cms-utils';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
-import './FileValueField.css';
 
 export type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
   updateValue: (languageTag: string, value: string) => void;
@@ -86,14 +85,11 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       }
       {...baseProps}
     >
-      <Flex
-        gap={2}
-        alignItems='center'
-        className='cms-editor-file-picker group--has-data-[message-state=error]:border-error'
+      <InputGroup
+        className='h-[36px] cursor-pointer gap-2 border-dashed!'
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={event => event.preventDefault()}
-        aria-disabled={readonly || baseProps.disabled}
       >
         {contentObject.values[baseProps.language.value] === undefined ? (
           <>
@@ -120,8 +116,9 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           onChange={event => updateFile(event.target.files?.[0])}
           disabled={baseProps.disabled}
           ref={inputRef}
+          className='hidden'
         />
-      </Flex>
+      </InputGroup>
     </BaseValueField>
   );
 };

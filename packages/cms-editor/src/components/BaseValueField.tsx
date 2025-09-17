@@ -70,7 +70,6 @@ export const BaseValueField = ({
           {deleteButton}
         </Flex>
       }
-      className='cms-editor-value-field group'
       message={message}
     >
       {children}
