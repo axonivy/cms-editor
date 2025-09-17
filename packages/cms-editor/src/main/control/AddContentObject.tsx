@@ -41,7 +41,6 @@ import { genQueryKey, useQueryKeys } from '../../query/query-client';
 import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
 import { isNotUndefined } from '../../utils/guards';
 import { useKnownHotkeys } from '../../utils/hotkeys';
-import './AddContentObject.css';
 import { toLanguages, type Language } from './language-tool/language-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
@@ -78,7 +77,7 @@ export const AddContentObject = ({ selectRow, children }: AddContentObjectProps)
           <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent onCloseAutoFocus={e => e.preventDefault()} className='cms-editor-add-content-object-content'>
+      <DialogContent onCloseAutoFocus={e => e.preventDefault()}>
         <AddContentObjectContent selectRow={selectRow} closeDialog={() => onOpenChange(false)} mutate={mutate} />
       </DialogContent>
     </Dialog>
@@ -191,7 +190,6 @@ export const AddContentObjectContent = ({
       }
       ref={enter}
       tabIndex={-1}
-      className='cms-editor-add-content-object-content-fields'
     >
       <BasicField label={t('common.label.name')} message={nameMessage}>
         <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />

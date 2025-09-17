@@ -31,7 +31,6 @@ import { genQueryKey, useQueryKeys } from '../../../query/query-client';
 import { filterNotPresentDefaultLanugageTags, getDefaultLanguageTagsLocalStorage } from '../../../use-languages';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { sortLanguages, toLanguages, type Language } from './language-utils';
-import './LanguageTool.css';
 import { LanguageToolControl } from './LanguageToolControl';
 import { LanguageToolSaveConfirmation } from './LanguageToolSaveConfirmation';
 
@@ -51,7 +50,7 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
           <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className='cms-editor-language-tool-content'>
+      <DialogContent className='max-h-[80vh]'>
         <LanguageToolContent closeDialog={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
@@ -178,7 +177,7 @@ export const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }
       onClick={() => table.resetRowSelection()}
     >
       <BasicField
-        className='cms-editor-language-tool-languages-field'
+        className='overflow-auto'
         label={t('common.label.languages')}
         control={
           <LanguageToolControl

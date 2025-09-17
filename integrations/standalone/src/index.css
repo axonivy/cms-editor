@@ -6,24 +6,10 @@
 
 @import '@axonivy/ui-icons/src-gen/ivy-icons.css' layer(icons);
 @import '@axonivy/ui-components/lib/components.css';
-@import '@axonivy/cms-editor/index.css';
 
 html,
 body,
 #root {
   height: 100%;
   overflow: hidden;
-}
-
-body {
-  margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

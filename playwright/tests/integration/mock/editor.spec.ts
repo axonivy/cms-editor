@@ -57,7 +57,7 @@ test('focus jumps', async () => {
   await editor.page.keyboard.press('1');
   await expect(editor.main.toolbar.locator).toBeFocused();
   await editor.page.keyboard.press('2');
-  await expect(editor.main.locator.locator('.cms-editor-main-table-field')).toBeFocused();
+  await expect(editor.page.locator('.ui-fieldset').first()).toBeFocused();
   await editor.page.keyboard.press('3');
   await expect(editor.detail.toolbar.locator).toBeFocused();
 });

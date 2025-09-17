@@ -89,7 +89,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       <Flex
         gap={2}
         alignItems='center'
-        className='cms-editor-file-picker'
+        className='cms-editor-file-picker group--has-data-[message-state=error]:border-error'
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={event => event.preventDefault()}

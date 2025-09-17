@@ -4,7 +4,6 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './CmsEditor.css';
 import { AppProvider } from './context/AppContext';
 import { DetailContent } from './detail/DetailContent';
 import { DetailToolbar } from './detail/DetailToolbar';
@@ -73,8 +72,8 @@ function CmsEditor(props: EditorProps) {
       }}
     >
       <ResizablePanelGroup direction='horizontal'>
-        <ResizablePanel defaultSize={75} minSize={50} className='cms-editor-main-panel'>
-          <Flex direction='column' className='cms-editor-panel-content h-full'>
+        <ResizablePanel defaultSize={75} minSize={50} className='cms-editor-main-panel bg-n75'>
+          <Flex direction='column' className='h-full'>
             <MainToolbar title={mainTitle} />
             <MainContent />
           </Flex>
@@ -83,7 +82,7 @@ function CmsEditor(props: EditorProps) {
           <>
             <ResizableHandle />
             <ResizablePanel defaultSize={25} minSize={10} className='cms-editor-detail-panel'>
-              <Flex direction='column' className='cms-editor-panel-content'>
+              <Flex direction='column' className='h-full'>
                 <DetailToolbar title={detailTitle} helpUrl={data.helpUrl} />
                 <DetailContent key={contentObject?.uri} />
               </Flex>
