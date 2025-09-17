@@ -6,3 +6,4 @@ export * from './query/QueryProvider';
 export { default as deTranslation } from './translation/cms-editor/de.json';
 export { default as enTranslation } from './translation/cms-editor/en.json';
 export * from './utils/cms-utils';
+import './index.css';

@@ -74,7 +74,7 @@ function CmsEditor(props: EditorProps) {
     >
       <ResizablePanelGroup direction='horizontal'>
         <ResizablePanel defaultSize={75} minSize={50} className='cms-editor-main-panel'>
-          <Flex direction='column' className='cms-editor-panel-content'>
+          <Flex direction='column' className='cms-editor-panel-content h-full'>
             <MainToolbar title={mainTitle} />
             <MainContent />
           </Flex>
