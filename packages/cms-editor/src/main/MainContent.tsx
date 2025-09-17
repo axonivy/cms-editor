@@ -30,7 +30,6 @@ import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
 import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
-import './MainContent.css';
 import { EmptyMainControl, MainControl } from './control/MainControl';
 import { toLanguages } from './control/language-tool/language-utils';
 
@@ -73,7 +72,7 @@ export const MainContent = () => {
         cell: cell => (
           <Flex alignItems='center' gap={1}>
             {<IvyIcon icon={isCmsDataFileDataObject(cell.row.original) ? fileIcon(cell.row.original.mimeType) : IvyIcons.Quote} />}
-            <span>{cell.getValue()}</span>
+            <span className='block truncate'>{cell.getValue()}</span>
           </Flex>
         ),
         minSize: 200,
@@ -86,7 +85,7 @@ export const MainContent = () => {
         id: language.value,
         accessorFn: co => (isCmsDataFileDataObject(co) && co.values[language.value] ? fileName(co) : co.values[language.value]),
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
-        cell: cell => <span>{cell.getValue()}</span>,
+        cell: cell => <span className='block truncate'>{cell.getValue()}</span>,
         minSize: 200,
         size: 500,
         maxSize: 1000
@@ -173,7 +172,7 @@ export const MainContent = () => {
   }
 
   return (
-    <Flex direction='column' onClick={() => table.resetRowSelection()} className='cms-editor-main-content' ref={ref}>
+    <Flex direction='column' onClick={() => table.resetRowSelection()} className='h-full overflow-auto p-3' ref={ref}>
       <BasicField
         label={t('label.contentObjects')}
         control={
@@ -188,11 +187,11 @@ export const MainContent = () => {
         tabIndex={-1}
         ref={firstElement}
         onClick={event => event.stopPropagation()}
-        className='cms-editor-main-table-field'
+        className='overflow-auto'
       >
         {globalFilter.filter}
-        <div ref={tableContainer} className='cms-editor-main-table-container'>
-          <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='cms-editor-main-table'>
+        <div ref={tableContainer} className='relative overflow-x-hidden overflow-y-auto'>
+          <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='grid [&_thead]:whitespace-nowrap'>
             <TableResizableHeader headerGroups={table.getHeaderGroups()} onClick={() => table.resetRowSelection()} />
             <TableBody style={{ height: `${virtualizer.getTotalSize()}px` }}>
               {virtualizer.getVirtualItems().map(virtualRow => {
@@ -201,7 +200,13 @@ export const MainContent = () => {
                   return null;
                 }
                 return (
-                  <SelectRow key={row.id} row={row} style={{ transform: `translateY(${virtualRow.start}px)` }} vindex={virtualRow.index}>
+                  <SelectRow
+                    key={row.id}
+                    className='absolute flex h-[32px] w-full items-center'
+                    row={row}
+                    style={{ transform: `translateY(${virtualRow.start}px)` }}
+                    vindex={virtualRow.index}
+                  >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
