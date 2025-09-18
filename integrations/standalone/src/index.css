@@ -2,9 +2,7 @@
 @source '../../../packages/cms-editor/src';
 @import '@axonivy/ui-components/src/styles/themes.css';
 
-@layer icons;
-
-@import '@axonivy/ui-icons/src-gen/ivy-icons.css' layer(icons);
+@import '@axonivy/ui-icons/src-gen/ivy-icons.css' layer(base);
 @import '@axonivy/ui-components/lib/components.css';
 
 html,
