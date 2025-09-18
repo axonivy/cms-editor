@@ -28,7 +28,6 @@ import {
   removeValue,
   type CmsValueDataObject
 } from '../utils/cms-utils';
-import './DetailContent.css';
 
 export const DetailContent = () => {
   const { t } = useTranslation();
@@ -130,7 +129,7 @@ export const DetailContent = () => {
   const hasExactlyOneValue = Object.keys(contentObject.values).length === 1;
 
   return (
-    <Flex direction='column' gap={4} className='cms-editor-detail-content'>
+    <Flex direction='column' gap={4} className='p-3 overflow-auto'>
       <BasicField label={t('common.label.path')}>
         <BasicInput value={contentObject.uri} disabled />
       </BasicField>

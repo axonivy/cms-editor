@@ -4,7 +4,6 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useMeta } from '../../../protocol/use-meta';
-import './LanguageToolSaveConfirmation.css';
 
 type LanguageToolSaveConfirmationProps = {
   localesToDelete: Array<string>;
@@ -38,7 +37,7 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
       </Button>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className='cms-editor-language-tool-save-confirmation-content'
+          className='max-h-[80vh]'
           onCloseAutoFocus={e => {
             e.preventDefault();
             saveButtonRef.current?.focus();
@@ -62,7 +61,7 @@ const LanguageToolSaveConfirmationContent = ({ localesToDelete, save }: Language
   };
   return (
     <BasicDialogContent
-      className='cms-editor-language-tool-save-confirmation-language-values'
+      className='overflow-auto'
       title={t('dialog.languageTool.saveConfirmation.title')}
       description={t('dialog.languageTool.saveConfirmation.description')}
       submit={

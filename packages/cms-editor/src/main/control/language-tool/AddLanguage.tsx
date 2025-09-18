@@ -15,7 +15,6 @@ import {
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
-import './AddLanguage.css';
 import type { Language } from './language-utils';
 import { LanguageBrowser } from './LanguageBrowser';
 
@@ -41,7 +40,7 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
           <TooltipContent>{shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className='cms-editor-add-language-content'>
+      <DialogContent className='h-[80vh]'>
         <Flex direction='column' gap={4} style={{ overflow: 'hidden' }}>
           <BasicDialogHeader
             title={t('dialog.languageTool.languageBrowser.title')}
