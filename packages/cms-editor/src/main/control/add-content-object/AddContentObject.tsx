@@ -91,7 +91,7 @@ type AddContentObjectContentProps = {
   mutate: ReturnType<typeof useMutateContentObject>;
 };
 
-export const AddContentObjectContent = ({
+const AddContentObjectContent = ({
   selectRow,
   closeDialog,
   mutate: { mutate, isPending, isError, error }

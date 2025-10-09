@@ -7,6 +7,7 @@ import { useKnownHotkeys } from '../../utils/hotkeys';
 import { AddContentObject } from './add-content-object/AddContentObject';
 import { DeleteContentObject } from './delete-content-object/DeleteContentObject';
 import { LanguageTool } from './language-tool/LanguageTool';
+import { TranslationWizard } from './translation-wizard/TranslationWizard';
 
 type MainControlProps = {
   selectRow: (rowId: string) => void;
@@ -23,6 +24,10 @@ export const MainControl = ({ selectRow, deleteContentObject, hasSelection }: Ma
       <LanguageTool>
         <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
       </LanguageTool>
+      <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
+      <TranslationWizard>
+        <Button icon={IvyIcons.Call} aria-label={hotkeys.translationWizard.label} />
+      </TranslationWizard>
       <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
       <AddContentObject selectRow={selectRow}>
         <Button icon={IvyIcons.Plus} aria-label={hotkeys.addContentObject.label} disabled={locales.length === 0} />

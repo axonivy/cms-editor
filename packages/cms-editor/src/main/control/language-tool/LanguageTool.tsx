@@ -58,7 +58,7 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
+const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
   const locales = useMeta('meta/locales', context, []).data;
