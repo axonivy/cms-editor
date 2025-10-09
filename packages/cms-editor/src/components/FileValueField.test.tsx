@@ -2,7 +2,7 @@ import type { CmsFileDataObject, CmsReadFileDataObject } from '@axonivy/cms-edit
 import { screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { customRender } from '../context/test-utils/test-utils';
-import type { Language } from '../main/control/language-tool/language-utils';
+import type { Language } from '../utils/language-utils';
 import { fileValue, FileValueField, type FileValueFieldProps } from './FileValueField';
 
 test('open file button', () => {
@@ -30,12 +30,8 @@ describe('file pcker', () => {
     expect(screen.getByRole('link')).toHaveTextContent('Choose File');
 
     await userEvent.upload(screen.getByLabelText('English'), new File(['content'], 'TestFile.txt'));
-    await waitFor(() => {
-      expect(screen.getByText('TestFile.txt')).toBeInTheDocument();
-    });
-    await waitFor(() => {
-      expect(screen.getByRole('link')).toHaveTextContent('Change File');
-    });
+    expect(screen.getByText('TestFile.txt')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('link')).toHaveTextContent('Change File'));
   });
 
   test('change file', async () => {

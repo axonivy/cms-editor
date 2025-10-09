@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useMeta } from '../../../protocol/use-meta';
-import { toLanguages, type Language } from './language-utils';
+import { toLanguages, type Language } from '../../../utils/language-utils';
 
 type LanguageBrowserProps = {
   languages: Array<Language>;

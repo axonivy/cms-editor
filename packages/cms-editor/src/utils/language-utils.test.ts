@@ -1,4 +1,5 @@
-import { sortLanguages, toLanguages, type Language } from './language-utils';
+import i18next from 'i18next';
+import { defaultLanguageTag, sortLanguages, toLanguages, type Language } from './language-utils';
 
 test('toLanguages', () => {
   const languageDisplayNameMock = {
@@ -17,4 +18,13 @@ test('sortLanguages', () => {
     { label: 'B' },
     { label: 'C' }
   ]);
+});
+
+test('defaultLanguageTag', () => {
+  expect(defaultLanguageTag([])).toEqual(undefined);
+  expect(defaultLanguageTag(['fr'])).toEqual('fr');
+  expect(defaultLanguageTag(['de', 'fr'])).toEqual('de');
+  expect(defaultLanguageTag(['de', 'en', 'fr'])).toEqual('en');
+  i18next.language = 'fr';
+  expect(defaultLanguageTag(['de', 'en', 'fr'])).toEqual('fr');
 });

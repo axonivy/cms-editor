@@ -1,5 +1,7 @@
 import {
   BasicDialogContent,
+  BasicField,
+  BasicSelect,
   Button,
   Dialog,
   DialogContent,
@@ -12,9 +14,12 @@ import {
   useHotkeys
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import type { ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppContext } from '../../../context/AppContext';
+import { useMeta } from '../../../protocol/use-meta';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
+import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
 
 const DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
@@ -41,6 +46,9 @@ export const TranslationWizard = ({ children }: { children: ReactNode }) => {
 
 const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
+  const { languages, defaultSourceLanguageTag } = useLanguages();
+
+  const [sourceLanguage, setSourceLanguage] = useState(defaultSourceLanguageTag);
 
   return (
     <BasicDialogContent
@@ -56,6 +64,28 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
           {t('common.label.cancel')}
         </Button>
       }
-    ></BasicDialogContent>
+    >
+      <BasicField label={t('common.label.sourceLanguage')}>
+        <BasicSelect value={sourceLanguage} items={languages} onValueChange={setSourceLanguage} />
+      </BasicField>
+    </BasicDialogContent>
   );
+};
+
+export const useLanguages = () => {
+  const { context, defaultLanguageTags, languageDisplayName } = useAppContext();
+  const locales = useMeta('meta/locales', context, []).data;
+
+  return useMemo(() => {
+    const languages = toLanguages(locales, languageDisplayName);
+
+    let defaultSourceLanguageTag;
+    if (defaultLanguageTags.length > 0) {
+      defaultSourceLanguageTag = defaultLanguageTag(defaultLanguageTags);
+    } else {
+      defaultSourceLanguageTag = defaultLanguageTag(locales);
+    }
+
+    return { languages, defaultSourceLanguageTag };
+  }, [locales, languageDisplayName, defaultLanguageTags]);
 };

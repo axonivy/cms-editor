@@ -28,9 +28,9 @@ import { useAppContext } from '../../../context/AppContext';
 import { useClient } from '../../../protocol/ClientContextProvider';
 import { useMeta } from '../../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../../query/query-client';
-import { filterNotPresentDefaultLanugageTags, getDefaultLanguageTagsLocalStorage } from '../../../use-languages';
+import { filterNotPresentDefaultLanguageTags, getDefaultLanguageTagsLocalStorage } from '../../../use-languages';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { sortLanguages, toLanguages, type Language } from './language-utils';
+import { sortLanguages, toLanguages, type Language } from '../../../utils/language-utils';
 import './LanguageTool.css';
 import { LanguageToolControl } from './LanguageToolControl';
 import { LanguageToolSaveConfirmation } from './LanguageToolSaveConfirmation';
@@ -128,7 +128,7 @@ const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: dataKey({ context, languageTags: filterNotPresentDefaultLanugageTags(defaultLanguages, locales) })
+        queryKey: dataKey({ context, languageTags: filterNotPresentDefaultLanguageTags(defaultLanguages, locales) })
       });
     }
   });
