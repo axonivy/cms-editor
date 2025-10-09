@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../context/AppContext';
 import { useMeta } from '../../protocol/use-meta';
 import { useKnownHotkeys } from '../../utils/hotkeys';
-import { AddContentObject } from './AddContentObject';
-import { DeleteContentObject } from './DeleteContentObject';
+import { AddContentObject } from './add-content-object/AddContentObject';
+import { DeleteContentObject } from './delete-content-object/DeleteContentObject';
 import { LanguageTool } from './language-tool/LanguageTool';
 
 type MainControlProps = {

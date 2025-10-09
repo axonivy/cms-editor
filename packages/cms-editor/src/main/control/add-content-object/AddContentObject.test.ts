@@ -1,6 +1,6 @@
 import type { Client, CmsDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
-import { customRenderHook } from '../../context/test-utils/test-utils';
+import { customRenderHook } from '../../../context/test-utils/test-utils';
 import { initialNamespace, namespaceOptions, useLanguageTags } from './AddContentObject';
 
 test('initialNamespace', () => {
