@@ -1,5 +1,5 @@
 import type { CmsDataObject, MapStringString } from '@axonivy/cms-editor-protocol';
-import { customRenderHook } from '../../context/test-utils/test-utils';
+import { customRenderHook } from '../../../context/test-utils/test-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 test('nameMessage', () => {

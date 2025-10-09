@@ -21,6 +21,7 @@
       "search": "Suchen",
       "settings": "Einstellungen",
       "theme": "Thema",
+      "translate": "Übersetzen",
       "type": "Typ",
       "value": "Wert",
       "values": "Werte"
@@ -48,6 +49,10 @@
         "title": "Speichern bestätigen"
       },
       "title": "Sprachenwerkzeug"
+    },
+    "translationWizard": {
+      "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
+      "title": "Übersetzungsassistent"
     }
   },
   "hotkey": {
@@ -55,7 +60,8 @@
     "addLanguage": "Sprache hinzufügen ({{hotkey}})",
     "deleteContentObject": "Inhaltsobjekt löschen ({{hotkey}})",
     "deleteLanguage": "Sprache löschen ({{hotkey}})",
-    "languageTool": "Sprachwerkzeug ({{hotkey}})"
+    "languageTool": "Sprachwerkzeug ({{hotkey}})",
+    "translationWizard": "Übersetzungsassistent ({{hotkey}})"
   },
   "label": {
     "contentObjects": "Inhaltsobjekte"

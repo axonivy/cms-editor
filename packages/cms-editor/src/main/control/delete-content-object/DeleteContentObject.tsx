@@ -1,6 +1,6 @@
 import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useKnownHotkeys } from '../../utils/hotkeys';
+import { useKnownHotkeys } from '../../../utils/hotkeys';
 
 type DeleteContentObjectProps = {
   deleteContentObject: () => void;

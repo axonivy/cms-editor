@@ -16,6 +16,11 @@ export const useKnownHotkeys = () => {
     return { hotkey, label: t('hotkey.languageTool', { hotkey: hotkeyText(hotkey) }) };
   }, [t]);
 
+  const translationWizard = useMemo<KnownHotkey>(() => {
+    const hotkey = 'T';
+    return { hotkey, label: t('hotkey.translationWizard', { hotkey: hotkeyText(hotkey) }) };
+  }, [t]);
+
   const addLanguage = useMemo<KnownHotkey>(() => {
     const hotkey = 'A';
     return { hotkey, label: t('hotkey.addLanguage', { hotkey: hotkeyText(hotkey) }) };
@@ -54,6 +59,7 @@ export const useKnownHotkeys = () => {
   return {
     openHelp,
     languageTool,
+    translationWizard,
     addLanguage,
     deleteLanguage,
     addContentObject,

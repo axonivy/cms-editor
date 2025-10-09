@@ -21,6 +21,7 @@
       "search": "Search",
       "settings": "Settings",
       "theme": "Theme",
+      "translate": "Translate",
       "type": "Type",
       "value": "value",
       "values": "values"
@@ -48,6 +49,10 @@
         "title": "Confirm Save"
       },
       "title": "Language Tool"
+    },
+    "translationWizard": {
+      "description": "The value of the chosen source language is used to generate translations for the specified target languages of the selected Content Objects.",
+      "title": "Translation Wizard"
     }
   },
   "hotkey": {
@@ -55,7 +60,8 @@
     "addLanguage": "Add Language ({{hotkey}})",
     "deleteContentObject": "Delete Content Object ({{hotkey}})",
     "deleteLanguage": "Delete Language ({{hotkey}})",
-    "languageTool": "Language Tool ({{hotkey}})"
+    "languageTool": "Language Tool ({{hotkey}})",
+    "translationWizard": "Translation Wizard ({{hotkey}})"
   },
   "label": {
     "contentObjects": "Content Objects"

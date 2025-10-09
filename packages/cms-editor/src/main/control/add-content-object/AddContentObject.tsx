@@ -32,17 +32,17 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileValueField } from '../../components/FileValueField';
-import { StringValueField } from '../../components/StringValueField';
-import { useAppContext } from '../../context/AppContext';
-import { useClient } from '../../protocol/ClientContextProvider';
-import { useMeta } from '../../protocol/use-meta';
-import { genQueryKey, useQueryKeys } from '../../query/query-client';
-import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../utils/cms-utils';
-import { isNotUndefined } from '../../utils/guards';
-import { useKnownHotkeys } from '../../utils/hotkeys';
+import { FileValueField } from '../../../components/FileValueField';
+import { StringValueField } from '../../../components/StringValueField';
+import { useAppContext } from '../../../context/AppContext';
+import { useClient } from '../../../protocol/ClientContextProvider';
+import { useMeta } from '../../../protocol/use-meta';
+import { genQueryKey, useQueryKeys } from '../../../query/query-client';
+import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../../utils/cms-utils';
+import { isNotUndefined } from '../../../utils/guards';
+import { useKnownHotkeys } from '../../../utils/hotkeys';
+import { toLanguages, type Language } from '../language-tool/language-utils';
 import './AddContentObject.css';
-import { toLanguages, type Language } from './language-tool/language-utils';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 const DIALOG_HOTKEY_IDS = ['addContentObjectDialog'];
@@ -91,7 +91,7 @@ type AddContentObjectContentProps = {
   mutate: ReturnType<typeof useMutateContentObject>;
 };
 
-export const AddContentObjectContent = ({
+const AddContentObjectContent = ({
   selectRow,
   closeDialog,
   mutate: { mutate, isPending, isError, error }
