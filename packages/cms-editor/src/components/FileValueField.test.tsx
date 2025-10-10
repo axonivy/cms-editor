@@ -19,7 +19,7 @@ test('open file button', () => {
   expect(screen.queryByRole('button', { name: 'Open File' })).not.toBeInTheDocument();
 });
 
-describe('file pcker', () => {
+describe('file picker', () => {
   File.prototype.arrayBuffer = async () => new ArrayBuffer();
 
   test('choose file', async () => {
@@ -30,7 +30,7 @@ describe('file pcker', () => {
     expect(screen.getByRole('link')).toHaveTextContent('Choose File');
 
     await userEvent.upload(screen.getByLabelText('English'), new File(['content'], 'TestFile.txt'));
-    expect(screen.getByText('TestFile.txt')).toBeInTheDocument();
+    expect(await screen.findByText('TestFile.txt')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('link')).toHaveTextContent('Change File'));
   });
 
