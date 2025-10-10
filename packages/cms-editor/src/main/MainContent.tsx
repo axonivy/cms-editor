@@ -37,21 +37,19 @@ import { EmptyMainControl, MainControl } from './control/MainControl';
 
 export const MainContent = () => {
   const { t } = useTranslation();
-  const { context, contentObjects, setSelectedContentObject, detail, setDetail, defaultLanguageTags, languageDisplayName } =
-    useAppContext();
+  const {
+    context,
+    contentObjects,
+    selectedContentObjects,
+    setSelectedContentObjects,
+    detail,
+    setDetail,
+    defaultLanguageTags,
+    languageDisplayName
+  } = useAppContext();
 
   const selection = useTableSelect<CmsValueDataObject>({
-    onSelect: selectedRows => {
-      if (Object.keys(selectedRows).length !== 1) {
-        setSelectedContentObject(undefined);
-        return;
-      }
-      const selectedRowId = Object.keys(selectedRows).find(key => selectedRows[key]);
-      const selectedContentObject = table.getRowModel().flatRows.find(row => row.id === selectedRowId)?.index;
-      if (selectedContentObject !== undefined) {
-        setSelectedContentObject(selectedContentObject);
-      }
-    }
+    onSelect: selectedRows => setSelectedContentObjects(Object.keys(selectedRows).map(key => Number(key)))
   });
 
   const sort = useTableSort();
@@ -98,6 +96,7 @@ export const MainContent = () => {
     getCoreRowModel: getCoreRowModel(),
     state: {
       ...selection.tableState,
+      rowSelection: Object.fromEntries(selectedContentObjects.map(index => [index, true])),
       ...sort.tableState,
       ...globalFilter.tableState
     }
@@ -134,10 +133,14 @@ export const MainContent = () => {
         }
         return { ...data, data: data.data.filter(co => !args.uris.includes(co.uri)) };
       });
-      if (data !== undefined) {
+      if (data !== undefined && selectedContentObjects[0] !== undefined) {
         const contentObjects = data?.data.filter(co => isCmsValueDataObject(co));
-        const selection = adjustSelectionAfterDeletionOfRow(contentObjects, table, table.getSelectedRowModel().rows[0]?.index ?? 0);
-        setSelectedContentObject(selection);
+        const selection = adjustSelectionAfterDeletionOfRow(contentObjects, table, selectedContentObjects[0]);
+        const newSelectedContentObjects = [];
+        if (selection !== undefined) {
+          newSelectedContentObjects.push(selection);
+        }
+        setSelectedContentObjects(newSelectedContentObjects);
       }
       client.delete(args);
     }
