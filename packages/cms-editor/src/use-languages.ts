@@ -16,6 +16,7 @@ export const useLanguages = (context: CmsEditorDataContext) => {
     setDefaultLanguageTagsState(filterNotPresentDefaultLanguageTags(languageTags, locales.data));
     setDefaultLanguageTagsLocalStorage(languageTags);
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setDefaultLanguageTagsState(defaultLanguages(locales.data)), [locales.data]);
 
   return { defaultLanguageTags, setDefaultLanguageTags, languageDisplayName };
