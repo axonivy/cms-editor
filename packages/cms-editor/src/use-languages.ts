@@ -2,6 +2,7 @@ import type { CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import i18next from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { useMeta } from './protocol/use-meta';
+import { defaultLanguageTag } from './utils/language-utils';
 
 export const defaultLanguageTagsKey = 'cms-editor-default-language-tags' as const;
 
@@ -10,32 +11,28 @@ export const useLanguages = (context: CmsEditorDataContext) => {
   const languageDisplayName = useMemo(() => new Intl.DisplayNames([clientLanguageTag], { type: 'language' }), [clientLanguageTag]);
 
   const locales = useMeta('meta/locales', context, []);
-  const [defaultLanguageTags, setDefaultLanguageTagsState] = useState(defaultLanguages(locales.data, clientLanguageTag));
+  const [defaultLanguageTags, setDefaultLanguageTagsState] = useState(defaultLanguages(locales.data));
   const setDefaultLanguageTags = (languageTags: Array<string>) => {
-    setDefaultLanguageTagsState(filterNotPresentDefaultLanugageTags(languageTags, locales.data));
+    setDefaultLanguageTagsState(filterNotPresentDefaultLanguageTags(languageTags, locales.data));
     setDefaultLanguageTagsLocalStorage(languageTags);
   };
-  useEffect(() => setDefaultLanguageTagsState(defaultLanguages(locales.data, clientLanguageTag)), [locales.data, clientLanguageTag]);
+  useEffect(() => setDefaultLanguageTagsState(defaultLanguages(locales.data)), [locales.data]);
 
   return { defaultLanguageTags, setDefaultLanguageTags, languageDisplayName };
 };
 
-const defaultLanguages = (locales: Array<string>, clientLanguageTag: string): Array<string> => {
-  const firstLocale = locales[0];
-  if (firstLocale === undefined) {
+const defaultLanguages = (locales: Array<string>): Array<string> => {
+  if (locales.length === 0) {
     return [];
   }
   const defaultLanguageTags = getDefaultLanguageTagsLocalStorage();
   if (defaultLanguageTags) {
-    return filterNotPresentDefaultLanugageTags(defaultLanguageTags, locales);
+    return filterNotPresentDefaultLanguageTags(defaultLanguageTags, locales);
   }
   const defaultLanguages: Array<string> = [];
-  if (locales.includes(clientLanguageTag)) {
-    defaultLanguages.push(clientLanguageTag);
-  } else if (locales.includes('en')) {
-    defaultLanguages.push('en');
-  } else {
-    defaultLanguages.push(firstLocale);
+  const defaultLanguage = defaultLanguageTag(locales);
+  if (defaultLanguage) {
+    defaultLanguages.push(defaultLanguage);
   }
   setDefaultLanguageTagsLocalStorage(defaultLanguages);
   return defaultLanguages;
@@ -49,7 +46,7 @@ export const getDefaultLanguageTagsLocalStorage = (): Array<string> | undefined 
   return JSON.parse(defaultLanguageTags);
 };
 
-export const filterNotPresentDefaultLanugageTags = (defaultLanguageTags: Array<string>, locales: Array<string>) =>
+export const filterNotPresentDefaultLanguageTags = (defaultLanguageTags: Array<string>, locales: Array<string>) =>
   defaultLanguageTags.filter(languageTag => locales.includes(languageTag));
 
 const setDefaultLanguageTagsLocalStorage = (languageTags: Array<string>) =>

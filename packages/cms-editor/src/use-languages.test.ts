@@ -26,24 +26,20 @@ test('default languages not set via local storage', async () => {
   expect(getDefaultLanguageTagsLocalStorage()).toBeUndefined();
 
   result = renderLanguageHook('de', ['ja', 'en']).result;
-  await waitFor(() => {
-    expect(result.current.defaultLanguageTags).toEqual(['en']);
-  });
+  await waitFor(() => expect(result.current.defaultLanguageTags).toEqual(['en']));
   expect(result.current.languageDisplayName.resolvedOptions().locale).toEqual('de');
   expect(getDefaultLanguageTagsLocalStorage()).toEqual(['en']);
 
   localStorage.removeItem(defaultLanguageTagsKey);
   result = renderLanguageHook('de', ['ja', 'fr']).result;
-  await waitFor(() => {
-    expect(result.current.defaultLanguageTags).toEqual(['ja']);
-  });
+  await waitFor(() => expect(result.current.defaultLanguageTags).toEqual(['ja']));
   expect(result.current.languageDisplayName.resolvedOptions().locale).toEqual('de');
   expect(getDefaultLanguageTagsLocalStorage()).toEqual(['ja']);
 });
 
 const renderLanguageHook = (clientLanguage: string, locales: Array<string>) => {
   return customRenderHook(() => useLanguages({} as CmsEditorDataContext), {
-    wrapperProps: { clientLanguage: clientLanguage, clientContext: { client: new TestClient(locales) } }
+    wrapperProps: { clientLanguage, clientContext: { client: new TestClient(locales) } }
   });
 };
 

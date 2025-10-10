@@ -41,7 +41,7 @@ import { genQueryKey, useQueryKeys } from '../../../query/query-client';
 import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../../utils/cms-utils';
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { toLanguages, type Language } from '../language-tool/language-utils';
+import { toLanguages, type Language } from '../../../utils/language-utils';
 import './AddContentObject.css';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 

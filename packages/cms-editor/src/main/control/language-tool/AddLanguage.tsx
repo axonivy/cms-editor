@@ -15,8 +15,8 @@ import {
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
+import type { Language } from '../../../utils/language-utils';
 import './AddLanguage.css';
-import type { Language } from './language-utils';
 import { LanguageBrowser } from './LanguageBrowser';
 
 type AddLanguageProps = {

@@ -13,8 +13,8 @@ import {
 import { IvyIcons } from '@axonivy/ui-icons';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Language } from '../main/control/language-tool/language-utils';
 import type { CmsValueDataObject } from '../utils/cms-utils';
+import type { Language } from '../utils/language-utils';
 
 export type BaseValueFieldProps<T extends CmsValueDataObject> = {
   contentObject: T;

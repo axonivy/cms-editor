@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { FileValueField } from '../components/FileValueField';
 import { StringValueField } from '../components/StringValueField';
 import { useAppContext } from '../context/AppContext';
-import { toLanguages } from '../main/control/language-tool/language-utils';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useMeta } from '../protocol/use-meta';
 import { useQueryKeys } from '../query/query-client';
@@ -28,6 +27,7 @@ import {
   removeValue,
   type CmsValueDataObject
 } from '../utils/cms-utils';
+import { toLanguages } from '../utils/language-utils';
 import './DetailContent.css';
 
 export const DetailContent = () => {

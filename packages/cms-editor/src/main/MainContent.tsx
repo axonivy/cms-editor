@@ -30,9 +30,9 @@ import { useClient } from '../protocol/ClientContextProvider';
 import { useQueryKeys } from '../query/query-client';
 import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
+import { toLanguages } from '../utils/language-utils';
 import './MainContent.css';
 import { EmptyMainControl, MainControl } from './control/MainControl';
-import { toLanguages } from './control/language-tool/language-utils';
 
 export const MainContent = () => {
   const { t } = useTranslation();

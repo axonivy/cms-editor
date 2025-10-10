@@ -1,7 +1,7 @@
 import { Flex, Separator } from '@axonivy/ui-components';
+import type { Language } from '../../../utils/language-utils';
 import { AddLanguage } from './AddLanguage';
 import { DeleteLanguage } from './DeleteLanguage';
-import type { Language } from './language-utils';
 
 type LanguageToolControlProps = {
   languages: Array<Language>;

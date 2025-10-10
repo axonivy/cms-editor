@@ -16,17 +16,13 @@ test('useLanguageTags', async () => {
   expect(result.current.languageTagsMessage).toBeUndefined();
 
   result = renderLanguageTagsHook(['de', 'en'], []).result;
-  await waitFor(() => {
-    expect(result.current.languageTags).toEqual(['de']);
-  });
+  await waitFor(() => expect(result.current.languageTags).toEqual(['de']));
   expect(result.current.languageTagsMessage).toBeDefined();
   expect(result.current.languageTagsMessage?.message).toBeDefined();
   expect(result.current.languageTagsMessage?.variant).toEqual('info');
 
   result = renderLanguageTagsHook([], ['de', 'en']).result;
-  await waitFor(() => {
-    expect(result.current.languageTags).toEqual(['de', 'en']);
-  });
+  await waitFor(() => expect(result.current.languageTags).toEqual(['de', 'en']));
   expect(result.current.languageTagsMessage).toBeUndefined();
 });
 
