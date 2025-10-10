@@ -3,11 +3,11 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 
 type DeleteContentObjectProps = {
-  deleteContentObject: () => void;
+  deleteContentObjects: () => void;
   hasSelection: boolean;
 };
 
-export const DeleteContentObject = ({ deleteContentObject, hasSelection }: DeleteContentObjectProps) => {
+export const DeleteContentObject = ({ deleteContentObjects, hasSelection }: DeleteContentObjectProps) => {
   const hotkeys = useKnownHotkeys();
 
   return (
@@ -16,7 +16,7 @@ export const DeleteContentObject = ({ deleteContentObject, hasSelection }: Delet
         <TooltipTrigger asChild>
           <Button
             icon={IvyIcons.Trash}
-            onClick={deleteContentObject}
+            onClick={deleteContentObjects}
             disabled={!hasSelection}
             aria-label={hotkeys.deleteContentObject.label}
           />

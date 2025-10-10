@@ -11,11 +11,11 @@ import { TranslationWizard } from './translation-wizard/TranslationWizard';
 
 type MainControlProps = {
   selectRow: (rowId: string) => void;
-  deleteContentObject: () => void;
+  deleteContentObjects: () => void;
   hasSelection: boolean;
 };
 
-export const MainControl = ({ selectRow, deleteContentObject, hasSelection }: MainControlProps) => {
+export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: MainControlProps) => {
   const hotkeys = useKnownHotkeys();
   const { context } = useAppContext();
   const locales = useMeta('meta/locales', context, []).data;
@@ -33,7 +33,7 @@ export const MainControl = ({ selectRow, deleteContentObject, hasSelection }: Ma
         <Button icon={IvyIcons.Plus} aria-label={hotkeys.addContentObject.label} disabled={locales.length === 0} />
       </AddContentObject>
       <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
-      <DeleteContentObject deleteContentObject={deleteContentObject} hasSelection={hasSelection} />
+      <DeleteContentObject deleteContentObjects={deleteContentObjects} hasSelection={hasSelection} />
     </Flex>
   );
 };
