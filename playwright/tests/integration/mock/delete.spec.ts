@@ -8,30 +8,43 @@ test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openMock(page);
 });
 
-test('delete', async () => {
-  const deleteButton = editor.main.control.delete;
-  await expect(deleteButton).toBeDisabled();
+test.describe('delete', () => {
+  test('single', async () => {
+    const deleteButton = editor.main.control.delete;
+    await expect(deleteButton).toBeDisabled();
 
-  const firstRow = editor.main.table.row(0);
-  await firstRow.locator.click();
-  await expect(deleteButton).toBeEnabled();
+    const firstRow = editor.main.table.row(0);
+    await firstRow.locator.click();
+    await expect(deleteButton).toBeEnabled();
 
-  await firstRow.expectToHaveStringColumns(['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence']);
-  await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AddTask', { English: 'Add a task to the sequence' });
-  await deleteButton.click();
-  await firstRow.expectToBeSelected();
-  await firstRow.expectToHaveStringColumns(['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'], ['Workflow Tasks']);
-  await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks', { English: 'Workflow Tasks' });
+    await firstRow.expectToHaveStringColumns(['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence']);
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AddTask', { English: 'Add a task to the sequence' });
+    await deleteButton.click();
+    await firstRow.expectToBeSelected();
+    await firstRow.expectToHaveStringColumns(['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'], ['Workflow Tasks']);
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks', { English: 'Workflow Tasks' });
 
-  await firstRow.locator.click();
-  await editor.page.keyboard.press('ArrowUp');
-  const lastRow = editor.main.table.row(-1);
-  await lastRow.expectToHaveFileColumns('IMAGE', ['/Files/ImageFile'], ['ImageFile.png']);
-  await editor.detail.expectToHaveFileValues('/Files/ImageFile', { English: true, German: false });
-  await deleteButton.click();
-  await lastRow.expectToBeSelected();
-  await lastRow.expectToHaveFileColumns('FILE', ['/Files/TextFile'], ['TextFile.txt']);
-  await editor.detail.expectToHaveFileValues('/Files/TextFile', { English: true, German: true });
+    await firstRow.locator.click();
+    await editor.page.keyboard.press('ArrowUp');
+    const lastRow = editor.main.table.row(-1);
+    await lastRow.expectToHaveFileColumns('IMAGE', ['/Files/ImageFile'], ['ImageFile.png']);
+    await editor.detail.expectToHaveFileValues('/Files/ImageFile', { English: true, German: false });
+    await deleteButton.click();
+    await lastRow.expectToBeSelected();
+    await lastRow.expectToHaveFileColumns('FILE', ['/Files/TextFile'], ['TextFile.txt']);
+    await editor.detail.expectToHaveFileValues('/Files/TextFile', { English: true, German: true });
+  });
+
+  test('multiple', async () => {
+    await editor.main.table.row(0).locator.click();
+    await editor.page.keyboard.down('Shift');
+    await editor.main.table.row(2).locator.click();
+    await editor.page.keyboard.up('Shift');
+    await editor.main.control.delete.click();
+    await editor.main.table.row(0).expectToBeSelected();
+    await editor.main.table.row(1).expectNotToBeSelected();
+    await editor.main.table.row(0).expectToHaveStringColumns(['/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'], ['Comma separated list of users:']);
+  });
 });
 
 test('keyboard', async () => {

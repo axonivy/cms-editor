@@ -102,7 +102,7 @@ export class CmsClientMock implements Client {
   private findContentObject = (uri: string) => this.cmsData.data.find(co => co.uri === uri);
 
   delete(args: CmsDeleteArgs): Promise<Void> {
-    this.cmsData = { ...this.cmsData, data: this.cmsData.data.filter(co => co.uri !== args.uri) };
+    this.cmsData = { ...this.cmsData, data: this.cmsData.data.filter(co => !args.uris.includes(co.uri)) };
     return Promise.resolve({});
   }
 

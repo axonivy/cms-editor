@@ -32,15 +32,15 @@ import './DetailContent.css';
 
 export const DetailContent = () => {
   const { t } = useTranslation();
-  const { context, contentObjects, selectedContentObject, defaultLanguageTags, languageDisplayName } = useAppContext();
+  const { context, contentObjects, selectedContentObjects, defaultLanguageTags, languageDisplayName } = useAppContext();
 
   const client = useClient();
   const queryClient = useQueryClient();
   const { dataKey, readKey } = useQueryKeys();
 
   let uri = '';
-  if (selectedContentObject !== undefined && selectedContentObject < contentObjects.length) {
-    uri = contentObjects[selectedContentObject]?.uri ?? '';
+  if (selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined && selectedContentObjects[0] < contentObjects.length) {
+    uri = contentObjects[selectedContentObjects[0]]?.uri ?? '';
   }
 
   const updateValuesInReadQuery = useCallback(

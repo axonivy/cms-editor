@@ -109,7 +109,7 @@ export interface CmsDataArgs {
 }
 export interface CmsDeleteArgs {
   context: CmsEditorDataContext;
-  uri: string;
+  uris: string[];
 }
 export interface CmsDeleteValueArgs {
   context: CmsEditorDataContext;

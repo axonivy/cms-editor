@@ -21,8 +21,8 @@ type ContextHelperProps = {
   appContext?: {
     context?: CmsEditorDataContext;
     contentObjects?: Array<CmsValueDataObject>;
-    selectedContentObject?: number;
-    setSelectedContentObject?: (index?: number) => void;
+    selectedContentObjects?: Array<number>;
+    setSelectedContentObjects?: (indexes?: Array<number>) => void;
     detail?: boolean;
     setDetail?: (visible: boolean) => void;
     defaultLanguageTags?: Array<string>;
@@ -56,8 +56,8 @@ const ContextHelper = ({
   const aContext = {
     context: appContext?.context ?? ({} as CmsEditorDataContext),
     contentObjects: appContext?.contentObjects ?? [],
-    selectedContentObject: appContext?.selectedContentObject,
-    setSelectedContentObject: appContext?.setSelectedContentObject ?? (() => {}),
+    selectedContentObjects: appContext?.selectedContentObjects ?? [],
+    setSelectedContentObjects: appContext?.setSelectedContentObjects ?? (() => {}),
     detail: appContext?.detail !== undefined ? appContext.detail : true,
     setDetail: appContext?.setDetail ?? (() => {}),
     defaultLanguageTags: appContext?.defaultLanguageTags ?? [],

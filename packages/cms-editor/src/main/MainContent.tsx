@@ -13,6 +13,7 @@ import {
   TableCell,
   TableResizableHeader,
   useHotkeys,
+  useMultiSelectRow,
   useReadonly,
   useTableGlobalFilter,
   useTableKeyHandler,
@@ -39,8 +40,8 @@ export const MainContent = () => {
   const {
     context,
     contentObjects,
-    selectedContentObject,
-    setSelectedContentObject,
+    selectedContentObjects,
+    setSelectedContentObjects,
     detail,
     setDetail,
     defaultLanguageTags,
@@ -48,17 +49,7 @@ export const MainContent = () => {
   } = useAppContext();
 
   const selection = useTableSelect<CmsValueDataObject>({
-    onSelect: selectedRows => {
-      if (Object.keys(selectedRows).length === 0) {
-        setSelectedContentObject(undefined);
-        return;
-      }
-      const selectedRowId = Object.keys(selectedRows).find(key => selectedRows[key]);
-      const selectedContentObject = table.getRowModel().flatRows.find(row => row.id === selectedRowId)?.index;
-      if (selectedContentObject !== undefined) {
-        setSelectedContentObject(selectedContentObject);
-      }
-    }
+    onSelect: selectedRows => setSelectedContentObjects(Object.keys(selectedRows).map(key => Number(key)))
   });
 
   const sort = useTableSort();
@@ -97,6 +88,7 @@ export const MainContent = () => {
 
   const table = useReactTable({
     ...selection.options,
+    enableMultiRowSelection: true,
     ...sort.options,
     ...globalFilter.options,
     data: contentObjects,
@@ -104,11 +96,12 @@ export const MainContent = () => {
     getCoreRowModel: getCoreRowModel(),
     state: {
       ...selection.tableState,
+      rowSelection: Object.fromEntries(selectedContentObjects.map(index => [index, true])),
       ...sort.tableState,
-      ...globalFilter.tableState,
-      rowSelection: { [String(selectedContentObject)]: true }
+      ...globalFilter.tableState
     }
   });
+  const { handleMultiSelectOnRow } = useMultiSelectRow(table);
 
   const rows = table.getRowModel().rows;
   const tableContainer = useRef<HTMLDivElement>(null);
@@ -119,7 +112,7 @@ export const MainContent = () => {
     overscan: 20
   });
 
-  const { handleKeyDown } = useTableKeyHandler({ table, data: contentObjects });
+  const { handleKeyDown } = useTableKeyHandler({ table, data: contentObjects, options: { multiSelect: true } });
 
   const hotkeys = useKnownHotkeys();
 
@@ -138,29 +131,27 @@ export const MainContent = () => {
         if (!data) {
           return;
         }
-        return { ...data, data: data.data.filter(co => co.uri !== args.uri) };
+        return { ...data, data: data.data.filter(co => !args.uris.includes(co.uri)) };
       });
-      if (data !== undefined && selectedContentObject !== undefined) {
+      if (data !== undefined && selectedContentObjects[0] !== undefined) {
         const contentObjects = data?.data.filter(co => isCmsValueDataObject(co));
-        const selection = adjustSelectionAfterDeletionOfRow(contentObjects, table, selectedContentObject);
-        setSelectedContentObject(selection);
+        const selection = adjustSelectionAfterDeletionOfRow(contentObjects, table, selectedContentObjects[0]);
+        const newSelectedContentObjects = [];
+        if (selection !== undefined) {
+          newSelectedContentObjects.push(selection);
+        }
+        setSelectedContentObjects(newSelectedContentObjects);
       }
       client.delete(args);
     }
   });
 
-  const deleteContentObject = () => {
-    if (selectedContentObject === undefined) {
-      return;
-    }
-    const uri = contentObjects[selectedContentObject]?.uri;
-    if (uri === undefined) {
-      return;
-    }
-    mutate({ context, uri });
+  const deleteContentObjects = () => {
+    const selectedContentObjectUris = table.getSelectedRowModel().flatRows.map(row => row.original.uri);
+    mutate({ context, uris: selectedContentObjectUris });
   };
 
-  const ref = useHotkeys(hotkeys.deleteContentObject.hotkey, () => deleteContentObject(), { scopes: ['global'], enabled: !readonly });
+  const ref = useHotkeys(hotkeys.deleteContentObject.hotkey, () => deleteContentObjects(), { scopes: ['global'], enabled: !readonly });
 
   if (contentObjects === undefined || contentObjects.length === 0) {
     return (
@@ -180,7 +171,7 @@ export const MainContent = () => {
           !readonly && (
             <MainControl
               selectRow={(rowId: string) => selectRow(table, rowId)}
-              deleteContentObject={deleteContentObject}
+              deleteContentObjects={deleteContentObjects}
               hasSelection={table.getSelectedRowModel().flatRows.length !== 0}
             />
           )
@@ -201,7 +192,13 @@ export const MainContent = () => {
                   return null;
                 }
                 return (
-                  <SelectRow key={row.id} row={row} style={{ transform: `translateY(${virtualRow.start}px)` }} vindex={virtualRow.index}>
+                  <SelectRow
+                    key={row.id}
+                    row={row}
+                    style={{ transform: `translateY(${virtualRow.start}px)` }}
+                    vindex={virtualRow.index}
+                    onClick={event => handleMultiSelectOnRow(row, event)}
+                  >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

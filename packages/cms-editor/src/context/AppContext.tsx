@@ -5,8 +5,8 @@ import type { CmsValueDataObject } from '../utils/cms-utils';
 type AppContext = {
   context: CmsEditorDataContext;
   contentObjects: Array<CmsValueDataObject>;
-  selectedContentObject?: number;
-  setSelectedContentObject: (index?: number) => void;
+  selectedContentObjects: Array<number>;
+  setSelectedContentObjects: (indexes: Array<number>) => void;
   detail: boolean;
   setDetail: (visible: boolean) => void;
   defaultLanguageTags: Array<string>;
@@ -17,8 +17,8 @@ type AppContext = {
 const appContext = createContext<AppContext>({
   context: { app: '', pmv: '', file: '' },
   contentObjects: [],
-  selectedContentObject: undefined,
-  setSelectedContentObject: () => {},
+  selectedContentObjects: [],
+  setSelectedContentObjects: () => {},
   detail: true,
   setDetail: () => {},
   defaultLanguageTags: [],

@@ -25,7 +25,7 @@ function CmsEditor(props: EditorProps) {
   useEffect(() => {
     setContext(props.context);
   }, [props]);
-  const [selectedContentObject, setSelectedContentObject] = useState<number>();
+  const [selectedContentObjects, setSelectedContentObjects] = useState<Array<number>>([]);
 
   const client = useClient();
   const { dataKey } = useQueryKeys();
@@ -55,7 +55,8 @@ function CmsEditor(props: EditorProps) {
   }
 
   const contentObjects = data.data.filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject));
-  const contentObject = selectedContentObject !== undefined ? contentObjects[selectedContentObject] : undefined;
+  const contentObject =
+    selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined ? contentObjects[selectedContentObjects[0]] : undefined;
   const { mainTitle, detailTitle } = toolbarTitles(context.pmv, contentObject);
 
   return (
@@ -63,8 +64,8 @@ function CmsEditor(props: EditorProps) {
       value={{
         context,
         contentObjects,
-        selectedContentObject,
-        setSelectedContentObject,
+        selectedContentObjects,
+        setSelectedContentObjects,
         detail,
         setDetail,
         defaultLanguageTags,

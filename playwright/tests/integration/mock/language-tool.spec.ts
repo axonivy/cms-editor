@@ -1,5 +1,4 @@
 import test, { expect } from '@playwright/test';
-import { describe } from 'node:test';
 import { CmsEditor } from '../../pageobjects/CmsEditor';
 
 let editor: CmsEditor;
@@ -9,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await expect(editor.main.table.locator).toBeVisible();
 });
 
-describe('default languages', () => {
+test.describe('default languages', () => {
   test('add and remove', async ({ page }) => {
     editor = await CmsEditor.openMock(page, { defaultLanguages: ['en', 'fr'] });
     const languageTool = editor.main.control.languageTool;
@@ -102,7 +101,7 @@ test('open, edit, and save using keyboard', async () => {
   await expect(editor.main.table.header(1).content).toHaveText('German');
 });
 
-describe('languages', () => {
+test.describe('languages', () => {
   test('add language', async () => {
     const languageTool = editor.main.control.languageTool;
 
@@ -180,7 +179,7 @@ describe('languages', () => {
     await languageTool.languages.row(0).expectToBeSelected();
   });
 
-  describe('language browser', () => {
+  test.describe('language browser', () => {
     const subRows = (languageTags: Array<string>, displayName: Intl.DisplayNames) =>
       languageTags
         .map(languageTag => [[displayName.of(languageTag) as string, languageTag]])
@@ -261,7 +260,7 @@ test('initialize dialog', async () => {
   await languageTool.languages.expectToHaveNoSelection();
 });
 
-describe('save confirmation', () => {
+test.describe('save confirmation', () => {
   test('show amount of values to delete', async () => {
     const languageTool = editor.main.control.languageTool;
 
@@ -352,7 +351,7 @@ describe('save confirmation', () => {
 });
 
 // In these cases the main table did not update properly at some point
-describe('table updates after save', () => {
+test.describe('table updates after save', () => {
   test('removing default language and deleting language', async ({ page }) => {
     editor = await CmsEditor.openMock(page, { defaultLanguages: ['de', 'en'] });
     const languageTool = editor.main.control.languageTool;
