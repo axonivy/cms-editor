@@ -55,6 +55,8 @@
       "title": "Sprachenwerkzeug"
     },
     "translationWizard": {
+      "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
+      "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
       "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
       "title": "Übersetzungsassistent"
     }

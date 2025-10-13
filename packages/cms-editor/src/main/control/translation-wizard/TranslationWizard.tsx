@@ -1,5 +1,6 @@
 import {
   BasicCheckbox,
+  BasicCollapsible,
   BasicDialogContent,
   BasicField,
   BasicSelect,
@@ -27,10 +28,15 @@ import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
 
 const DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
-export const TranslationWizard = ({ children }: { children: ReactNode }) => {
+type TranslationWizardProps = {
+  children: ReactNode;
+  disabled: boolean;
+};
+
+export const TranslationWizard = ({ children, disabled }: TranslationWizardProps) => {
   const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
   const hotkeys = useKnownHotkeys();
-  useHotkeys(hotkeys.translationWizard.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
+  useHotkeys(hotkeys.translationWizard.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open && !disabled });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <TooltipProvider>
@@ -51,6 +57,7 @@ export const TranslationWizard = ({ children }: { children: ReactNode }) => {
 const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
   const { languages, defaultSourceLanguageTag } = useLanguages();
+  const { amountOfSelectedContentObjects, selectedContentObjectsUris } = useSelectedContentObjects();
 
   const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag);
   const onSourceTagLanguageChange = (languageTag: string) => {
@@ -87,6 +94,19 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
         </Button>
       }
     >
+      <BasicCollapsible
+        label={
+          amountOfSelectedContentObjects === 1
+            ? t('dialog.translationWizard.amountOfContentObjectsSelectedSingular')
+            : t('dialog.translationWizard.amountOfContentObjectsSelectedPlural', { amount: amountOfSelectedContentObjects })
+        }
+      >
+        <Flex direction='column' gap={1}>
+          {selectedContentObjectsUris.map(uri => (
+            <span key={uri}>{uri}</span>
+          ))}
+        </Flex>
+      </BasicCollapsible>
       <BasicField label={t('common.label.sourceLanguage')}>
         <BasicSelect value={sourceLanguageTag} items={languages} onValueChange={onSourceTagLanguageChange} />
       </BasicField>
@@ -150,4 +170,11 @@ export const useLanguages = () => {
 
     return { languages, defaultSourceLanguageTag };
   }, [locales, languageDisplayName, defaultLanguageTags]);
+};
+
+export const useSelectedContentObjects = () => {
+  const { contentObjects, selectedContentObjects } = useAppContext();
+  const amountOfSelectedContentObjects = selectedContentObjects.length;
+  const selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri);
+  return { amountOfSelectedContentObjects, selectedContentObjectsUris };
 };
