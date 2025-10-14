@@ -38,7 +38,7 @@ import { useAppContext } from '../../../context/AppContext';
 import { useClient } from '../../../protocol/ClientContextProvider';
 import { useMeta } from '../../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../../query/query-client';
-import { isCmsFileDataObject, isCmsStringDataObject, removeValue } from '../../../utils/cms-utils';
+import { isCmsFileDataObject, isCmsStringDataObject, isCmsValueDataObject, removeValue } from '../../../utils/cms-utils';
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { toLanguages, type Language } from '../../../utils/language-utils';
@@ -99,13 +99,13 @@ const AddContentObjectContent = ({
   const { t } = useTranslation();
   const { languageTags, languageTagsMessage } = useLanguageTags();
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const { context, contentObjects, selectedContentObject, setSelectedContentObject, defaultLanguageTags, languageDisplayName } =
+  const { context, contentObjects, selectedContentObjects, setSelectedContentObjects, defaultLanguageTags, languageDisplayName } =
     useAppContext();
 
   const allValuesEmpty = () => Object.fromEntries(languageTags.map(tag => [tag, '']));
 
   const [name, setName] = useState('NewContentObject');
-  const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObject));
+  const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObjects));
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
   const [values, setValues] = useState<MapStringString>(() => allValuesEmpty());
@@ -131,9 +131,13 @@ const AddContentObjectContent = ({
         onSuccess: () => {
           const data: CmsData | undefined = queryClient.getQueryData(dataKey({ context, languageTags: defaultLanguageTags }));
           const selectedContentObject = data?.data
-            .filter((contentObject: CmsDataObject) => contentObject.type !== 'FOLDER')
+            .filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject))
             .findIndex(co => co.uri === uri);
-          setSelectedContentObject(selectedContentObject);
+          const selectedContentObjects = [];
+          if (selectedContentObject !== undefined) {
+            selectedContentObjects.push(selectedContentObject);
+          }
+          setSelectedContentObjects(selectedContentObjects);
           selectRow(String(selectedContentObject));
           if (!event.ctrlKey && !event.metaKey) {
             closeDialog();
@@ -257,11 +261,11 @@ const useMutateContentObject = () => {
   return mutate;
 };
 
-export const initialNamespace = (contentObjects: Array<CmsDataObject>, selectedContentObject?: number) => {
-  if (selectedContentObject === undefined) {
+export const initialNamespace = (contentObjects: Array<CmsDataObject>, selectedContentObjects: Array<number>) => {
+  if (selectedContentObjects[0] === undefined) {
     return '';
   }
-  const uri = contentObjects[selectedContentObject]?.uri ?? '';
+  const uri = contentObjects[selectedContentObjects[0]]?.uri ?? '';
   return uri.substring(0, uri.lastIndexOf('/'));
 };
 

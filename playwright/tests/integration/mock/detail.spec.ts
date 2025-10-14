@@ -8,7 +8,16 @@ test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openMock(page);
 });
 
-test('empty while no selecton', async () => {
+test('empty while no selection', async () => {
+  await expect(editor.detail.values).toHaveCount(0);
+  await expect(editor.detail.message).toHaveText('Select a Content Object to edit its values.');
+});
+
+test('empty while multi selection', async () => {
+  await editor.main.table.row(0).locator.click();
+  await editor.page.keyboard.down('Shift');
+  await editor.main.table.row(2).locator.click();
+  await editor.page.keyboard.up('Shift');
   await expect(editor.detail.values).toHaveCount(0);
   await expect(editor.detail.message).toHaveText('Select a Content Object to edit its values.');
 });

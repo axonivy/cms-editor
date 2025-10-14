@@ -4,10 +4,15 @@ import { customRenderHook } from '../../../context/test-utils/test-utils';
 import { initialNamespace, namespaceOptions, useLanguageTags } from './AddContentObject';
 
 test('initialNamespace', () => {
-  const contentObjects = [{ uri: '/contentObject' }, { uri: '/folder/deep/contentObject' }] as Array<CmsDataObject>;
-  expect(initialNamespace(contentObjects, undefined)).toEqual('');
-  expect(initialNamespace(contentObjects, 0)).toEqual('');
-  expect(initialNamespace(contentObjects, 1)).toEqual('/folder/deep');
+  const contentObjects = [
+    { uri: '/contentObject' },
+    { uri: '/folder/deep/contentObject' },
+    { uri: '/other/namespace' }
+  ] as Array<CmsDataObject>;
+  expect(initialNamespace(contentObjects, [])).toEqual('');
+  expect(initialNamespace(contentObjects, [0])).toEqual('');
+  expect(initialNamespace(contentObjects, [1])).toEqual('/folder/deep');
+  expect(initialNamespace(contentObjects, [1, 2])).toEqual('/folder/deep');
 });
 
 test('useLanguageTags', async () => {
