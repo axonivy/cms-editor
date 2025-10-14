@@ -25,8 +25,8 @@ export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: M
         <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
       </LanguageTool>
       <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
-      <TranslationWizard>
-        <Button icon={IvyIcons.Call} aria-label={hotkeys.translationWizard.label} />
+      <TranslationWizard disabled={!hasSelection}>
+        <Button icon={IvyIcons.Call} aria-label={hotkeys.translationWizard.label} disabled={!hasSelection} />
       </TranslationWizard>
       <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
       <AddContentObject selectRow={selectRow}>

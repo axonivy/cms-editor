@@ -1,7 +1,7 @@
-import type { Client } from '@axonivy/cms-editor-protocol';
+import type { Client, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
 import { customRenderHook } from '../../../context/test-utils/test-utils';
-import { useLanguages } from './TranslationWizard';
+import { useLanguages, useSelectedContentObjects } from './TranslationWizard';
 
 describe('useLanguages', () => {
   test('languages', async () => {
@@ -67,3 +67,27 @@ class TestClient implements Partial<Client> {
     return Promise.resolve(this.locales);
   }
 }
+
+test('useSelectedContentObjects', () => {
+  let result = renderSelectedContentObjectsHook([], []).result;
+  expect(result.current.amountOfSelectedContentObjects).toBe(0);
+  expect(result.current.selectedContentObjectsUris).toEqual([]);
+
+  result = renderSelectedContentObjectsHook(
+    [
+      { uri: 'contentObjectUri0' },
+      { uri: 'contentObjectUri1' },
+      { uri: 'contentObjectUri2' },
+      { uri: 'contentObjectUri3' }
+    ] as Array<CmsValueDataObject>,
+    [1, 3]
+  ).result;
+  expect(result.current.amountOfSelectedContentObjects).toBe(2);
+  expect(result.current.selectedContentObjectsUris).toEqual(['contentObjectUri1', 'contentObjectUri3']);
+});
+
+const renderSelectedContentObjectsHook = (contentObjects: Array<CmsValueDataObject>, selectedContentObjects: Array<number>) => {
+  return customRenderHook(() => useSelectedContentObjects(), {
+    wrapperProps: { appContext: { contentObjects, selectedContentObjects } }
+  });
+};

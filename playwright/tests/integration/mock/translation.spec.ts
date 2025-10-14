@@ -7,20 +7,45 @@ test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openMock(page);
 });
 
-test('keyboard support', async () => {
+test('keyboard support', async ({ page }) => {
   const translationWizard = editor.main.control.translationWizard;
-  const keyboard = editor.page.keyboard;
 
   await expect(translationWizard.locator).toBeHidden();
-  await keyboard.press('t');
+  await page.keyboard.press('t');
+  await expect(translationWizard.locator).toBeHidden();
+
+  await editor.main.table.row(0).locator.click();
+  await page.keyboard.press('t');
   await expect(translationWizard.locator).toBeVisible();
-  await keyboard.press('Escape');
+  await page.keyboard.press('Escape');
   await expect(translationWizard.locator).toBeHidden();
+});
 
+test('selected content objects', async ({ page }) => {
+  const translationWizard = editor.main.control.translationWizard;
+  const table = editor.main.table;
+
+  await expect(translationWizard.trigger).toBeDisabled();
+  await table.row(0).locator.click();
+  await expect(translationWizard.trigger).toBeEnabled();
   await translationWizard.trigger.click();
-  await expect(translationWizard.locator).toBeVisible();
-  await keyboard.press('Enter');
-  await expect(translationWizard.locator).toBeHidden();
+  await expect(translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+  await translationWizard.selectedContentObjects.trigger.click();
+  await expect(translationWizard.selectedContentObjects.content).toHaveText('/Dialogs/agileBPM/define_WF/AddTask');
+
+  await translationWizard.cancel.click();
+  await table.row(1).locator.click();
+  await page.keyboard.down('Shift');
+  await table.row(3).locator.click();
+  await page.keyboard.up('Shift');
+  await translationWizard.trigger.click();
+  await expect(translationWizard.selectedContentObjects.trigger).toHaveText('3 Content Objects selected.');
+  await translationWizard.selectedContentObjects.trigger.click();
+  await expect(translationWizard.selectedContentObjects.content.locator('span')).toHaveText([
+    '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
+    '/Dialogs/agileBPM/define_WF/Case',
+    '/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'
+  ]);
 });
 
 test.describe('source language', () => {
@@ -28,6 +53,7 @@ test.describe('source language', () => {
     const translationWizard = editor.main.control.translationWizard;
     const languageTool = editor.main.control.languageTool;
 
+    await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await translationWizard.sourceLanguage.expectToHaveOptions('English', 'German');
 
@@ -46,6 +72,7 @@ test.describe('source language', () => {
     await languageTool.trigger.click();
     await languageTool.checkboxOfRow(1).check();
     await languageTool.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.sourceLanguage.locator).toHaveText('English');
 
@@ -73,6 +100,7 @@ test.describe('target languages', () => {
     await languageTool.trigger.click();
     await languageTool.addLanguage(1);
     await languageTool.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.targetLanguages.languages).toHaveCount(3);
     await expect(translationWizard.targetLanguages.language('English').locator).toBeVisible();
@@ -85,6 +113,7 @@ test.describe('target languages', () => {
     const englishCheckbox = translationWizard.targetLanguages.language('English').checkbox;
     const germanCheckbox = translationWizard.targetLanguages.language('German').checkbox;
 
+    await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
 
     await expect(englishCheckbox).toBeDisabled();
@@ -112,6 +141,7 @@ test.describe('target languages', () => {
     await languageTool.trigger.click();
     await languageTool.addLanguage(1);
     await languageTool.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
 
     await expect(englishCheckbox).not.toBeChecked();

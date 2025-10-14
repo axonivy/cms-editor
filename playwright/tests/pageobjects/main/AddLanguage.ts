@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 import { Textbox } from '../abstract/Textbox';
-import { Collapsible } from './Collapsible';
+import { Collapsible } from '../abstract/Collapsible';
 import { Table } from './Table';
 
 export class AddLanguage {
