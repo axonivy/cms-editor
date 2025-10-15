@@ -19,6 +19,8 @@ import type {
   CmsDeleteValueArgs,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
+  CmsStringDataObject,
+  CmsTranslationArgs,
   CmsUpdateValueArgs,
   MetaRequestTypes,
   Void
@@ -92,9 +94,9 @@ export class CmsClientMock implements Client {
   }
 
   deleteValue(args: CmsDeleteValueArgs): Promise<Void> {
-    const co = this.findContentObject(args.deleteObject.uri);
+    const co = this.findContentObject(args.deleteRequest.uri);
     if (isCmsValueDataObject(co)) {
-      co.values = removeValue(co.values, args.deleteObject.languageTag);
+      co.values = removeValue(co.values, args.deleteRequest.languageTag);
     }
     return Promise.resolve({});
   }
@@ -127,6 +129,25 @@ export class CmsClientMock implements Client {
     ...co,
     values: Object.fromEntries(Object.entries(co.values).filter(entry => !locales.includes(entry[0])))
   });
+
+  translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>> {
+    return Promise.resolve(
+      this.cmsData.data
+        .filter(co => args.translationRequest.uris.includes(co.uri))
+        .filter(co => isCmsStringDataObject(co))
+        .map(co => ({ ...co, values: this.translatedValues(co, args) }))
+    );
+  }
+
+  private translatedValues = (co: CmsStringDataObject, args: CmsTranslationArgs) => {
+    const sourceLanguageTag = args.translationRequest.sourceLanguageTag;
+    return Object.fromEntries(
+      args.translationRequest.targetLanguageTags.map(tag => [
+        tag,
+        `Translation of '${co.values[sourceLanguageTag]}' from '${sourceLanguageTag}' to '${tag}'`
+      ])
+    );
+  };
 
   meta<TMeta extends keyof MetaRequestTypes>(path: TMeta, args: MetaRequestTypes[TMeta][0]): Promise<MetaRequestTypes[TMeta][1]> {
     switch (path) {
