@@ -159,3 +159,24 @@ test.describe('target languages', () => {
     await expect(germanCheckbox).not.toBeChecked();
   });
 });
+
+test('translation review', async () => {
+  const translationWizard = editor.main.control.translationWizard;
+
+  await editor.main.table.row(0).locator.click();
+  await translationWizard.trigger.click();
+  await expect(translationWizard.translationWizardReview.trigger).toBeDisabled();
+
+  await translationWizard.targetLanguages.language('German').checkbox.check();
+  await translationWizard.translationWizardReview.trigger.click();
+  await expect(translationWizard.translationWizardReview.locator).toBeVisible();
+
+  await translationWizard.translationWizardReview.cancel.click();
+  await expect(translationWizard.translationWizardReview.locator).toBeHidden();
+  await expect(translationWizard.locator).toBeVisible();
+
+  await translationWizard.translationWizardReview.trigger.click();
+  await translationWizard.translationWizardReview.apply.click();
+  await expect(translationWizard.translationWizardReview.locator).toBeHidden();
+  await expect(translationWizard.locator).toBeHidden();
+});

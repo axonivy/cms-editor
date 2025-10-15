@@ -175,7 +175,6 @@ const AddContentObjectContent = ({
               <Button
                 variant='primary'
                 size='large'
-                aria-label={t('dialog.addContentObject.create')}
                 onClick={addContentObject}
                 disabled={!allInputsValid || isPending}
                 icon={isPending ? IvyIcons.Spinner : IvyIcons.Plus}

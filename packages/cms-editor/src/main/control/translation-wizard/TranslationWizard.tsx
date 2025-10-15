@@ -25,6 +25,7 @@ import { useAppContext } from '../../../context/AppContext';
 import { useMeta } from '../../../protocol/use-meta';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
+import { TranslationWizardReview } from './TranslationWizardReview';
 
 const DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
@@ -83,11 +84,7 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
     <BasicDialogContent
       title={t('dialog.translationWizard.title')}
       description={t('dialog.translationWizard.description')}
-      submit={
-        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={closeDialog}>
-          {t('common.label.translate')}
-        </Button>
-      }
+      submit={<TranslationWizardReview hasSelectedTargetLanguages={targetLanguageTags.length > 0} closeTranslationWizard={closeDialog} />}
       cancel={
         <Button variant='outline' size='large'>
           {t('common.label.cancel')}
