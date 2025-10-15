@@ -7,6 +7,7 @@
       "help": "Hilfe öffnen ({{hotkey}})"
     },
     "label": {
+      "apply": "Anwenden",
       "cancel": "Abbrechen",
       "changeFile": "Datei ändern",
       "chooseFile": "Datei auswählen",
@@ -58,7 +59,12 @@
       "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
       "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
       "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
-      "title": "Übersetzungsassistent"
+      "review": {
+        "description": "Überprüfe die Änderungen, bevor sie angewendet werden.",
+        "title": "Übersetzungsüberprüfung"
+      },
+      "title": "Übersetzungsassistent",
+      "translateDisabled": "Wähle mindestens eine Zielsprache aus."
     }
   },
   "hotkey": {
