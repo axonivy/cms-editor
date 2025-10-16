@@ -13,7 +13,5 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname
       }
     }
-  },
-  // Latest react-hook rules
-  ...config.reactHooksLatest
+  }
 );
