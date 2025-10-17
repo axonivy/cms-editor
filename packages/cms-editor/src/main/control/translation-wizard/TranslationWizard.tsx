@@ -60,7 +60,7 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
   const { languages, defaultSourceLanguageTag } = useLanguages();
   const { amountOfSelectedContentObjects, selectedContentObjectsUris } = useSelectedContentObjects();
 
-  const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag);
+  const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag ?? '');
   const onSourceTagLanguageChange = (languageTag: string) => {
     removeTargetLanguageTag(languageTag);
     setSourceLanguageTag(languageTag);
@@ -84,7 +84,13 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
     <BasicDialogContent
       title={t('dialog.translationWizard.title')}
       description={t('dialog.translationWizard.description')}
-      submit={<TranslationWizardReview hasSelectedTargetLanguages={targetLanguageTags.length > 0} closeTranslationWizard={closeDialog} />}
+      submit={
+        <TranslationWizardReview
+          hasSelectedTargetLanguages={targetLanguageTags.length > 0}
+          closeTranslationWizard={closeDialog}
+          translationRequest={{ sourceLanguageTag, targetLanguageTags, uris: selectedContentObjectsUris }}
+        />
+      }
       cancel={
         <Button variant='outline' size='large'>
           {t('common.label.cancel')}
@@ -172,6 +178,6 @@ export const useLanguages = () => {
 export const useSelectedContentObjects = () => {
   const { contentObjects, selectedContentObjects } = useAppContext();
   const amountOfSelectedContentObjects = selectedContentObjects.length;
-  const selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri);
+  const selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
   return { amountOfSelectedContentObjects, selectedContentObjectsUris };
 };

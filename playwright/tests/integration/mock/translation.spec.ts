@@ -160,23 +160,65 @@ test.describe('target languages', () => {
   });
 });
 
-test('translation review', async () => {
-  const translationWizard = editor.main.control.translationWizard;
+test.describe('translation review', () => {
+  test('translate', async ({ page }) => {
+    const translationWizard = editor.main.control.translationWizard;
+    const languageTool = editor.main.control.languageTool;
 
-  await editor.main.table.row(0).locator.click();
-  await translationWizard.trigger.click();
-  await expect(translationWizard.translationWizardReview.trigger).toBeDisabled();
+    await languageTool.trigger.click();
+    await languageTool.addLanguage(1);
+    await languageTool.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
+    page.keyboard.down('Shift');
+    await editor.main.table.row(1).locator.click();
+    page.keyboard.up('Shift');
+    await translationWizard.trigger.click();
+    await translationWizard.targetLanguages.language('German').checkbox.check();
+    await translationWizard.translationWizardReview.trigger.click();
+    await expect(translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
+      '/Dialogs/agileBPM/define_WF/AddTask',
+      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
+      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
+      "de: Translation of 'Workflow Tasks' from 'en' to 'de'"
+    ]);
 
-  await translationWizard.targetLanguages.language('German').checkbox.check();
-  await translationWizard.translationWizardReview.trigger.click();
-  await expect(translationWizard.translationWizardReview.locator).toBeVisible();
+    await translationWizard.translationWizardReview.cancel.click();
+    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.translationWizardReview.trigger.click();
+    await expect(translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
+      '/Dialogs/agileBPM/define_WF/AddTask',
+      "fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'",
+      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
+      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
+      "fr: Translation of 'Workflow Tasks' from 'en' to 'fr'",
+      "de: Translation of 'Workflow Tasks' from 'en' to 'de'"
+    ]);
+  });
 
-  await translationWizard.translationWizardReview.cancel.click();
-  await expect(translationWizard.translationWizardReview.locator).toBeHidden();
-  await expect(translationWizard.locator).toBeVisible();
+  test('show spinner and disable apply button while translation is pending', async () => {
+    const translationWizard = editor.main.control.translationWizard;
 
-  await translationWizard.translationWizardReview.trigger.click();
-  await translationWizard.translationWizardReview.apply.click();
-  await expect(translationWizard.translationWizardReview.locator).toBeHidden();
-  await expect(translationWizard.locator).toBeHidden();
+    await editor.main.control.add.addString('TranslateIsPending', '', {});
+    translationWizard.trigger.click();
+    await translationWizard.targetLanguages.selectAll.click();
+    translationWizard.translationWizardReview.trigger.click();
+
+    await expect(translationWizard.translationWizardReview.spinner).toBeVisible();
+    await expect(translationWizard.translationWizardReview.apply).toBeDisabled();
+    // wait for translation to complete
+    await expect(translationWizard.translationWizardReview.spinner).toBeHidden();
+    await expect(translationWizard.translationWizardReview.apply).toBeEnabled();
+  });
+
+  test('show error and disable apply button while translation is error', async () => {
+    const translationWizard = editor.main.control.translationWizard;
+
+    await editor.main.control.add.addString('TranslateIsError', '', {});
+    translationWizard.trigger.click();
+    await translationWizard.targetLanguages.selectAll.click();
+    translationWizard.translationWizardReview.trigger.click();
+
+    await expect(translationWizard.translationWizardReview.error).toHaveText('An error has occurred: Error: error message');
+    await expect(translationWizard.translationWizardReview.apply).toBeDisabled();
+  });
 });

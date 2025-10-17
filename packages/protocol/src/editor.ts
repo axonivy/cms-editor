@@ -28,6 +28,8 @@ export interface CMS {
   cmsEditorDataContext: CmsEditorDataContext;
   cmsReadArgs: CmsReadArgs;
   cmsRemoveLocalesArgs: CmsRemoveLocalesArgs;
+  cmsStringDataObject: CmsStringDataObject[];
+  cmsTranslationArgs: CmsTranslationArgs;
   cmsUpdateValueArgs: CmsUpdateValueArgs;
   long: MapStringLong;
   string: string[];
@@ -113,9 +115,9 @@ export interface CmsDeleteArgs {
 }
 export interface CmsDeleteValueArgs {
   context: CmsEditorDataContext;
-  deleteObject: CmsDeleteValueObject;
+  deleteRequest: CmsDeleteValueRequest;
 }
-export interface CmsDeleteValueObject {
+export interface CmsDeleteValueRequest {
   languageTag: string;
   uri: string;
 }
@@ -126,6 +128,15 @@ export interface CmsReadArgs {
 export interface CmsRemoveLocalesArgs {
   context: CmsEditorDataContext;
   locales: string[];
+}
+export interface CmsTranslationArgs {
+  context: CmsEditorDataContext;
+  translationRequest: CmsTranslationRequest;
+}
+export interface CmsTranslationRequest {
+  sourceLanguageTag: string;
+  targetLanguageTags: string[];
+  uris: string[];
 }
 export interface CmsUpdateValueArgs {
   context: CmsEditorDataContext;

@@ -11,6 +11,8 @@ import type {
   CmsDeleteValueArgs,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
+  CmsStringDataObject,
+  CmsTranslationArgs,
   CmsUpdateValueArgs,
   MetaRequestTypes,
   NotificationTypes,
@@ -58,6 +60,10 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
 
   removeLocales(args: CmsRemoveLocalesArgs): Promise<Void> {
     return this.sendRequest('removeLocales', args);
+  }
+
+  translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>> {
+    return this.sendRequest('translate', args);
   }
 
   meta<TMeta extends keyof MetaRequestTypes>(path: TMeta, args: MetaRequestTypes[TMeta][0]): Promise<MetaRequestTypes[TMeta][1]> {

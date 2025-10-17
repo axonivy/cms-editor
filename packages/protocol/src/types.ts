@@ -12,6 +12,8 @@ import type {
   CmsEditorDataContext,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
+  CmsStringDataObject,
+  CmsTranslationArgs,
   CmsUpdateValueArgs,
   MapStringBoolean,
   MapStringLong,
@@ -36,6 +38,7 @@ export interface Client {
   delete(args: CmsDeleteArgs): Promise<Void>;
   addLocales(args: CmsAddLocalesArgs): Promise<Void>;
   removeLocales(args: CmsRemoveLocalesArgs): Promise<Void>;
+  translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>>;
   meta<TMeta extends keyof MetaRequestTypes>(path: TMeta, args: MetaRequestTypes[TMeta][0]): Promise<MetaRequestTypes[TMeta][1]>;
   action(action: CmsActionArgs): Promise<void>;
 }
@@ -61,6 +64,7 @@ export interface RequestTypes extends MetaRequestTypes {
   delete: [CmsDeleteArgs, Void];
   addLocales: [CmsAddLocalesArgs, Void];
   removeLocales: [CmsRemoveLocalesArgs, Void];
+  translate: [CmsTranslationArgs, Array<CmsStringDataObject>];
 }
 
 export interface NotificationTypes {

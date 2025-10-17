@@ -89,10 +89,10 @@ export const DetailContent = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (args: CmsDeleteValueArgs) => {
-      const deleteValueUpdater = (values: CmsDataObjectValues) => removeValue(values, args.deleteObject.languageTag);
-      updateValuesInReadQuery(args.deleteObject.uri, deleteValueUpdater);
-      if (defaultLanguageTags.includes(args.deleteObject.languageTag)) {
-        updateValuesInDataQuery(args.deleteObject.uri, deleteValueUpdater);
+      const deleteValueUpdater = (values: CmsDataObjectValues) => removeValue(values, args.deleteRequest.languageTag);
+      updateValuesInReadQuery(args.deleteRequest.uri, deleteValueUpdater);
+      if (defaultLanguageTags.includes(args.deleteRequest.languageTag)) {
+        updateValuesInDataQuery(args.deleteRequest.uri, deleteValueUpdater);
       }
       return client.deleteValue(args);
     }
@@ -137,7 +137,7 @@ export const DetailContent = () => {
       <Flex direction='column' gap={4}>
         {toLanguages(locales, languageDisplayName).map(language => {
           const props = {
-            deleteValue: (languageTag: string) => deleteMutation.mutate({ context, deleteObject: { uri, languageTag } }),
+            deleteValue: (languageTag: string) => deleteMutation.mutate({ context, deleteRequest: { uri, languageTag } }),
             language,
             disabledDelete: hasExactlyOneValue,
             deleteTooltip: hasExactlyOneValue && contentObject.values[language.value] !== undefined ? t('value.lastValue') : undefined
