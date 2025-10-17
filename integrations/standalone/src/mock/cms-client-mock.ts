@@ -46,9 +46,9 @@ export class CmsClientMock implements Client {
 
   private async create(args: CmsCreateStringArgs | CmsCreateFileArgs): Promise<Void> {
     const uri = args.contentObject.uri;
-    if (uri.endsWith('IsPending')) {
+    if (uri.endsWith('CreateIsPending')) {
       await new Promise(res => setTimeout(res, 1000));
-    } else if (uri.endsWith('IsError')) {
+    } else if (uri.endsWith('CreateIsError')) {
       throw Error('error message');
     }
 
@@ -130,7 +130,13 @@ export class CmsClientMock implements Client {
     values: Object.fromEntries(Object.entries(co.values).filter(entry => !locales.includes(entry[0])))
   });
 
-  translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>> {
+  async translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>> {
+    if (args.translationRequest.uris[0]?.endsWith('TranslateIsPending')) {
+      await new Promise(res => setTimeout(res, 1000));
+    } else if (args.translationRequest.uris[0]?.endsWith('TranslateIsError')) {
+      throw Error('error message');
+    }
+
     return Promise.resolve(
       this.cmsData.data
         .filter(co => args.translationRequest.uris.includes(co.uri))

@@ -167,7 +167,7 @@ test.describe('disable dialog while create request is pending', () => {
     const add = editor.main.control.add;
 
     await add.trigger.click();
-    await add.name.locator.fill('IsPending');
+    await add.name.locator.fill('CreateIsPending');
     await add.create.click();
     await expect(add.name.locator).toBeDisabled();
     await expect(add.namespace.locator).toBeDisabled();
@@ -186,7 +186,7 @@ test.describe('disable dialog while create request is pending', () => {
     const add = editor.main.control.add;
 
     await add.trigger.click();
-    await add.name.locator.fill('IsPending');
+    await add.name.locator.fill('CreateIsPending');
     await add.type.select('File');
     await add.value('English').selectFile(path.join('test-files', 'TestFile.txt'));
     await add.create.click();
@@ -199,7 +199,7 @@ test('show error if create request is error', async () => {
   const add = editor.main.control.add;
   await expect(add.error.locator).toBeHidden();
   await add.trigger.click();
-  await add.name.locator.fill('IsError');
+  await add.name.locator.fill('CreateIsError');
   await add.create.click();
   await expect(add.locator).toBeVisible();
   await add.error.expectToBeError('An error has occurred: Error: error message');
