@@ -19,10 +19,12 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { type CheckedState } from '@radix-ui/react-checkbox';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useMeta } from '../../../protocol/use-meta';
+import { useQueryKeys } from '../../../query/query-client';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
 import { TranslationWizardReview } from './TranslationWizardReview';
@@ -38,8 +40,18 @@ export const TranslationWizard = ({ children, disabled }: TranslationWizardProps
   const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
   const hotkeys = useKnownHotkeys();
   useHotkeys(hotkeys.translationWizard.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open && !disabled });
+
+  const queryClient = useQueryClient();
+  const { translateKey } = useQueryKeys();
+  const onDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      queryClient.resetQueries({ queryKey: translateKey() });
+    }
+    onOpenChange(open);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onDialogOpenChange}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -49,7 +61,7 @@ export const TranslationWizard = ({ children, disabled }: TranslationWizardProps
         </Tooltip>
       </TooltipProvider>
       <DialogContent>
-        <TranslationWizardContent closeDialog={() => onOpenChange(false)} />
+        <TranslationWizardContent closeDialog={() => onDialogOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

@@ -9,13 +9,13 @@ export const initQueryClient = () => {
 export const useQueryKeys = () =>
   useMemo(
     () => ({
-      dataKey: (args: CmsDataArgs) => genQueryKey('data', args),
-      readKey: (args: CmsReadArgs) => genQueryKey('read', args),
-      translateKey: (args: CmsTranslationArgs) => genQueryKey('translate', args)
+      dataKey: (args?: CmsDataArgs) => genQueryKey('data', args),
+      readKey: (args?: CmsReadArgs) => genQueryKey('read', args),
+      translateKey: (args?: CmsTranslationArgs) => genQueryKey('translate', args)
     }),
     []
   );
 
 export const genQueryKey = (...args: unknown[]) => {
-  return ['cms-editor', ...args];
+  return ['cms-editor', ...args.filter(arg => arg !== undefined)];
 };
