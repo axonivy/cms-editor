@@ -37,7 +37,7 @@ import { StringValueField } from '../../../components/StringValueField';
 import { useAppContext } from '../../../context/AppContext';
 import { useClient } from '../../../protocol/ClientContextProvider';
 import { useMeta } from '../../../protocol/use-meta';
-import { genQueryKey, useQueryKeys } from '../../../query/query-client';
+import { useQueryKeys } from '../../../query/query-client';
 import { isCmsFileDataObject, isCmsStringDataObject, isCmsValueDataObject, removeValue } from '../../../utils/cms-utils';
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
@@ -238,6 +238,7 @@ const useMutateContentObject = () => {
   const { context } = useAppContext();
   const client = useClient();
   const queryClient = useQueryClient();
+  const { dataKey } = useQueryKeys();
   const mutate = useMutation({
     mutationFn: async (args: {
       context: CmsEditorDataContext;
@@ -255,7 +256,7 @@ const useMutateContentObject = () => {
       }
       return;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: genQueryKey('data') })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: dataKey() })
   });
   return mutate;
 };
