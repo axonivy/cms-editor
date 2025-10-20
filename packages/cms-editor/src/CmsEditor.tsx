@@ -8,12 +8,12 @@ import './CmsEditor.css';
 import { AppProvider } from './context/AppContext';
 import { DetailContent } from './detail/DetailContent';
 import { DetailToolbar } from './detail/DetailToolbar';
+import { useLanguages } from './hooks/use-languages';
 import { MainContent } from './main/MainContent';
 import { MainToolbar } from './main/MainToolbar';
 import { useClient } from './protocol/ClientContextProvider';
 import { useAction } from './protocol/use-action';
 import { useQueryKeys } from './query/query-client';
-import { useLanguages } from './use-languages';
 import { isCmsValueDataObject } from './utils/cms-utils';
 import { useKnownHotkeys } from './utils/hotkeys';
 

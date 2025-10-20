@@ -1,5 +1,5 @@
 import type { CmsData, CmsDataObject } from '@axonivy/cms-editor-protocol';
-import { updateValueOfContentObjectInData } from './DetailContent';
+import { updateValueOfContentObjectInData } from './use-update-values';
 
 test('updateValueOfContentObjectInData', () => {
   const data = {

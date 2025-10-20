@@ -25,10 +25,10 @@ import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tan
 import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
+import { filterNotPresentDefaultLanguageTags, getDefaultLanguageTagsLocalStorage } from '../../../hooks/use-languages';
 import { useClient } from '../../../protocol/ClientContextProvider';
 import { useMeta } from '../../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../../query/query-client';
-import { filterNotPresentDefaultLanguageTags, getDefaultLanguageTagsLocalStorage } from '../../../use-languages';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { sortLanguages, toLanguages, type Language } from '../../../utils/language-utils';
 import './LanguageTool.css';
