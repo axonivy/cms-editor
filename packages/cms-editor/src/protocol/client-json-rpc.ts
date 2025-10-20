@@ -13,7 +13,7 @@ import type {
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
   CmsTranslationArgs,
-  CmsUpdateValueArgs,
+  CmsUpdateValuesArgs,
   MetaRequestTypes,
   NotificationTypes,
   RequestTypes,
@@ -38,12 +38,12 @@ export class ClientJsonRpc extends BaseRpcClient implements Client {
     return this.sendRequest('read', args);
   }
 
-  updateStringValue = (args: CmsUpdateValueArgs): Promise<Void> => {
-    return this.sendRequest('updateStringValue', args);
+  updateStringValues = (args: CmsUpdateValuesArgs): Promise<Void> => {
+    return this.sendRequest('updateStringValues', args);
   };
 
-  updateFileValue = (args: CmsUpdateValueArgs): Promise<Void> => {
-    return this.sendRequest('updateFileValue', args);
+  updateFileValues = (args: CmsUpdateValuesArgs): Promise<Void> => {
+    return this.sendRequest('updateFileValues', args);
   };
 
   deleteValue(args: CmsDeleteValueArgs): Promise<Void> {

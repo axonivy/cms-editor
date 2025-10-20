@@ -21,7 +21,7 @@ import type {
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
   CmsTranslationArgs,
-  CmsUpdateValueArgs,
+  CmsUpdateValuesArgs,
   MetaRequestTypes,
   Void
 } from '@axonivy/cms-editor-protocol';
@@ -76,21 +76,23 @@ export class CmsClientMock implements Client {
     return Promise.resolve(co ?? ({} as CmsDataObject));
   }
 
-  updateStringValue = (args: CmsUpdateValueArgs): Promise<Void> => {
+  updateStringValues = (args: CmsUpdateValuesArgs): Promise<Void> => {
     this.updateValue(args, isCmsStringDataObject);
     return Promise.resolve({});
   };
 
-  updateFileValue = (args: CmsUpdateValueArgs): Promise<Void> => {
+  updateFileValues = (args: CmsUpdateValuesArgs): Promise<Void> => {
     this.updateValue(args, isCmsFileDataObject);
     return Promise.resolve({});
   };
 
-  private updateValue<T extends CmsValueDataObject>(args: CmsUpdateValueArgs, typeCheck: (co?: CmsDataObject) => co is T) {
-    const co = this.findContentObject(args.updateObject.uri);
-    if (typeCheck(co)) {
-      co.values = { ...co.values, [args.updateObject.languageTag]: args.updateObject.value } as T['values'];
-    }
+  private updateValue<T extends CmsValueDataObject>(args: CmsUpdateValuesArgs, typeCheck: (co?: CmsDataObject) => co is T) {
+    args.updateRequests.forEach(updateRequest => {
+      const co = this.findContentObject(updateRequest.uri);
+      if (typeCheck(co)) {
+        co.values = { ...co.values, ...updateRequest.values } as T['values'];
+      }
+    });
   }
 
   deleteValue(args: CmsDeleteValueArgs): Promise<Void> {

@@ -14,7 +14,7 @@ import type {
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
   CmsTranslationArgs,
-  CmsUpdateValueArgs,
+  CmsUpdateValuesArgs,
   MapStringBoolean,
   MapStringLong,
   MapStringString,
@@ -32,8 +32,8 @@ export interface Client {
   createString(args: CmsCreateStringArgs): Promise<Void>;
   createFile(args: CmsCreateFileArgs): Promise<Void>;
   read(args: CmsReadArgs): Promise<CmsDataObject>;
-  updateStringValue(args: CmsUpdateValueArgs): Promise<Void>;
-  updateFileValue(args: CmsUpdateValueArgs): Promise<Void>;
+  updateStringValues(args: CmsUpdateValuesArgs): Promise<Void>;
+  updateFileValues(args: CmsUpdateValuesArgs): Promise<Void>;
   deleteValue(args: CmsDeleteValueArgs): Promise<Void>;
   delete(args: CmsDeleteArgs): Promise<Void>;
   addLocales(args: CmsAddLocalesArgs): Promise<Void>;
@@ -58,8 +58,8 @@ export interface RequestTypes extends MetaRequestTypes {
   createString: [CmsCreateStringArgs, Void];
   createFile: [CmsCreateFileArgs, Void];
   read: [CmsReadArgs, CmsDataObject];
-  updateStringValue: [CmsUpdateValueArgs, Void];
-  updateFileValue: [CmsUpdateValueArgs, Void];
+  updateStringValues: [CmsUpdateValuesArgs, Void];
+  updateFileValues: [CmsUpdateValuesArgs, Void];
   deleteValue: [CmsDeleteValueArgs, Void];
   delete: [CmsDeleteArgs, Void];
   addLocales: [CmsAddLocalesArgs, Void];
