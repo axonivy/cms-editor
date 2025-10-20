@@ -64,8 +64,18 @@ export const useUpdateValues = () => {
     <T extends CmsValueDataObject>(
       updateRequests: Array<CmsUpdateValuesRequest>,
       valueUpdater: (currentValues: T['values'], newValues?: MapStringString) => T['values']
-    ) => updateRequests.forEach(updateRequest => updateValuesInDataQuery(updateRequest.uri, valueUpdater, updateRequest.values)),
-    [updateValuesInDataQuery]
+    ) =>
+      queryClient.setQueryData<CmsData>(dataKey({ context, languageTags: defaultLanguageTags }), data => {
+        if (!data) {
+          return;
+        }
+        return updateRequests.reduce(
+          (updatedData, updateRequest) =>
+            updateValueOfContentObjectInData(updatedData, updateRequest.uri, valueUpdater, updateRequest.values),
+          data
+        );
+      }),
+    [context, dataKey, defaultLanguageTags, queryClient]
   );
 
   const updateStringValuesMutation = useMutation({
@@ -112,11 +122,11 @@ export const updateValueOfContentObjectInData = <T extends CmsValueDataObject>(
 ) => {
   const index = data.data.findIndex(co => co.uri === uri);
   if (index === -1) {
-    return;
+    return data;
   }
   const co = data.data[index];
   if (!isCmsValueDataObject(co)) {
-    return;
+    return data;
   }
   const newCo = { ...co, values: valueUpdater(co.values, newValues) };
   const newData = [...data.data];

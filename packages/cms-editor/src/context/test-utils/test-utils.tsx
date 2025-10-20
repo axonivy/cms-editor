@@ -18,6 +18,9 @@ type ContextHelperProps = {
   clientContext?: {
     client?: Partial<Client>;
   };
+  query?: {
+    client?: Partial<QueryClient>;
+  };
   appContext?: {
     context?: CmsEditorDataContext;
     contentObjects?: Array<CmsValueDataObject>;
@@ -46,12 +49,14 @@ const ContextHelper = ({
   clientLanguage,
   readonlyContext,
   clientContext,
+  query,
   appContext,
   children
 }: ContextHelperProps & { children: ReactNode }) => {
   const readonly = readonlyContext?.readonly !== undefined ? readonlyContext.readonly : false;
 
   const client = (clientContext?.client ?? {}) as Client;
+  const queryClient = (query?.client ?? new QueryClient()) as QueryClient;
 
   const aContext = {
     context: appContext?.context ?? ({} as CmsEditorDataContext),
@@ -70,7 +75,7 @@ const ContextHelper = ({
   return (
     <ReadonlyProvider readonly={readonly}>
       <ClientContextProvider client={client}>
-        <QueryProvider client={new QueryClient()}>
+        <QueryProvider client={queryClient}>
           <AppProvider value={aContext}>{children}</AppProvider>
         </QueryProvider>
       </ClientContextProvider>

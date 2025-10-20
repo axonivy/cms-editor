@@ -39,11 +39,11 @@ test('default languages not set via local storage', async () => {
 
 const renderLanguageHook = (clientLanguage: string, locales: Array<string>) => {
   return customRenderHook(() => useLanguages({} as CmsEditorDataContext), {
-    wrapperProps: { clientLanguage, clientContext: { client: new TestClient(locales) } }
+    wrapperProps: { clientLanguage, clientContext: { client: new ClientMock(locales) } }
   });
 };
 
-class TestClient implements Partial<Client> {
+class ClientMock implements Partial<Client> {
   private readonly locales: Array<string>;
 
   constructor(locales: Array<string>) {
