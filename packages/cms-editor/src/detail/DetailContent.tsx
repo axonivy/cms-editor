@@ -1,32 +1,16 @@
-import type {
-  CmsData,
-  CmsDataFileDataObject,
-  CmsDataObject,
-  CmsDataObjectValues,
-  CmsDeleteValueArgs,
-  CmsStringDataObject,
-  CmsUpdateValueArgs,
-  MapStringBoolean,
-  MapStringString
-} from '@axonivy/cms-editor-protocol';
-import { BasicField, BasicInput, Flex, PanelMessage, Spinner, type Unary } from '@axonivy/ui-components';
+import type { CmsDataObjectValues, CmsDeleteValueArgs } from '@axonivy/cms-editor-protocol';
+import { BasicField, BasicInput, Flex, PanelMessage, Spinner } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { FileValueField } from '../components/FileValueField';
 import { StringValueField } from '../components/StringValueField';
 import { useAppContext } from '../context/AppContext';
+import { useUpdateValues } from '../hooks/use-update-values';
 import { useClient } from '../protocol/ClientContextProvider';
 import { useMeta } from '../protocol/use-meta';
 import { useQueryKeys } from '../query/query-client';
-import {
-  isCmsReadFileDataObject,
-  isCmsStringDataObject,
-  isCmsValueDataObject,
-  removeValue,
-  type CmsValueDataObject
-} from '../utils/cms-utils';
+import { isCmsReadFileDataObject, isCmsStringDataObject, removeValue } from '../utils/cms-utils';
 import { toLanguages } from '../utils/language-utils';
 import './DetailContent.css';
 
@@ -35,57 +19,13 @@ export const DetailContent = () => {
   const { context, contentObjects, selectedContentObjects, defaultLanguageTags, languageDisplayName } = useAppContext();
 
   const client = useClient();
-  const queryClient = useQueryClient();
-  const { dataKey, readKey } = useQueryKeys();
+  const { readKey } = useQueryKeys();
+  const { updateStringValuesMutation, updateFileValuesMutation, updateValuesInReadQuery, updateValuesInDataQuery } = useUpdateValues();
 
   let uri = '';
   if (selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined && selectedContentObjects[0] < contentObjects.length) {
     uri = contentObjects[selectedContentObjects[0]]?.uri ?? '';
   }
-
-  const updateValuesInReadQuery = useCallback(
-    <T extends CmsValueDataObject>(uri: string, valueUpdater: Unary<T['values']>) =>
-      queryClient.setQueryData<CmsDataObject>(readKey({ context, uri }), data => {
-        if (!data || !isCmsValueDataObject(data)) {
-          return;
-        }
-        return { ...data, values: valueUpdater(data.values) };
-      }),
-    [context, queryClient, readKey]
-  );
-
-  const updateValuesInDataQuery = useCallback(
-    <T extends CmsValueDataObject>(uri: string, valueUpdater: Unary<T['values']>) =>
-      queryClient.setQueryData<CmsData>(dataKey({ context, languageTags: defaultLanguageTags }), data => {
-        if (!data) {
-          return;
-        }
-        return updateValuesOfContentObjectInData(data, uri, valueUpdater);
-      }),
-    [context, dataKey, defaultLanguageTags, queryClient]
-  );
-
-  const updateStringValueMutation = useMutation({
-    mutationFn: async (args: CmsUpdateValueArgs) => {
-      const changeValueUpdater = (values: MapStringString) => ({ ...values, [args.updateObject.languageTag]: args.updateObject.value });
-      updateValuesInReadQuery<CmsStringDataObject>(args.updateObject.uri, changeValueUpdater);
-      if (defaultLanguageTags.includes(args.updateObject.languageTag)) {
-        updateValuesInDataQuery<CmsStringDataObject>(args.updateObject.uri, changeValueUpdater);
-      }
-      return client.updateStringValue(args);
-    }
-  });
-
-  const updateFileValueMutation = useMutation({
-    mutationFn: async (args: CmsUpdateValueArgs) => {
-      if (defaultLanguageTags.includes(args.updateObject.languageTag)) {
-        const changeValueUpdater = (values: MapStringBoolean) => ({ ...values, [args.updateObject.languageTag]: true });
-        updateValuesInDataQuery<CmsDataFileDataObject>(args.updateObject.uri, changeValueUpdater);
-      }
-      return client.updateFileValue(args);
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: readKey({ context, uri }) })
-  });
 
   const deleteMutation = useMutation({
     mutationFn: async (args: CmsDeleteValueArgs) => {
@@ -147,7 +87,7 @@ export const DetailContent = () => {
               key={language.value}
               contentObject={contentObject}
               updateValue={(languageTag: string, value: string) =>
-                updateFileValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
+                updateFileValuesMutation.mutate({ context, updateRequests: [{ uri, values: { [languageTag]: value } }] })
               }
               allowOpenFile
               {...props}
@@ -157,7 +97,7 @@ export const DetailContent = () => {
               key={language.value}
               contentObject={contentObject}
               updateValue={(languageTag: string, value: string) =>
-                updateStringValueMutation.mutate({ context, updateObject: { uri, languageTag, value } })
+                updateStringValuesMutation.mutate({ context, updateRequests: [{ uri, values: { [languageTag]: value } }] })
               }
               {...props}
             />
@@ -166,23 +106,4 @@ export const DetailContent = () => {
       </Flex>
     </Flex>
   );
-};
-
-export const updateValuesOfContentObjectInData = <T extends CmsValueDataObject>(
-  data: CmsData,
-  uri: string,
-  valueUpdater: Unary<T['values']>
-) => {
-  const index = data.data.findIndex(co => co.uri === uri);
-  if (index === -1) {
-    return;
-  }
-  const co = data.data[index];
-  if (!isCmsValueDataObject(co)) {
-    return;
-  }
-  const newCo = { ...co, values: valueUpdater(co.values) };
-  const newData = [...data.data];
-  newData[index] = newCo;
-  return { ...data, data: newData };
 };

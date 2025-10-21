@@ -18,6 +18,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
+import { useUpdateValues } from '../../../hooks/use-update-values';
 import { useClient } from '../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../query/query-client';
 
@@ -72,7 +73,16 @@ type TranslationWizardContentProps = {
 
 const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
   const { t } = useTranslation();
+  const { context } = useAppContext();
+
   const query = useContentObjectTranslation(translationRequest);
+
+  const { updateStringValuesMutation } = useUpdateValues();
+  const applyTranslations = () => {
+    updateStringValuesMutation.mutate({ context, updateRequests: query.data ?? [] });
+    closeTranslationWizard();
+  };
+
   return (
     <BasicDialogContent
       title={t('dialog.translationWizard.review.title')}
@@ -87,7 +97,7 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
           variant='primary'
           size='large'
           icon={IvyIcons.Check}
-          onClick={closeTranslationWizard}
+          onClick={applyTranslations}
           disabled={query.isPending || query.isError}
         >
           {t('common.label.apply')}

@@ -30,7 +30,7 @@ export interface CMS {
   cmsRemoveLocalesArgs: CmsRemoveLocalesArgs;
   cmsStringDataObject: CmsStringDataObject[];
   cmsTranslationArgs: CmsTranslationArgs;
-  cmsUpdateValueArgs: CmsUpdateValueArgs;
+  cmsUpdateValuesArgs: CmsUpdateValuesArgs;
   long: MapStringLong;
   string: string[];
   void: Void;
@@ -138,14 +138,13 @@ export interface CmsTranslationRequest {
   targetLanguageTags: string[];
   uris: string[];
 }
-export interface CmsUpdateValueArgs {
+export interface CmsUpdateValuesArgs {
   context: CmsEditorDataContext;
-  updateObject: CmsUpdateValueObject;
+  updateRequests: CmsUpdateValuesRequest[];
 }
-export interface CmsUpdateValueObject {
-  languageTag: string;
+export interface CmsUpdateValuesRequest {
   uri: string;
-  value: string;
+  values: MapStringString;
 }
 export interface MapStringLong {
   [k: string]: number;

@@ -167,6 +167,7 @@ test.describe('translation review', () => {
 
     await languageTool.trigger.click();
     await languageTool.addLanguage(1);
+    await languageTool.checkboxOfRow(2).check();
     await languageTool.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     page.keyboard.down('Shift');
@@ -193,6 +194,24 @@ test.describe('translation review', () => {
       "fr: Translation of 'Workflow Tasks' from 'en' to 'fr'",
       "de: Translation of 'Workflow Tasks' from 'en' to 'de'"
     ]);
+
+    await translationWizard.translationWizardReview.apply.click();
+    await editor.main.table.expectToHaveRows(
+      [['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence'], ["Translation of 'Add a task to the sequence' from 'en' to 'de'"]],
+      [['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'], ['Workflow Tasks'], ["Translation of 'Workflow Tasks' from 'en' to 'de'"]]
+    );
+    await editor.main.table.row(0).locator.click();
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AddTask', {
+      English: 'Add a task to the sequence',
+      French: "Translation of 'Add a task to the sequence' from 'en' to 'fr'",
+      German: "Translation of 'Add a task to the sequence' from 'en' to 'de'"
+    });
+    await editor.main.table.row(1).locator.click();
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks', {
+      English: 'Workflow Tasks',
+      French: "Translation of 'Workflow Tasks' from 'en' to 'fr'",
+      German: "Translation of 'Workflow Tasks' from 'en' to 'de'"
+    });
   });
 
   test('show spinner and disable apply button while translation is pending', async () => {

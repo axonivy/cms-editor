@@ -1,8 +1,8 @@
 import type { CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import i18next from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
-import { useMeta } from './protocol/use-meta';
-import { defaultLanguageTag } from './utils/language-utils';
+import { useMeta } from '../protocol/use-meta';
+import { defaultLanguageTag } from '../utils/language-utils';
 
 export const defaultLanguageTagsKey = 'cms-editor-default-language-tags' as const;
 
