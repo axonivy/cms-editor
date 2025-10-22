@@ -1,10 +1,9 @@
-import { BasicDialogContent, Button, Dialog, DialogContent, Flex, useDialogHotkeys } from '@axonivy/ui-components';
+import { BasicDialogContent, Button, Dialog, DialogContent, useDialogHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useMeta } from '../../../protocol/use-meta';
-import './LanguageToolSaveConfirmation.css';
 
 type LanguageToolSaveConfirmationProps = {
   localesToDelete: Array<string>;
@@ -38,7 +37,6 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
       </Button>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className='cms-editor-language-tool-save-confirmation-content'
           onCloseAutoFocus={e => {
             e.preventDefault();
             saveButtonRef.current?.focus();
@@ -62,7 +60,6 @@ const LanguageToolSaveConfirmationContent = ({ localesToDelete, save }: Language
   };
   return (
     <BasicDialogContent
-      className='cms-editor-language-tool-save-confirmation-language-values'
       title={t('dialog.languageTool.saveConfirmation.title')}
       description={t('dialog.languageTool.saveConfirmation.description')}
       submit={
@@ -82,13 +79,11 @@ const LanguageToolSaveConfirmationContent = ({ localesToDelete, save }: Language
         </Button>
       }
     >
-      <Flex direction='column' gap={1}>
-        {Object.entries(amountOfValuesToDelete)
-          .filter(([, amount]) => amount > 0)
-          .map(([languageTag, amount]) => (
-            <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
-          ))}
-      </Flex>
+      {Object.entries(amountOfValuesToDelete)
+        .filter(([, amount]) => amount > 0)
+        .map(([languageTag, amount]) => (
+          <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
+        ))}
     </BasicDialogContent>
   );
 };

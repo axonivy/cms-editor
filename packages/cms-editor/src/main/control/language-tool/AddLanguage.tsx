@@ -4,7 +4,6 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
-  Flex,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -16,7 +15,6 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import type { Language } from '../../../utils/language-utils';
-import './AddLanguage.css';
 import { LanguageBrowser } from './LanguageBrowser';
 
 type AddLanguageProps = {
@@ -41,14 +39,12 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
           <TooltipContent>{shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className='cms-editor-add-language-content'>
-        <Flex direction='column' gap={4} style={{ overflow: 'hidden' }}>
-          <BasicDialogHeader
-            title={t('dialog.languageTool.languageBrowser.title')}
-            description={t('dialog.languageTool.languageBrowser.description')}
-          ></BasicDialogHeader>
-          <LanguageBrowser languages={languages} addLanguage={addLanguage} closeDialog={() => onOpenChange(false)} />
-        </Flex>
+      <DialogContent>
+        <BasicDialogHeader
+          title={t('dialog.languageTool.languageBrowser.title')}
+          description={t('dialog.languageTool.languageBrowser.description')}
+        ></BasicDialogHeader>
+        <LanguageBrowser languages={languages} addLanguage={addLanguage} closeDialog={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );
