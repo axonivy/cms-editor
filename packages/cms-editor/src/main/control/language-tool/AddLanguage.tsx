@@ -39,7 +39,7 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
           <TooltipContent>{shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent>
+      <DialogContent style={{ height: '80vh', gridTemplateRows: 'auto 1fr' }}>
         <BasicDialogHeader
           title={t('dialog.languageTool.languageBrowser.title')}
           description={t('dialog.languageTool.languageBrowser.description')}
