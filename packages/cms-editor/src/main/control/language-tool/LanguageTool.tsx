@@ -51,7 +51,7 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
           <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className='cms-editor-language-tool-content'>
+      <DialogContent>
         <LanguageToolContent closeDialog={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>

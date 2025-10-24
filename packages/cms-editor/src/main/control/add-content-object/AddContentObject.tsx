@@ -42,7 +42,6 @@ import { isCmsFileDataObject, isCmsStringDataObject, isCmsValueDataObject, remov
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { toLanguages, type Language } from '../../../utils/language-utils';
-import './AddContentObject.css';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 const DIALOG_HOTKEY_IDS = ['addContentObjectDialog'];
@@ -78,7 +77,7 @@ export const AddContentObject = ({ selectRow, children }: AddContentObjectProps)
           <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent onCloseAutoFocus={e => e.preventDefault()} className='cms-editor-add-content-object-content'>
+      <DialogContent onCloseAutoFocus={e => e.preventDefault()}>
         <AddContentObjectContent selectRow={selectRow} closeDialog={() => onOpenChange(false)} mutate={mutate} />
       </DialogContent>
     </Dialog>
@@ -194,7 +193,6 @@ const AddContentObjectContent = ({
       }
       ref={enter}
       tabIndex={-1}
-      className='cms-editor-add-content-object-content-fields'
     >
       <BasicField label={t('common.label.name')} message={nameMessage}>
         <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
