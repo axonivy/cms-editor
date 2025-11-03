@@ -8,8 +8,8 @@ export class TranslationWizardTargetLanguages {
 
   constructor(parent: Locator) {
     this.locator = parent.locator('.cms-editor-translation-wizard-target-languages');
-    this.selectAll = this.locator.getByRole('button', { name: 'Select All', exact: true });
-    this.deselectAll = this.locator.getByRole('button', { name: 'Deselect All' });
+    this.selectAll = this.locator.getByRole('button', { name: '\uf11a Select All' });
+    this.deselectAll = this.locator.getByRole('button', { name: '\uf11f Deselect All' });
     this.languages = this.locator.locator('.ui-field');
   }
 

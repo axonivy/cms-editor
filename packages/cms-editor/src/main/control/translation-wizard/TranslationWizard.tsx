@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTrigger,
   Flex,
-  Separator,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -77,7 +76,9 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
   const removeTargetLanguageTag = (languageTag: string) =>
     setTargetLanguageTags(targetLanguageTags => targetLanguageTags.filter(tag => tag !== languageTag));
 
-  const selectAll = () => setTargetLanguageTags(languages.map(language => language.value).filter(tag => tag !== sourceLanguageTag));
+  const targetLanguages = languages.filter(language => language.value !== sourceLanguageTag);
+  const selectableTargetLanguageTags = targetLanguages.map(language => language.value);
+  const selectAll = () => setTargetLanguageTags(selectableTargetLanguageTags);
   const deselectAll = () => setTargetLanguageTags([]);
 
   return (
@@ -115,16 +116,21 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
       </BasicField>
       <BasicField
         label={t('common.label.targetLanguages')}
-        control={<TargetLanguagesControl selectAll={selectAll} deselectAll={deselectAll} />}
+        control={
+          <TargetLanguagesControl
+            selectAll={selectAll}
+            deselectAll={deselectAll}
+            areAllSelected={targetLanguageTags.length == selectableTargetLanguageTags.length}
+          />
+        }
         className='cms-editor-translation-wizard-target-languages'
       >
-        {languages.map(language => (
+        {targetLanguages.map(language => (
           <BasicCheckbox
             key={language.value}
             label={language.label}
             checked={targetLanguageTags.includes(language.value)}
             onCheckedChange={checked => onTargetLanguageTagCheckedChange(checked, language.value)}
-            disabled={language.value === sourceLanguageTag}
           />
         ))}
       </BasicField>
@@ -132,28 +138,22 @@ const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) 
   );
 };
 
-const TargetLanguagesControl = ({ selectAll, deselectAll }: { selectAll: () => void; deselectAll: () => void }) => {
+type TargetLanguagesControlProps = {
+  selectAll: () => void;
+  deselectAll: () => void;
+  areAllSelected: boolean;
+};
+
+const TargetLanguagesControl = ({ selectAll, deselectAll, areAllSelected }: TargetLanguagesControlProps) => {
   const { t } = useTranslation();
-  return (
-    <Flex gap={2}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button icon={IvyIcons.Check} aria-label={t('common.label.selectAll')} onClick={selectAll} />
-          </TooltipTrigger>
-          <TooltipContent>{t('common.label.selectAll')}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button icon={IvyIcons.Close} aria-label={t('common.label.deselectAll')} onClick={deselectAll} />
-          </TooltipTrigger>
-          <TooltipContent>{t('common.label.deselectAll')}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </Flex>
+  return areAllSelected ? (
+    <Button icon={IvyIcons.Close} size='small' onClick={deselectAll}>
+      {t('common.label.deselectAll')}
+    </Button>
+  ) : (
+    <Button icon={IvyIcons.Check} size='small' onClick={selectAll}>
+      {t('common.label.selectAll')}
+    </Button>
   );
 };
 

@@ -102,38 +102,31 @@ test.describe('target languages', () => {
     await languageTool.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
-    await expect(translationWizard.targetLanguages.languages).toHaveCount(3);
-    await expect(translationWizard.targetLanguages.language('English').locator).toBeVisible();
+    await expect(translationWizard.targetLanguages.languages).toHaveCount(2);
     await expect(translationWizard.targetLanguages.language('German').locator).toBeVisible();
     await expect(translationWizard.targetLanguages.language('French').locator).toBeVisible();
   });
 
-  test('selected source language is disabled and deselected on selection', async () => {
+  test('selected source language is hidden and deselected on selection', async () => {
     const translationWizard = editor.main.control.translationWizard;
     const englishCheckbox = translationWizard.targetLanguages.language('English').checkbox;
     const germanCheckbox = translationWizard.targetLanguages.language('German').checkbox;
 
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
-
-    await expect(englishCheckbox).toBeDisabled();
-    await expect(germanCheckbox).toBeEnabled();
-
     await germanCheckbox.check();
     await translationWizard.sourceLanguage.select('German');
-    await expect(englishCheckbox).toBeEnabled();
-    await expect(germanCheckbox).toBeDisabled();
-    await expect(germanCheckbox).not.toBeChecked();
+    await expect(englishCheckbox).toBeVisible();
+    await expect(germanCheckbox).toBeHidden();
 
     await translationWizard.sourceLanguage.select('English');
-    await expect(englishCheckbox).toBeDisabled();
-    await expect(germanCheckbox).toBeEnabled();
+    await expect(germanCheckbox).toBeVisible();
     await expect(germanCheckbox).not.toBeChecked();
+    await expect(englishCheckbox).toBeHidden();
   });
 
   test('select all / deselect all', async () => {
     const translationWizard = editor.main.control.translationWizard;
-    const englishCheckbox = translationWizard.targetLanguages.language('English').checkbox;
     const frenchCheckbox = translationWizard.targetLanguages.language('French').checkbox;
     const germanCheckbox = translationWizard.targetLanguages.language('German').checkbox;
     const languageTool = editor.main.control.languageTool;
@@ -144,19 +137,32 @@ test.describe('target languages', () => {
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
 
-    await expect(englishCheckbox).not.toBeChecked();
     await expect(frenchCheckbox).not.toBeChecked();
     await expect(germanCheckbox).not.toBeChecked();
+    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
+    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
 
     await translationWizard.targetLanguages.selectAll.click();
-    await expect(englishCheckbox).not.toBeChecked();
     await expect(frenchCheckbox).toBeChecked();
     await expect(germanCheckbox).toBeChecked();
+    await expect(translationWizard.targetLanguages.selectAll).toBeHidden();
+    await expect(translationWizard.targetLanguages.deselectAll).toBeVisible();
 
     await translationWizard.targetLanguages.deselectAll.click();
-    await expect(englishCheckbox).not.toBeChecked();
     await expect(frenchCheckbox).not.toBeChecked();
     await expect(germanCheckbox).not.toBeChecked();
+    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
+    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
+
+    await frenchCheckbox.check();
+    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
+    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
+
+    await translationWizard.targetLanguages.selectAll.click();
+    await expect(frenchCheckbox).toBeChecked();
+    await expect(germanCheckbox).toBeChecked();
+    await expect(translationWizard.targetLanguages.selectAll).toBeHidden();
+    await expect(translationWizard.targetLanguages.deselectAll).toBeVisible();
   });
 });
 
