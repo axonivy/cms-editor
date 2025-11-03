@@ -2,14 +2,12 @@ import { type Locator } from '@playwright/test';
 
 export class TranslationWizardTargetLanguages {
   readonly locator: Locator;
-  readonly selectAll: Locator;
-  readonly deselectAll: Locator;
+  readonly selectDeselectAll: Locator;
   readonly languages: Locator;
 
   constructor(parent: Locator) {
     this.locator = parent.locator('.cms-editor-translation-wizard-target-languages');
-    this.selectAll = this.locator.getByRole('button', { name: '\uf11a Select All' });
-    this.deselectAll = this.locator.getByRole('button', { name: '\uf11f Deselect All' });
+    this.selectDeselectAll = this.locator.getByRole('button');
     this.languages = this.locator.locator('.ui-field');
   }
 

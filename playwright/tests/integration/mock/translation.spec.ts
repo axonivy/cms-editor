@@ -139,30 +139,25 @@ test.describe('target languages', () => {
 
     await expect(frenchCheckbox).not.toBeChecked();
     await expect(germanCheckbox).not.toBeChecked();
-    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
-    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
+    await expect(translationWizard.targetLanguages.selectDeselectAll).toHaveText('Select All');
 
-    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     await expect(frenchCheckbox).toBeChecked();
     await expect(germanCheckbox).toBeChecked();
-    await expect(translationWizard.targetLanguages.selectAll).toBeHidden();
-    await expect(translationWizard.targetLanguages.deselectAll).toBeVisible();
+    await expect(translationWizard.targetLanguages.selectDeselectAll).toHaveText('Deselect All');
 
-    await translationWizard.targetLanguages.deselectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     await expect(frenchCheckbox).not.toBeChecked();
     await expect(germanCheckbox).not.toBeChecked();
-    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
-    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
+    await expect(translationWizard.targetLanguages.selectDeselectAll).toHaveText('Select All');
 
     await frenchCheckbox.check();
-    await expect(translationWizard.targetLanguages.selectAll).toBeVisible();
-    await expect(translationWizard.targetLanguages.deselectAll).toBeHidden();
+    await expect(translationWizard.targetLanguages.selectDeselectAll).toHaveText('Select All');
 
-    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     await expect(frenchCheckbox).toBeChecked();
     await expect(germanCheckbox).toBeChecked();
-    await expect(translationWizard.targetLanguages.selectAll).toBeHidden();
-    await expect(translationWizard.targetLanguages.deselectAll).toBeVisible();
+    await expect(translationWizard.targetLanguages.selectDeselectAll).toHaveText('Deselect All');
   });
 });
 
@@ -190,7 +185,7 @@ test.describe('translation review', () => {
     ]);
 
     await translationWizard.translationWizardReview.cancel.click();
-    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     await translationWizard.translationWizardReview.trigger.click();
     await expect(translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
       '/Dialogs/agileBPM/define_WF/AddTask',
@@ -225,7 +220,7 @@ test.describe('translation review', () => {
 
     await editor.main.control.add.addString('TranslateIsPending', '', {});
     translationWizard.trigger.click();
-    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     translationWizard.translationWizardReview.trigger.click();
 
     await expect(translationWizard.translationWizardReview.spinner).toBeVisible();
@@ -240,7 +235,7 @@ test.describe('translation review', () => {
 
     await editor.main.control.add.addString('TranslateIsError', '', {});
     translationWizard.trigger.click();
-    await translationWizard.targetLanguages.selectAll.click();
+    await translationWizard.targetLanguages.selectDeselectAll.click();
     translationWizard.translationWizardReview.trigger.click();
 
     await expect(translationWizard.translationWizardReview.error).toHaveText('An error has occurred: Error: error message');
