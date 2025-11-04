@@ -58,7 +58,7 @@ export const LanguageManager = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => void }) => {
+export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
   const locales = useMeta('meta/locales', context, []).data;

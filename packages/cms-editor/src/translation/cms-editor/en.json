@@ -55,6 +55,7 @@
       },
       "title": "Language Manager"
     },
+    "languageTools": "Language Tools",
     "translationWizard": {
       "amountOfContentObjectsSelectedPlural": "{{amount}} Content Objects selected.",
       "amountOfContentObjectsSelectedSingular": "1 Content Object selected.",

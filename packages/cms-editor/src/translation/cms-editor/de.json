@@ -55,6 +55,7 @@
       },
       "title": "Sprachenverwaltung"
     },
+    "languageTools": "Sprachwerkzeuge",
     "translationWizard": {
       "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
       "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
