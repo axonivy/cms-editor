@@ -1,6 +1,6 @@
 import type { Client, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
-import { customRenderHook } from '../../../context/test-utils/test-utils';
+import { customRenderHook } from '../../../../context/test-utils/test-utils';
 import { useLanguages, useSelectedContentObjects } from './TranslationWizard';
 
 describe('useLanguages', () => {

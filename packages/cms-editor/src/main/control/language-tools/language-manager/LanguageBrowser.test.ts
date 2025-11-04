@@ -1,4 +1,4 @@
-import type { Language } from '../../../utils/language-utils';
+import type { Language } from '../../../../utils/language-utils';
 import { aggregateLanguageNodes } from './LanguageBrowser';
 
 test('aggregateLanguageNodes', () => {

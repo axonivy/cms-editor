@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-export class LanguageToolSaveConfirmation {
+export class LanguageManagerSaveConfirmation {
   readonly locator: Locator;
   readonly trigger: Locator;
   readonly valueAmounts: Locator;

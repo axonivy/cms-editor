@@ -32,23 +32,23 @@ test.describe('add', () => {
 
 test('disable if no languages are present in the CMS', async () => {
   const add = editor.main.control.add;
-  const languageTool = editor.main.control.languageTool;
+  const languageManager = editor.main.control.languageManager;
 
   await expect(add.trigger).toBeEnabled();
 
-  await languageTool.trigger.click();
-  await languageTool.languages.row(0).locator.click();
-  await languageTool.delete.click();
-  await languageTool.delete.click();
-  await languageTool.save.trigger.click();
-  await languageTool.save.save.click();
+  await languageManager.trigger.click();
+  await languageManager.languages.row(0).locator.click();
+  await languageManager.delete.click();
+  await languageManager.delete.click();
+  await languageManager.save.trigger.click();
+  await languageManager.save.save.click();
   await expect(add.trigger).toBeDisabled();
 
-  await languageTool.trigger.click();
-  await languageTool.add.trigger.click();
-  await languageTool.add.languages.row(0).locator.click();
-  await languageTool.add.add.click();
-  await languageTool.save.trigger.click();
+  await languageManager.trigger.click();
+  await languageManager.add.trigger.click();
+  await languageManager.add.languages.row(0).locator.click();
+  await languageManager.add.add.click();
+  await languageManager.save.trigger.click();
   await expect(add.trigger).toBeEnabled();
 });
 
@@ -126,7 +126,7 @@ test('show fields for values of default languages', async ({ page }) => {
   await expect(editor.main.control.add.value('English').locator).toBeVisible();
   await (
     await editor.main.control.add.value('English').textbox.message()
-  ).expectToBeInfo('No languages are checked to be displayed in the Language Tool. This is the first language found.');
+  ).expectToBeInfo('No languages are checked to be displayed in the Language Manager. This is the first language found.');
 
   editor = await CmsEditor.openMock(page, { parameters: { lng: 'en' }, defaultLanguages: ['de'] });
   await editor.page.keyboard.press('a');

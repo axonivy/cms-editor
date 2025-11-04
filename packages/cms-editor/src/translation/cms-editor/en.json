@@ -38,11 +38,11 @@
       "createTooltip": "Hold {{modifier}} to add an additional Content Object.",
       "description": "Choose the name, namespace, and values of the Content Object you want to add.",
       "fileFormatInfo": "All files must be of the same type. The first file uploaded will determine the file type.",
-      "noDefaultLanguages": "No languages are checked to be displayed in the Language Tool. This is the first language found.",
-      "noLanguages": "No languages are present in the CMS. Add languages using the Language Tool.",
+      "noDefaultLanguages": "No languages are checked to be displayed in the Language Manager. This is the first language found.",
+      "noLanguages": "No languages are present in the CMS. Add languages using the Language Manager.",
       "title": "Add Content Object"
     },
-    "languageTool": {
+    "languageManager": {
       "description": "Edit the languages of the CMS. Check the languages you want to be displayed.",
       "languageBrowser": {
         "addLanguage": "Add Language",
@@ -53,7 +53,7 @@
         "description": "Saving will delete the following languages and all their values. Are you sure?",
         "title": "Confirm Save"
       },
-      "title": "Language Tool"
+      "title": "Language Manager"
     },
     "translationWizard": {
       "amountOfContentObjectsSelectedPlural": "{{amount}} Content Objects selected.",
@@ -72,7 +72,7 @@
     "addLanguage": "Add Language ({{hotkey}})",
     "deleteContentObject": "Delete Content Object ({{hotkey}})",
     "deleteLanguage": "Delete Language ({{hotkey}})",
-    "languageTool": "Language Tool ({{hotkey}})",
+    "languageManager": "Language Manager ({{hotkey}})",
     "translationWizard": "Translation Wizard ({{hotkey}})"
   },
   "label": {

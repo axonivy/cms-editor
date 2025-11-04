@@ -51,42 +51,42 @@ test('selected content objects', async ({ page }) => {
 test.describe('source language', () => {
   test('options', async () => {
     const translationWizard = editor.main.control.translationWizard;
-    const languageTool = editor.main.control.languageTool;
+    const languageManager = editor.main.control.languageManager;
 
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await translationWizard.sourceLanguage.expectToHaveOptions('English', 'German');
 
     await translationWizard.cancel.click();
-    await languageTool.trigger.click();
-    await languageTool.addLanguage(1);
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.addLanguage(1);
+    await languageManager.save.trigger.click();
     await translationWizard.trigger.click();
     await translationWizard.sourceLanguage.expectToHaveOptions('English', 'French', 'German');
   });
 
   test('default value', async () => {
     const translationWizard = editor.main.control.translationWizard;
-    const languageTool = editor.main.control.languageTool;
+    const languageManager = editor.main.control.languageManager;
 
-    await languageTool.trigger.click();
-    await languageTool.checkboxOfRow(1).check();
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.checkboxOfRow(1).check();
+    await languageManager.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.sourceLanguage.locator).toHaveText('English');
 
     await translationWizard.cancel.click();
-    await languageTool.trigger.click();
-    await languageTool.checkboxOfRow(0).uncheck();
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.checkboxOfRow(0).uncheck();
+    await languageManager.save.trigger.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.sourceLanguage.locator).toHaveText('German');
 
     await translationWizard.cancel.click();
-    await languageTool.trigger.click();
-    await languageTool.checkboxOfRow(1).uncheck();
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.checkboxOfRow(1).uncheck();
+    await languageManager.save.trigger.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.sourceLanguage.locator).toHaveText('English');
   });
@@ -95,11 +95,11 @@ test.describe('source language', () => {
 test.describe('target languages', () => {
   test('options', async () => {
     const translationWizard = editor.main.control.translationWizard;
-    const languageTool = editor.main.control.languageTool;
+    const languageManager = editor.main.control.languageManager;
 
-    await languageTool.trigger.click();
-    await languageTool.addLanguage(1);
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.addLanguage(1);
+    await languageManager.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
     await expect(translationWizard.targetLanguages.languages).toHaveCount(2);
@@ -129,11 +129,11 @@ test.describe('target languages', () => {
     const translationWizard = editor.main.control.translationWizard;
     const frenchCheckbox = translationWizard.targetLanguages.language('French').checkbox;
     const germanCheckbox = translationWizard.targetLanguages.language('German').checkbox;
-    const languageTool = editor.main.control.languageTool;
+    const languageManager = editor.main.control.languageManager;
 
-    await languageTool.trigger.click();
-    await languageTool.addLanguage(1);
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.addLanguage(1);
+    await languageManager.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     await translationWizard.trigger.click();
 
@@ -164,12 +164,12 @@ test.describe('target languages', () => {
 test.describe('translation review', () => {
   test('translate', async ({ page }) => {
     const translationWizard = editor.main.control.translationWizard;
-    const languageTool = editor.main.control.languageTool;
+    const languageManager = editor.main.control.languageManager;
 
-    await languageTool.trigger.click();
-    await languageTool.addLanguage(1);
-    await languageTool.checkboxOfRow(2).check();
-    await languageTool.save.trigger.click();
+    await languageManager.trigger.click();
+    await languageManager.addLanguage(1);
+    await languageManager.checkboxOfRow(2).check();
+    await languageManager.save.trigger.click();
     await editor.main.table.row(0).locator.click();
     page.keyboard.down('Shift');
     await editor.main.table.row(1).locator.click();

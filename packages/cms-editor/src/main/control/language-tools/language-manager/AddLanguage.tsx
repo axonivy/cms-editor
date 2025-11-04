@@ -13,9 +13,10 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
-import { useKnownHotkeys } from '../../../utils/hotkeys';
-import type { Language } from '../../../utils/language-utils';
+import { useKnownHotkeys } from '../../../../utils/hotkeys';
+import type { Language } from '../../../../utils/language-utils';
 import { LanguageBrowser } from './LanguageBrowser';
+import { LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS } from './LanguageManager';
 
 type AddLanguageProps = {
   languages: Array<Language>;
@@ -26,7 +27,7 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
   const { t } = useTranslation();
   const { open, onOpenChange } = useDialogHotkeys(['addLanguageDialog']);
   const { addLanguage: shortcut } = useKnownHotkeys();
-  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['languageToolDialog'], keyup: true, enabled: !open });
+  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS, keyup: true, enabled: !open });
   return (
     <Dialog open={open} onOpenChange={open => onOpenChange(open)}>
       <TooltipProvider>
@@ -41,8 +42,8 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
       </TooltipProvider>
       <DialogContent style={{ height: '80vh', gridTemplateRows: 'auto 1fr' }}>
         <BasicDialogHeader
-          title={t('dialog.languageTool.languageBrowser.title')}
-          description={t('dialog.languageTool.languageBrowser.description')}
+          title={t('dialog.languageManager.languageBrowser.title')}
+          description={t('dialog.languageManager.languageBrowser.description')}
         ></BasicDialogHeader>
         <LanguageBrowser languages={languages} addLanguage={addLanguage} closeDialog={() => onOpenChange(false)} />
       </DialogContent>

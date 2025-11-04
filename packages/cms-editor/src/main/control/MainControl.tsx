@@ -6,8 +6,8 @@ import { useMeta } from '../../protocol/use-meta';
 import { useKnownHotkeys } from '../../utils/hotkeys';
 import { AddContentObject } from './add-content-object/AddContentObject';
 import { DeleteContentObject } from './delete-content-object/DeleteContentObject';
-import { LanguageTool } from './language-tool/LanguageTool';
-import { TranslationWizard } from './translation-wizard/TranslationWizard';
+import { LanguageManager } from './language-tools/language-manager/LanguageManager';
+import { TranslationWizard } from './language-tools/translation-wizard/TranslationWizard';
 
 type MainControlProps = {
   selectRow: (rowId: string) => void;
@@ -21,9 +21,9 @@ export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: M
   const locales = useMeta('meta/locales', context, []).data;
   return (
     <Flex gap={2} className='cms-editor-main-control'>
-      <LanguageTool>
-        <Button icon={IvyIcons.Language} aria-label={hotkeys.languageTool.label} />
-      </LanguageTool>
+      <LanguageManager>
+        <Button icon={IvyIcons.Language} aria-label={hotkeys.languageManager.label} />
+      </LanguageManager>
       <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
       <TranslationWizard disabled={!hasSelection}>
         <Button icon={IvyIcons.Call} aria-label={hotkeys.translationWizard.label} disabled={!hasSelection} />
@@ -44,11 +44,11 @@ export const EmptyMainControl = ({ selectRow }: Pick<MainControlProps, 'selectRo
   const locales = useMeta('meta/locales', context, []).data;
   return (
     <Flex gap={2} className='cms-editor-main-control'>
-      <LanguageTool>
+      <LanguageManager>
         <Button size='large' variant='primary' icon={IvyIcons.Language}>
-          {t('dialog.languageTool.title')}
+          {t('dialog.languageManager.title')}
         </Button>
-      </LanguageTool>
+      </LanguageManager>
       <AddContentObject selectRow={selectRow}>
         <Button size='large' variant='primary' icon={IvyIcons.Plus} disabled={locales.length === 0}>
           {t('dialog.addContentObject.title')}

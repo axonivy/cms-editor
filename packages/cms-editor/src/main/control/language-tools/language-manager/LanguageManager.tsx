@@ -24,23 +24,23 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { filterNotPresentDefaultLanguageTags, getDefaultLanguageTagsLocalStorage } from '../../../hooks/use-languages';
-import { useClient } from '../../../protocol/ClientContextProvider';
-import { useMeta } from '../../../protocol/use-meta';
-import { genQueryKey, useQueryKeys } from '../../../query/query-client';
-import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { sortLanguages, toLanguages, type Language } from '../../../utils/language-utils';
-import './LanguageTool.css';
-import { LanguageToolControl } from './LanguageToolControl';
-import { LanguageToolSaveConfirmation } from './LanguageToolSaveConfirmation';
+import { useAppContext } from '../../../../context/AppContext';
+import { filterNotPresentDefaultLanguageTags, getDefaultLanguageTagsLocalStorage } from '../../../../hooks/use-languages';
+import { useClient } from '../../../../protocol/ClientContextProvider';
+import { useMeta } from '../../../../protocol/use-meta';
+import { genQueryKey, useQueryKeys } from '../../../../query/query-client';
+import { useKnownHotkeys } from '../../../../utils/hotkeys';
+import { sortLanguages, toLanguages, type Language } from '../../../../utils/language-utils';
+import './LanguageManager.css';
+import { LanguageManagerControl } from './LanguageManagerControl';
+import { LanguageManagerSaveConfirmation } from './LanguageManagerSaveConfirmation';
 
-const DIALOG_HOTKEY_IDS = ['languageToolDialog'];
+export const LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS = ['languageManagerDialog'];
 
-export const LanguageTool = ({ children }: { children: ReactNode }) => {
-  const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
+export const LanguageManager = ({ children }: { children: ReactNode }) => {
+  const { open, onOpenChange } = useDialogHotkeys(LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS);
   const hotkeys = useKnownHotkeys();
-  useHotkeys(hotkeys.languageTool.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
+  useHotkeys(hotkeys.languageManager.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <TooltipProvider>
@@ -48,17 +48,17 @@ export const LanguageTool = ({ children }: { children: ReactNode }) => {
           <TooltipTrigger asChild>
             <DialogTrigger asChild>{children}</DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>{hotkeys.languageTool.label}</TooltipContent>
+          <TooltipContent>{hotkeys.languageManager.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent>
-        <LanguageToolContent closeDialog={() => onOpenChange(false)} />
+        <LanguageManagerContent closeDialog={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );
 };
 
-const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
+const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
   const locales = useMeta('meta/locales', context, []).data;
@@ -147,7 +147,9 @@ const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
   };
 
   const hotkeys = useKnownHotkeys();
-  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), { scopes: DIALOG_HOTKEY_IDS });
+  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), {
+    scopes: LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS
+  });
 
   const onKeyDown = (event: KeyboardEvent<HTMLTableElement>) => {
     if (event.code === 'Space') {
@@ -162,10 +164,10 @@ const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
 
   return (
     <BasicDialogContent
-      title={t('dialog.languageTool.title')}
-      description={t('dialog.languageTool.description')}
+      title={t('dialog.languageManager.title')}
+      description={t('dialog.languageManager.description')}
       submit={
-        <LanguageToolSaveConfirmation
+        <LanguageManagerSaveConfirmation
           localesToDelete={locales.filter(locale => !languages.some(language => language.value === locale))}
           save={save}
         />
@@ -181,7 +183,7 @@ const LanguageToolContent = ({ closeDialog }: { closeDialog: () => void }) => {
         className='cms-editor-language-tool-languages-field'
         label={t('common.label.languages')}
         control={
-          <LanguageToolControl
+          <LanguageManagerControl
             languages={languages}
             addLanguage={addLanguage}
             deleteSelectedLanguage={deleteSelectedLanguage}

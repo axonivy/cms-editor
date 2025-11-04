@@ -20,10 +20,10 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { type CheckedState } from '@radix-ui/react-checkbox';
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { useMeta } from '../../../protocol/use-meta';
-import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
+import { useAppContext } from '../../../../context/AppContext';
+import { useMeta } from '../../../../protocol/use-meta';
+import { useKnownHotkeys } from '../../../../utils/hotkeys';
+import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
 import { TranslationWizardReview } from './TranslationWizardReview';
 
 const DIALOG_HOTKEY_IDS = ['translationWizardDialog'];

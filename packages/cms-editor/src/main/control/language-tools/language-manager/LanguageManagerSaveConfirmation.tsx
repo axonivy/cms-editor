@@ -2,17 +2,17 @@ import { BasicDialogContent, Button, Dialog, DialogContent, useDialogHotkeys } f
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { useMeta } from '../../../protocol/use-meta';
+import { useAppContext } from '../../../../context/AppContext';
+import { useMeta } from '../../../../protocol/use-meta';
 
-type LanguageToolSaveConfirmationProps = {
+type LanguageManagerSaveConfirmationProps = {
   localesToDelete: Array<string>;
   save: (localesToDelete: Array<string>) => void;
 };
 
-export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: LanguageToolSaveConfirmationProps) => {
+export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: LanguageManagerSaveConfirmationProps) => {
   const { t } = useTranslation();
-  const { open, onOpenChange } = useDialogHotkeys(['languageToolSaveDialog']);
+  const { open, onOpenChange } = useDialogHotkeys(['languageManagerSaveDialog']);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const onSaveClick = () => {
@@ -42,14 +42,14 @@ export const LanguageToolSaveConfirmation = ({ localesToDelete, save }: Language
             saveButtonRef.current?.focus();
           }}
         >
-          <LanguageToolSaveConfirmationContent localesToDelete={localesToDelete} save={save} />
+          <LanguageManagerSaveConfirmationContent localesToDelete={localesToDelete} save={save} />
         </DialogContent>
       </Dialog>
     </>
   );
 };
 
-const LanguageToolSaveConfirmationContent = ({ localesToDelete, save }: LanguageToolSaveConfirmationProps) => {
+const LanguageManagerSaveConfirmationContent = ({ localesToDelete, save }: LanguageManagerSaveConfirmationProps) => {
   const { t } = useTranslation();
   const { context, languageDisplayName } = useAppContext();
   const amountOfValuesToDelete = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
@@ -60,8 +60,8 @@ const LanguageToolSaveConfirmationContent = ({ localesToDelete, save }: Language
   };
   return (
     <BasicDialogContent
-      title={t('dialog.languageTool.saveConfirmation.title')}
-      description={t('dialog.languageTool.saveConfirmation.description')}
+      title={t('dialog.languageManager.saveConfirmation.title')}
+      description={t('dialog.languageManager.saveConfirmation.description')}
       submit={
         <Button
           variant='primary'
