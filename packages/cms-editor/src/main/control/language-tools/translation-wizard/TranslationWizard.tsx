@@ -133,7 +133,14 @@ export const useLanguages = () => {
 
 export const useSelectedContentObjects = () => {
   const { contentObjects, selectedContentObjects } = useAppContext();
-  const amountOfSelectedContentObjects = selectedContentObjects.length;
-  const selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
+  let amountOfSelectedContentObjects;
+  let selectedContentObjectsUris;
+  if (selectedContentObjects.length === 0) {
+    amountOfSelectedContentObjects = contentObjects.length;
+    selectedContentObjectsUris = contentObjects.map(co => co.uri);
+  } else {
+    amountOfSelectedContentObjects = selectedContentObjects.length;
+    selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
+  }
   return { amountOfSelectedContentObjects, selectedContentObjectsUris };
 };
