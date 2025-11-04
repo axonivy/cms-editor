@@ -2,9 +2,9 @@ import { BrowsersView, groupBy, useBrowser } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { useMeta } from '../../../protocol/use-meta';
-import { toLanguages, type Language } from '../../../utils/language-utils';
+import { useAppContext } from '../../../../context/AppContext';
+import { useMeta } from '../../../../protocol/use-meta';
+import { toLanguages, type Language } from '../../../../utils/language-utils';
 
 type LanguageBrowserProps = {
   languages: Array<Language>;
@@ -18,7 +18,7 @@ export const LanguageBrowser = ({ languages, addLanguage, closeDialog }: Languag
   const languageBrowser = useLanguageBrowser(languages);
   const options = useMemo(
     () => ({
-      applyBtn: { label: t('dialog.languageTool.languageBrowser.addLanguage') },
+      applyBtn: { label: t('dialog.languageManager.languageBrowser.addLanguage') },
       cancelBtn: { label: t('common.label.cancel') },
       info: { label: t('common.label.info') },
       search: { placeholder: t('common.label.search') }

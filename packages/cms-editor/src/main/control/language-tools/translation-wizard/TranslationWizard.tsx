@@ -1,60 +1,16 @@
-import {
-  BasicCheckbox,
-  BasicCollapsible,
-  BasicDialogContent,
-  BasicField,
-  BasicSelect,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  Flex,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  useDialogHotkeys,
-  useHotkeys
-} from '@axonivy/ui-components';
+import { BasicCheckbox, BasicCollapsible, BasicDialogContent, BasicField, BasicSelect, Button, Flex } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { type CheckedState } from '@radix-ui/react-checkbox';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { useMeta } from '../../../protocol/use-meta';
-import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { defaultLanguageTag, toLanguages } from '../../../utils/language-utils';
+import { useAppContext } from '../../../../context/AppContext';
+import { useMeta } from '../../../../protocol/use-meta';
+import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
 import { TranslationWizardReview } from './TranslationWizardReview';
 
-const DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
+export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
-type TranslationWizardProps = {
-  children: ReactNode;
-  disabled: boolean;
-};
-
-export const TranslationWizard = ({ children, disabled }: TranslationWizardProps) => {
-  const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
-  const hotkeys = useKnownHotkeys();
-  useHotkeys(hotkeys.translationWizard.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open && !disabled });
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>{children}</DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{hotkeys.translationWizard.label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DialogContent>
-        <TranslationWizardContent closeDialog={() => onOpenChange(false)} />
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
+export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
   const { languages, defaultSourceLanguageTag } = useLanguages();
   const { amountOfSelectedContentObjects, selectedContentObjectsUris } = useSelectedContentObjects();
@@ -177,7 +133,14 @@ export const useLanguages = () => {
 
 export const useSelectedContentObjects = () => {
   const { contentObjects, selectedContentObjects } = useAppContext();
-  const amountOfSelectedContentObjects = selectedContentObjects.length;
-  const selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
+  let amountOfSelectedContentObjects;
+  let selectedContentObjectsUris;
+  if (selectedContentObjects.length === 0) {
+    amountOfSelectedContentObjects = contentObjects.length;
+    selectedContentObjectsUris = contentObjects.map(co => co.uri);
+  } else {
+    amountOfSelectedContentObjects = selectedContentObjects.length;
+    selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
+  }
   return { amountOfSelectedContentObjects, selectedContentObjectsUris };
 };

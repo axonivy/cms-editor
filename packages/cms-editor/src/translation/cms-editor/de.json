@@ -38,11 +38,11 @@
       "createTooltip": "Halte {{modifier}} um ein weiteres Inhaltsobjekt zu erstellen.",
       "description": "Wählen Sie den Namen, den Namensbereich und die Werte des Inhaltsobjekts, das Sie hinzufügen möchten.",
       "fileFormatInfo": "Alle Dateien müssen vom gleichen Typ sein. Die erste hochgeladene Datei bestimmt den Dateityp.",
-      "noDefaultLanguages": "Es sind keine Sprachen im Sprachwerkzeug markiert, die angezeigt werden sollen. Dies ist die erste gefundene Sprache.",
-      "noLanguages": "Es sind keine Sprachen im CMS vorhanden. Füge Sprachen mit dem Sprachenwerkzeug hinzu.",
+      "noDefaultLanguages": "Es sind keine Sprachen in der Sprachenverwaltung markiert, die angezeigt werden sollen. Dies ist die erste gefundene Sprache.",
+      "noLanguages": "Es sind keine Sprachen im CMS vorhanden. Füge Sprachen mit der Sprachenverwaltung hinzu.",
       "title": "Inhaltsobjekt hinzufügen"
     },
-    "languageTool": {
+    "languageManager": {
       "description": "Bearbeite die Sprachen des CMS. Markiere die Sprachen, die angezeigt werden sollen.",
       "languageBrowser": {
         "addLanguage": "Sprache hinzufügen",
@@ -53,8 +53,9 @@
         "description": "Speichern löscht die folgenden Sprachen und deren Werte. Soll der Vorgang fortgesetzt werden?",
         "title": "Speichern bestätigen"
       },
-      "title": "Sprachenwerkzeug"
+      "title": "Sprachenverwaltung"
     },
+    "languageTools": "Sprachwerkzeuge",
     "translationWizard": {
       "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
       "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
@@ -72,8 +73,8 @@
     "addLanguage": "Sprache hinzufügen ({{hotkey}})",
     "deleteContentObject": "Inhaltsobjekt löschen ({{hotkey}})",
     "deleteLanguage": "Sprache löschen ({{hotkey}})",
-    "languageTool": "Sprachwerkzeug ({{hotkey}})",
-    "translationWizard": "Übersetzungsassistent ({{hotkey}})"
+    "languageManager": "Sprachenverwaltung",
+    "translationWizard": "Übersetzungsassistent"
   },
   "label": {
     "contentObjects": "Inhaltsobjekte"

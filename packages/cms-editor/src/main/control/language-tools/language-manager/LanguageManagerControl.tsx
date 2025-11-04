@@ -1,16 +1,16 @@
 import { Flex, Separator } from '@axonivy/ui-components';
-import type { Language } from '../../../utils/language-utils';
+import type { Language } from '../../../../utils/language-utils';
 import { AddLanguage } from './AddLanguage';
 import { DeleteLanguage } from './DeleteLanguage';
 
-type LanguageToolControlProps = {
+type LanguageManagerControlProps = {
   languages: Array<Language>;
   addLanguage: (language: Language) => void;
   deleteSelectedLanguage: () => void;
   hasSelection: boolean;
 };
 
-export const LanguageToolControl = ({ languages, addLanguage, deleteSelectedLanguage, hasSelection }: LanguageToolControlProps) => {
+export const LanguageManagerControl = ({ languages, addLanguage, deleteSelectedLanguage, hasSelection }: LanguageManagerControlProps) => {
   return (
     <Flex gap={2}>
       <AddLanguage languages={languages} addLanguage={addLanguage} />

@@ -15,7 +15,7 @@ export class TranslationWizard {
 
   constructor(page: Page, parent: Locator) {
     this.locator = page.getByRole('dialog');
-    this.trigger = parent.getByRole('button', { name: 'Translation Wizard' });
+    this.trigger = parent.getByRole('menuitem', { name: 'Translation Wizard' });
     this.selectedContentObjects = new Collapsible(this.locator);
     this.sourceLanguage = new Select(page, this.locator, { name: 'Source Language' });
     this.targetLanguages = new TranslationWizardTargetLanguages(this.locator);

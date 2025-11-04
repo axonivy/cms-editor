@@ -17,10 +17,10 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAppContext } from '../../../context/AppContext';
-import { useUpdateValues } from '../../../hooks/use-update-values';
-import { useClient } from '../../../protocol/ClientContextProvider';
-import { useQueryKeys } from '../../../query/query-client';
+import { useAppContext } from '../../../../context/AppContext';
+import { useUpdateValues } from '../../../../hooks/use-update-values';
+import { useClient } from '../../../../protocol/ClientContextProvider';
+import { useQueryKeys } from '../../../../query/query-client';
 
 type TranslationWizardProps = {
   hasSelectedTargetLanguages: boolean;

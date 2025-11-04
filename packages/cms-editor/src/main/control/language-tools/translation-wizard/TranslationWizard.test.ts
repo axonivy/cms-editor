@@ -1,6 +1,6 @@
 import type { Client, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
-import { customRenderHook } from '../../../context/test-utils/test-utils';
+import { customRenderHook } from '../../../../context/test-utils/test-utils';
 import { useLanguages, useSelectedContentObjects } from './TranslationWizard';
 
 describe('useLanguages', () => {
@@ -73,15 +73,22 @@ test('useSelectedContentObjects', () => {
   expect(result.current.amountOfSelectedContentObjects).toBe(0);
   expect(result.current.selectedContentObjectsUris).toEqual([]);
 
-  result = renderSelectedContentObjectsHook(
-    [
-      { uri: 'contentObjectUri0' },
-      { uri: 'contentObjectUri1' },
-      { uri: 'contentObjectUri2' },
-      { uri: 'contentObjectUri3' }
-    ] as Array<CmsValueDataObject>,
-    [1, 3]
-  ).result;
+  const contentObjects = [
+    { uri: 'contentObjectUri0' },
+    { uri: 'contentObjectUri1' },
+    { uri: 'contentObjectUri2' },
+    { uri: 'contentObjectUri3' }
+  ] as Array<CmsValueDataObject>;
+  result = renderSelectedContentObjectsHook(contentObjects, []).result;
+  expect(result.current.amountOfSelectedContentObjects).toBe(4);
+  expect(result.current.selectedContentObjectsUris).toEqual([
+    'contentObjectUri0',
+    'contentObjectUri1',
+    'contentObjectUri2',
+    'contentObjectUri3'
+  ]);
+
+  result = renderSelectedContentObjectsHook(contentObjects, [1, 3]).result;
   expect(result.current.amountOfSelectedContentObjects).toBe(2);
   expect(result.current.selectedContentObjectsUris).toEqual(['contentObjectUri1', 'contentObjectUri3']);
 });
