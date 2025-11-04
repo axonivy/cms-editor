@@ -32,23 +32,24 @@ test.describe('add', () => {
 
 test('disable if no languages are present in the CMS', async () => {
   const add = editor.main.control.add;
-  const languageManager = editor.main.control.languageManager;
+  const languageTools = editor.main.control.languageTools;
 
   await expect(add.trigger).toBeEnabled();
 
-  await languageManager.trigger.click();
-  await languageManager.languages.row(0).locator.click();
-  await languageManager.delete.click();
-  await languageManager.delete.click();
-  await languageManager.save.trigger.click();
-  await languageManager.save.save.click();
+  await languageTools.trigger.click();
+  await languageTools.languageManager.trigger.click();
+  await languageTools.languageManager.languages.row(0).locator.click();
+  await languageTools.languageManager.delete.click();
+  await languageTools.languageManager.delete.click();
+  await languageTools.languageManager.save.trigger.click();
+  await languageTools.languageManager.save.save.click();
   await expect(add.trigger).toBeDisabled();
 
-  await languageManager.trigger.click();
-  await languageManager.add.trigger.click();
-  await languageManager.add.languages.row(0).locator.click();
-  await languageManager.add.add.click();
-  await languageManager.save.trigger.click();
+  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await languageTools.languageManager.add.trigger.click();
+  await languageTools.languageManager.add.languages.row(0).locator.click();
+  await languageTools.languageManager.add.add.click();
+  await languageTools.languageManager.save.trigger.click();
   await expect(add.trigger).toBeEnabled();
 });
 

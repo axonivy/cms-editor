@@ -13,11 +13,11 @@ test.afterEach(() => {
 });
 
 test('save data', async () => {
-  await editor.main.control.languageManager.trigger.click();
-  await editor.main.control.languageManager.addLanguage(0);
-  await editor.main.control.languageManager.addLanguage(2);
-  await editor.main.control.languageManager.addLanguage(3);
-  await editor.main.control.languageManager.save.trigger.click();
+  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await editor.main.control.languageTools.languageManager.addLanguage(0);
+  await editor.main.control.languageTools.languageManager.addLanguage(2);
+  await editor.main.control.languageTools.languageManager.addLanguage(3);
+  await editor.main.control.languageTools.languageManager.save.trigger.click();
 
   await editor.main.control.add.addString('TestContentObject', '/TestNamespace', { Afrikaans: 'AfrikaansValue' });
 
@@ -38,18 +38,20 @@ test('save data', async () => {
   await editor.detail.expectToHaveStringValues('/TestEmptyNamespaceContentObject', { Afrikaans: 'AfrikaansValueWithEmptyNamespace', Akan: '', Albanian: '' });
   await editor.main.control.delete.click();
 
-  await editor.main.control.languageManager.trigger.click();
-  await editor.main.control.languageManager.languages.row(0).locator.click();
-  await editor.main.control.languageManager.delete.click();
-  await editor.main.control.languageManager.delete.click();
-  await editor.main.control.languageManager.save.trigger.click();
-  await expect(editor.main.control.languageManager.save.valueAmounts).toHaveText('Akan: 1 value');
-  await editor.main.control.languageManager.save.save.click();
+  await editor.main.control.languageTools.trigger.click();
+  await editor.main.control.languageTools.languageManager.trigger.click();
+  await editor.main.control.languageTools.languageManager.languages.row(0).locator.click();
+  await editor.main.control.languageTools.languageManager.delete.click();
+  await editor.main.control.languageTools.languageManager.delete.click();
+  await editor.main.control.languageTools.languageManager.save.trigger.click();
+  await expect(editor.main.control.languageTools.languageManager.save.valueAmounts).toHaveText('Akan: 1 value');
+  await editor.main.control.languageTools.languageManager.save.save.click();
 
-  await editor.main.control.languageManager.trigger.click();
-  await expect(editor.main.control.languageManager.languages.rows).toHaveCount(1);
-  await expect(editor.main.control.languageManager.languages.row(0).locator).toHaveText('Albanian');
-  await editor.main.control.languageManager.save.trigger.click();
+  await editor.main.control.languageTools.trigger.click();
+  await editor.main.control.languageTools.languageManager.trigger.click();
+  await expect(editor.main.control.languageTools.languageManager.languages.rows).toHaveCount(1);
+  await expect(editor.main.control.languageTools.languageManager.languages.row(0).locator).toHaveText('Albanian');
+  await editor.main.control.languageTools.languageManager.save.trigger.click();
 
   await editor.main.table.row(0).locator.click();
   await editor.main.control.delete.click();
@@ -58,9 +60,9 @@ test('save data', async () => {
 });
 
 test('add file', async () => {
-  await editor.main.control.languageManager.trigger.click();
-  await editor.main.control.languageManager.addLanguage(0);
-  await editor.main.control.languageManager.save.trigger.click();
+  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await editor.main.control.languageTools.languageManager.addLanguage(0);
+  await editor.main.control.languageTools.languageManager.save.trigger.click();
 
   await editor.main.control.add.addFile('TestFile', '/TestNamespace', { Afrikaans: path.join('test-files', 'TestFile.txt') });
   await editor.page.reload();

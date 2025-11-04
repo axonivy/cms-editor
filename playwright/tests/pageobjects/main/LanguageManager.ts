@@ -13,7 +13,7 @@ export class LanguageManager {
 
   constructor(page: Page, parent: Locator) {
     this.locator = page.getByRole('dialog');
-    this.trigger = parent.getByRole('button', { name: 'Language Tool' });
+    this.trigger = parent.getByRole('menuitem', { name: 'Language Manager' });
     this.add = new AddLanguage(page, this.locator);
     this.delete = this.locator.getByRole('button', { name: 'Delete Language' });
     this.languages = new Table(this.locator);
