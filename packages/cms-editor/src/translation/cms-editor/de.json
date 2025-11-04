@@ -73,8 +73,8 @@
     "addLanguage": "Sprache hinzufügen ({{hotkey}})",
     "deleteContentObject": "Inhaltsobjekt löschen ({{hotkey}})",
     "deleteLanguage": "Sprache löschen ({{hotkey}})",
-    "languageManager": "Sprachenverwaltung ({{hotkey}})",
-    "translationWizard": "Übersetzungsassistent ({{hotkey}})"
+    "languageManager": "Sprachenverwaltung",
+    "translationWizard": "Übersetzungsassistent"
   },
   "label": {
     "contentObjects": "Inhaltsobjekte"

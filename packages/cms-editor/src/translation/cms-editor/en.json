@@ -73,8 +73,8 @@
     "addLanguage": "Add Language ({{hotkey}})",
     "deleteContentObject": "Delete Content Object ({{hotkey}})",
     "deleteLanguage": "Delete Language ({{hotkey}})",
-    "languageManager": "Language Manager ({{hotkey}})",
-    "translationWizard": "Translation Wizard ({{hotkey}})"
+    "languageManager": "Language Manager",
+    "translationWizard": "Translation Wizard"
   },
   "label": {
     "contentObjects": "Content Objects"

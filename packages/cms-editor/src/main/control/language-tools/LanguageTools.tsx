@@ -5,7 +5,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
+  hotkeyText,
   IvyIcon,
   Tooltip,
   TooltipContent,
@@ -65,10 +67,12 @@ export const LanguageTools = () => {
           <DropdownMenuItem onClick={() => onLanguageManagerOpenChange(true)}>
             <IvyIcon icon={IvyIcons.WorldCog} />
             {hotkeys.languageManager.label}
+            <DropdownMenuShortcut>{hotkeyText(hotkeys.languageManager.hotkey)}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onTranslationWizardOpenChange(true)}>
             <IvyIcon icon={IvyIcons.Language} />
             {hotkeys.translationWizard.label}
+            <DropdownMenuShortcut>{hotkeyText(hotkeys.translationWizard.hotkey)}</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
