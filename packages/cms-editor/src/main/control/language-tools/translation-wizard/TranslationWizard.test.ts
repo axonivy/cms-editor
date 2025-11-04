@@ -70,27 +70,25 @@ class TestClient implements Partial<Client> {
 
 test('useSelectedContentObjects', () => {
   let result = renderSelectedContentObjectsHook([], []).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(0);
-  expect(result.current.selectedContentObjectsUris).toEqual([]);
+  expect(result.current.allSelectedContentObjects).toEqual([]);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual([]);
+  expect(result.current.amountOfTranslatableSelectedContentObjects).toBe(0);
 
   const contentObjects = [
-    { uri: 'contentObjectUri0' },
-    { uri: 'contentObjectUri1' },
-    { uri: 'contentObjectUri2' },
-    { uri: 'contentObjectUri3' }
+    { uri: 'contentObjectUri0', type: 'STRING' },
+    { uri: 'contentObjectUri1', type: 'FILE' },
+    { uri: 'contentObjectUri2', type: 'STRING' },
+    { uri: 'contentObjectUri3', type: 'STRING' }
   ] as Array<CmsValueDataObject>;
   result = renderSelectedContentObjectsHook(contentObjects, []).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(4);
-  expect(result.current.selectedContentObjectsUris).toEqual([
-    'contentObjectUri0',
-    'contentObjectUri1',
-    'contentObjectUri2',
-    'contentObjectUri3'
-  ]);
+  expect(result.current.allSelectedContentObjects).toEqual(contentObjects);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual(['contentObjectUri0', 'contentObjectUri2', 'contentObjectUri3']);
+  expect(result.current.amountOfTranslatableSelectedContentObjects).toBe(3);
 
-  result = renderSelectedContentObjectsHook(contentObjects, [1, 3]).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(2);
-  expect(result.current.selectedContentObjectsUris).toEqual(['contentObjectUri1', 'contentObjectUri3']);
+  result = renderSelectedContentObjectsHook(contentObjects, [1, 2, 3]).result;
+  expect(result.current.allSelectedContentObjects).toEqual([contentObjects[1], contentObjects[2], contentObjects[3]]);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual(['contentObjectUri2', 'contentObjectUri3']);
+  expect(result.current.amountOfTranslatableSelectedContentObjects).toBe(2);
 });
 
 const renderSelectedContentObjectsHook = (contentObjects: Array<CmsValueDataObject>, selectedContentObjects: Array<number>) => {

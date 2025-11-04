@@ -16,36 +16,95 @@ test('keyboard support', async ({ page }) => {
   await expect(languageTools.translationWizard.locator).toBeHidden();
 });
 
-test('selected content objects', async ({ page }) => {
-  const languageTools = editor.main.control.languageTools;
-  const table = editor.main.table;
+test.describe('selected content objects', () => {
+  test('display amount and uris', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+    const table = editor.main.table;
 
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('102 Content Objects selected.');
-  await languageTools.translationWizard.cancel.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('100 Content Objects selected.');
+    await languageTools.translationWizard.cancel.click();
 
-  await table.row(0).locator.click();
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
-  await languageTools.translationWizard.selectedContentObjects.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.content).toHaveText('/Dialogs/agileBPM/define_WF/AddTask');
+    await table.row(0).locator.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.content).toHaveText('/Dialogs/agileBPM/define_WF/AddTask');
 
-  await languageTools.translationWizard.cancel.click();
-  await table.row(1).locator.click();
-  await page.keyboard.down('Shift');
-  await table.row(3).locator.click();
-  await page.keyboard.up('Shift');
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('3 Content Objects selected.');
-  await languageTools.translationWizard.selectedContentObjects.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.content.locator('span')).toHaveText([
-    '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-    '/Dialogs/agileBPM/define_WF/Case',
-    '/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'
-  ]);
+    await languageTools.translationWizard.cancel.click();
+    await table.row(1).locator.click();
+    await page.keyboard.down('Shift');
+    await table.row(3).locator.click();
+    await page.keyboard.up('Shift');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('3 Content Objects selected.');
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.content.locator('span')).toHaveText([
+      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
+      '/Dialogs/agileBPM/define_WF/Case',
+      '/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'
+    ]);
+  });
+
+  test('ignore files', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+    const table = editor.main.table;
+
+    await table.row(0).locator.click();
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.up('Shift');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveWarning();
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages({
+      variant: 'warning',
+      message: 'File Content Objects are not translatable and will be ignored.'
+    });
+
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    const contentObjects = languageTools.translationWizard.selectedContentObjects.content.locator('span');
+    await expect(contentObjects).toHaveText(['/Dialogs/trigger/selectParkingLot', '/Files/TextFile', '/Files/ImageFile']);
+    await expect(contentObjects.nth(0)).not.toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    await expect(contentObjects.nth(1)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    await expect(contentObjects.nth(2)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await languageTools.translationWizard.translationWizardReview.trigger.click();
+    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
+      '/Dialogs/trigger/selectParkingLot',
+      "de: Translation of 'Select parking lot' from 'en' to 'de'"
+    ]);
+
+    await languageTools.translationWizard.translationWizardReview.cancel.click();
+    await languageTools.translationWizard.cancel.click();
+    await table.row(-1).locator.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('0 Content Objects selected.');
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveError();
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages(
+      {
+        variant: 'error',
+        message: 'No translatable Content Objects selected.'
+      },
+      {
+        variant: 'warning',
+        message: 'File Content Objects are not translatable and will be ignored.'
+      }
+    );
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
+    await languageTools.translationWizard.translationWizardReview.trigger.hover();
+    await expect(page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
+  });
 });
 
 test.describe('source language', () => {
@@ -163,6 +222,19 @@ test.describe('target languages', () => {
     await expect(frenchCheckbox).toBeChecked();
     await expect(germanCheckbox).toBeChecked();
     await expect(languageTools.translationWizard.targetLanguages.selectDeselectAll).toHaveText('Deselect All');
+  });
+
+  test('translate is disabled when no target language is selected', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
+    await languageTools.translationWizard.translationWizardReview.trigger.hover();
+    await expect(page.getByRole('tooltip')).toHaveText('Select at least one target language.');
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeEnabled();
   });
 });
 

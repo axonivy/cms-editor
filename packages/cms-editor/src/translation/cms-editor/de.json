@@ -60,12 +60,14 @@
       "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
       "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
       "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
+      "ignoreFiles": "Dateiinhaltsobjekte sind nicht übersetzbar und werden ignoriert.",
+      "noSelectedTargetLanguages": "Wähle mindestens eine Zielsprache aus.",
+      "noTranslatableSelectedContentObjects": "Keine übersetzbaren Inhaltsobjekte ausgewählt.",
       "review": {
         "description": "Überprüfe die Änderungen, bevor sie angewendet werden.",
         "title": "Übersetzungsüberprüfung"
       },
-      "title": "Übersetzungsassistent",
-      "translateDisabled": "Wähle mindestens eine Zielsprache aus."
+      "title": "Übersetzungsassistent"
     }
   },
   "hotkey": {
