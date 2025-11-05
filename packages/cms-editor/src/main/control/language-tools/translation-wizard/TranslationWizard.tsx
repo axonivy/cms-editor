@@ -1,4 +1,13 @@
-import { BasicCheckbox, BasicCollapsible, BasicDialogContent, BasicField, BasicSelect, Button, Flex } from '@axonivy/ui-components';
+import {
+  BasicCheckbox,
+  BasicCollapsible,
+  BasicDialogContent,
+  BasicField,
+  BasicSelect,
+  Button,
+  Flex,
+  type MessageData
+} from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { type CheckedState } from '@radix-ui/react-checkbox';
 import { useMemo, useState } from 'react';
@@ -6,14 +15,16 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
 import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
-import { TranslationWizardReview } from './TranslationWizardReview';
+import './TranslationWizard.css';
+import { TranslationWizardReview, type DisabledWithReason } from './TranslationWizardReview';
 
 export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
 export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
   const { languages, defaultSourceLanguageTag } = useLanguages();
-  const { amountOfSelectedContentObjects, selectedContentObjectsUris } = useSelectedContentObjects();
+  const { allSelectedContentObjects, translatableSelectedContentObjectUris, amountOfTranslatableSelectedContentObjects } =
+    useSelectedContentObjects();
 
   const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag ?? '');
   const onSourceTagLanguageChange = (languageTag: string) => {
@@ -37,15 +48,32 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
   const selectAll = () => setTargetLanguageTags(selectableTargetLanguageTags);
   const deselectAll = () => setTargetLanguageTags([]);
 
+  const selectedContentObjectsCollapsibleMessages: Array<MessageData> = [];
+  let translationDisabledWithReason: DisabledWithReason = { disabled: false };
+  if (translatableSelectedContentObjectUris.length === 0) {
+    const reason = t('dialog.translationWizard.noTranslatableSelectedContentObjects');
+    translationDisabledWithReason = { disabled: true, reason };
+    selectedContentObjectsCollapsibleMessages.push({ variant: 'error', message: reason });
+  } else if (targetLanguageTags.length === 0) {
+    translationDisabledWithReason = { disabled: true, reason: t('dialog.translationWizard.noSelectedTargetLanguages') };
+  }
+
+  if (allSelectedContentObjects.length !== translatableSelectedContentObjectUris.length) {
+    selectedContentObjectsCollapsibleMessages.push({
+      variant: 'warning',
+      message: t('dialog.translationWizard.ignoreFiles')
+    });
+  }
+
   return (
     <BasicDialogContent
       title={t('dialog.translationWizard.title')}
       description={t('dialog.translationWizard.description')}
       submit={
         <TranslationWizardReview
-          hasSelectedTargetLanguages={targetLanguageTags.length > 0}
+          disabledWithReason={translationDisabledWithReason}
           closeTranslationWizard={closeDialog}
-          translationRequest={{ sourceLanguageTag, targetLanguageTags, uris: selectedContentObjectsUris }}
+          translationRequest={{ sourceLanguageTag, targetLanguageTags, uris: translatableSelectedContentObjectUris }}
         />
       }
       cancel={
@@ -56,14 +84,18 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
     >
       <BasicCollapsible
         label={
-          amountOfSelectedContentObjects === 1
+          amountOfTranslatableSelectedContentObjects === 1
             ? t('dialog.translationWizard.amountOfContentObjectsSelectedSingular')
-            : t('dialog.translationWizard.amountOfContentObjectsSelectedPlural', { amount: amountOfSelectedContentObjects })
+            : t('dialog.translationWizard.amountOfContentObjectsSelectedPlural', { amount: amountOfTranslatableSelectedContentObjects })
         }
+        defaultOpen={false}
+        state={{ messages: selectedContentObjectsCollapsibleMessages }}
       >
         <Flex direction='column' gap={1}>
-          {selectedContentObjectsUris.map(uri => (
-            <span key={uri}>{uri}</span>
+          {allSelectedContentObjects.map(co => (
+            <span key={co.uri} className={co.type === 'FILE' ? 'cms-editor-translation-wizard-ignored-content-object' : undefined}>
+              {co.uri}
+            </span>
           ))}
         </Flex>
       </BasicCollapsible>
@@ -133,14 +165,11 @@ export const useLanguages = () => {
 
 export const useSelectedContentObjects = () => {
   const { contentObjects, selectedContentObjects } = useAppContext();
-  let amountOfSelectedContentObjects;
-  let selectedContentObjectsUris;
-  if (selectedContentObjects.length === 0) {
-    amountOfSelectedContentObjects = contentObjects.length;
-    selectedContentObjectsUris = contentObjects.map(co => co.uri);
-  } else {
-    amountOfSelectedContentObjects = selectedContentObjects.length;
-    selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
-  }
-  return { amountOfSelectedContentObjects, selectedContentObjectsUris };
+  const allSelectedContentObjects =
+    selectedContentObjects.length === 0
+      ? contentObjects
+      : selectedContentObjects.map(index => contentObjects[index]).filter(co => co !== undefined);
+  const translatableSelectedContentObjectUris = allSelectedContentObjects.filter(co => co.type !== 'FILE').map(co => co.uri);
+  const amountOfTranslatableSelectedContentObjects = translatableSelectedContentObjectUris.length;
+  return { allSelectedContentObjects, translatableSelectedContentObjectUris, amountOfTranslatableSelectedContentObjects };
 };

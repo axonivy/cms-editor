@@ -22,31 +22,28 @@ import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
 
+export type DisabledWithReason = { disabled: boolean; reason?: string };
+
 type TranslationWizardProps = {
-  hasSelectedTargetLanguages: boolean;
+  disabledWithReason: DisabledWithReason;
   closeTranslationWizard: () => void;
   translationRequest: CmsTranslationRequest;
 };
 
-export const TranslationWizardReview = ({
-  hasSelectedTargetLanguages,
-  closeTranslationWizard,
-  translationRequest
-}: TranslationWizardProps) => {
-  const { t } = useTranslation();
+export const TranslationWizardReview = ({ disabledWithReason, closeTranslationWizard, translationRequest }: TranslationWizardProps) => {
   return (
     <Dialog>
-      {hasSelectedTargetLanguages ? (
-        <TranslationWizardReviewTrigger disabled={false} />
-      ) : (
+      {disabledWithReason.disabled && disabledWithReason.reason ? (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <TranslationWizardReviewTrigger disabled={true} />
             </TooltipTrigger>
-            <TooltipContent>{t('dialog.translationWizard.translateDisabled')}</TooltipContent>
+            <TooltipContent>{disabledWithReason.reason}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
+      ) : (
+        <TranslationWizardReviewTrigger disabled={disabledWithReason.disabled} />
       )}
       <DialogContent>
         <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />

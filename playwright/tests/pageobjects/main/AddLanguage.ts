@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
-import { Textbox } from '../abstract/Textbox';
 import { Collapsible } from '../abstract/Collapsible';
+import { Textbox } from '../abstract/Textbox';
 import { Table } from './Table';
 
 export class AddLanguage {
@@ -16,7 +16,7 @@ export class AddLanguage {
     this.trigger = parent.getByRole('button', { name: 'Add Language' });
     this.search = new Textbox(this.locator);
     this.languages = new Table(this.locator);
-    this.info = new Collapsible(this.locator);
+    this.info = new Collapsible(page, this.locator);
     this.add = this.locator.getByRole('button', { name: 'Add Language' });
   }
 }
