@@ -23,7 +23,7 @@ test.describe('selected content objects', () => {
 
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
-    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('100 Content Objects selected.');
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('99 Content Objects selected.');
     await languageTools.translationWizard.cancel.click();
 
     await table.row(0).locator.click();
@@ -49,7 +49,7 @@ test.describe('selected content objects', () => {
     ]);
   });
 
-  test('ignore files', async ({ page }) => {
+  test('ignore not translatable content objects', async ({ page }) => {
     const languageTools = editor.main.control.languageTools;
     const table = editor.main.table;
 
@@ -84,7 +84,8 @@ test.describe('selected content objects', () => {
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
     await languageTools.translationWizard.cancel.click();
-    await table.row(-1).locator.click();
+    await table.row(-3).locator.click();
+    await editor.detail.value('English').delete.click();
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
     await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('0 Content Objects selected.');
@@ -96,7 +97,7 @@ test.describe('selected content objects', () => {
       },
       {
         variant: 'warning',
-        message: 'File Content Objects are not translatable and will be ignored.'
+        message: 'Some Content Objects have no value for the selected source language. These will be ignored.'
       }
     );
 
