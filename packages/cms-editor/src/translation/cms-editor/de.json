@@ -60,6 +60,7 @@
       "amountOfContentObjectsSelectedPlural": "{{amount}} Inhaltsobjekte ausgewählt.",
       "amountOfContentObjectsSelectedSingular": "1 Inhaltsobjekt ausgewählt.",
       "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
+      "ignoreEmptySourceLanguageValues": "Einige Inhaltsobjekte haben keinen Wert für die ausgewählte Quellsprache. Diese werden ignoriert.",
       "ignoreFiles": "Dateiinhaltsobjekte sind nicht übersetzbar und werden ignoriert.",
       "noSelectedTargetLanguages": "Wähle mindestens eine Zielsprache aus.",
       "noTranslatableSelectedContentObjects": "Keine übersetzbaren Inhaltsobjekte ausgewählt.",
