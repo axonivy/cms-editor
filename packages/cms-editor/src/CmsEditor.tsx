@@ -1,8 +1,8 @@
-import type { Capabilities, CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
+import type { CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
 import { Flex, PanelMessage, ResizableHandle, ResizablePanel, ResizablePanelGroup, Spinner, useHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { use, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './CmsEditor.css';
 import { AppProvider } from './context/AppContext';
@@ -17,19 +17,11 @@ import { useQueryKeys } from './query/query-client';
 import { isCmsValueDataObject } from './utils/cms-utils';
 import { useKnownHotkeys } from './utils/hotkeys';
 
-function CmsEditor(props: EditorProps) {
+function CmsEditor({ context, initializePromise }: EditorProps) {
   const [detail, setDetail] = useState(true);
   const { t } = useTranslation();
 
-  const [context, setContext] = useState(props.context);
-  useEffect(() => {
-    setContext(props.context);
-  }, [props]);
-
-  const [capabilities, setCapabilities] = useState<Capabilities>({ translationServiceEnabled: false });
-  useEffect(() => {
-    props.initializePromise.then(result => setCapabilities(result.capabilities));
-  }, [props.initializePromise]);
+  const capabilities = use(initializePromise).capabilities;
 
   const [selectedContentObjects, setSelectedContentObjects] = useState<Array<number>>([]);
 
