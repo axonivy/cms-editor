@@ -9,6 +9,8 @@ import type {
   CmsDataObject,
   CmsDeleteArgs,
   CmsDeleteValueArgs,
+  CmsEditorDataContext,
+  CmsInitializeResult,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
@@ -22,6 +24,10 @@ import type {
 import { BaseRpcClient, createMessageConnection, urlBuilder, type Connection, type MessageConnection } from '@axonivy/jsonrpc';
 
 export class ClientJsonRpc extends BaseRpcClient implements Client {
+  initialize(args: CmsEditorDataContext): Promise<CmsInitializeResult> {
+    return this.sendRequest('initialize', args);
+  }
+
   data(args: CmsDataArgs): Promise<CmsData> {
     return this.sendRequest('data', args);
   }

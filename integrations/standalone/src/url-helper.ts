@@ -31,6 +31,17 @@ export function readonlyParam(): boolean {
   return false;
 }
 
+export function translationServiceEnabledParam(): boolean | undefined {
+  const translationServiceEnabled = parameter('translationServiceEnabled');
+  if (translationServiceEnabled === undefined) {
+    return;
+  }
+  if (translationServiceEnabled === 'true') {
+    return true;
+  }
+  return false;
+}
+
 export function webSocketBaseParam(): string {
   return `${isSecureConnection() ? 'wss' : 'ws'}://${server()}`;
 }

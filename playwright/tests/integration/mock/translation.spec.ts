@@ -323,3 +323,14 @@ test.describe('translation review', () => {
     await expect(languageTools.translationWizard.translationWizardReview.apply).toBeDisabled();
   });
 });
+
+test('translation service enabled', async ({ page }) => {
+  editor = await CmsEditor.openMock(page, { parameters: { translationServiceEnabled: false } });
+
+  const languageTools = editor.main.control.languageTools;
+
+  await languageTools.trigger.click();
+  await expect(languageTools.translationWizard.trigger).toBeDisabled();
+  await languageTools.translationWizard.trigger.locator('..').hover();
+  await expect(page.getByRole('tooltip')).toHaveText('The Translation Service is not configured on the Axon Ivy Engine.');
+});

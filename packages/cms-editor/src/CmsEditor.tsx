@@ -63,6 +63,7 @@ function CmsEditor(props: EditorProps) {
     <AppProvider
       value={{
         context,
+        capabilities: props.capabilities,
         contentObjects,
         selectedContentObjects,
         setSelectedContentObjects,

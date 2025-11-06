@@ -68,7 +68,8 @@
         "description": "Review the changes before applying them.",
         "title": "Translation Review"
       },
-      "title": "Translation Wizard"
+      "title": "Translation Wizard",
+      "translationServiceNotConfigured": "The Translation Service is not configured on the Axon Ivy Engine."
     }
   },
   "hotkey": {

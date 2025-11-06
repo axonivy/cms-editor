@@ -18,12 +18,14 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
+import { useAppContext } from '../../../context/AppContext';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS, LanguageManagerContent } from './language-manager/LanguageManager';
 import { TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS, TranslationWizardContent } from './translation-wizard/TranslationWizard';
 
 export const LanguageTools = () => {
   const { t } = useTranslation();
+  const { capabilities } = useAppContext();
 
   const { open: languageManagerDialogOpen, onOpenChange: onLanguageManagerOpenChange } =
     useDialogHotkeys(LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS);
@@ -40,7 +42,7 @@ export const LanguageTools = () => {
   useHotkeys(hotkeys.translationWizard.hotkey, () => onTranslationWizardOpenChange(true), {
     scopes: ['global'],
     keyup: true,
-    enabled: !translationWizardOpen
+    enabled: capabilities.translationServiceEnabled && !translationWizardOpen
   });
 
   return (
@@ -69,11 +71,7 @@ export const LanguageTools = () => {
             {hotkeys.languageManager.label}
             <DropdownMenuShortcut>{hotkeyText(hotkeys.languageManager.hotkey)}</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onTranslationWizardOpenChange(true)}>
-            <IvyIcon icon={IvyIcons.Language} />
-            {hotkeys.translationWizard.label}
-            <DropdownMenuShortcut>{hotkeyText(hotkeys.translationWizard.hotkey)}</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {<TranslationWizardMenuItem onTranslationWizardOpenChange={onTranslationWizardOpenChange} />}
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent>
@@ -84,5 +82,39 @@ export const LanguageTools = () => {
         )}
       </DialogContent>
     </Dialog>
+  );
+};
+
+type TranslationWizardMenuItemProps = {
+  onTranslationWizardOpenChange: (open: boolean) => void;
+};
+
+const TranslationWizardMenuItem = ({ onTranslationWizardOpenChange }: TranslationWizardMenuItemProps) => {
+  const { t } = useTranslation();
+  const { capabilities } = useAppContext();
+  const hotkeys = useKnownHotkeys();
+
+  const menuItemContent = (
+    <>
+      <IvyIcon icon={IvyIcons.Language} />
+      {hotkeys.translationWizard.label}
+      <DropdownMenuShortcut>{hotkeyText(hotkeys.translationWizard.hotkey)}</DropdownMenuShortcut>
+    </>
+  );
+
+  if (capabilities.translationServiceEnabled) {
+    return <DropdownMenuItem onClick={() => onTranslationWizardOpenChange(true)}>{menuItemContent}</DropdownMenuItem>;
+  }
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span>
+            <DropdownMenuItem disabled>{menuItemContent}</DropdownMenuItem>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{t('dialog.translationWizard.translationServiceNotConfigured')}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };

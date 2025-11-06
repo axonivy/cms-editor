@@ -1,4 +1,4 @@
-import type { Client, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
+import type { Capabilities, Client, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import { ReadonlyProvider } from '@axonivy/ui-components';
 import { QueryClient } from '@tanstack/react-query';
 import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
@@ -23,6 +23,7 @@ type ContextHelperProps = {
   };
   appContext?: {
     context?: CmsEditorDataContext;
+    capabilities?: Capabilities;
     contentObjects?: Array<CmsValueDataObject>;
     selectedContentObjects?: Array<number>;
     setSelectedContentObjects?: (indexes?: Array<number>) => void;
@@ -60,6 +61,7 @@ const ContextHelper = ({
 
   const aContext = {
     context: appContext?.context ?? ({} as CmsEditorDataContext),
+    capabilities: appContext?.capabilities ?? ({} as Capabilities),
     contentObjects: appContext?.contentObjects ?? [],
     selectedContentObjects: appContext?.selectedContentObjects ?? [],
     setSelectedContentObjects: appContext?.setSelectedContentObjects ?? (() => {}),

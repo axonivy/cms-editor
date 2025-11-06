@@ -68,7 +68,8 @@
         "description": "Überprüfe die Änderungen, bevor sie angewendet werden.",
         "title": "Übersetzungsüberprüfung"
       },
-      "title": "Übersetzungsassistent"
+      "title": "Übersetzungsassistent",
+      "translationServiceNotConfigured": "Der Übersetzungsdienst ist auf der Axon Ivy Engine nicht konfiguriert."
     }
   },
   "hotkey": {

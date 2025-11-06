@@ -1,9 +1,10 @@
-import type { CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
+import type { Capabilities, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import { createContext, useContext } from 'react';
 import type { CmsValueDataObject } from '../utils/cms-utils';
 
 type AppContext = {
   context: CmsEditorDataContext;
+  capabilities: Capabilities;
   contentObjects: Array<CmsValueDataObject>;
   selectedContentObjects: Array<number>;
   setSelectedContentObjects: (indexes: Array<number>) => void;
@@ -16,6 +17,7 @@ type AppContext = {
 
 const appContext = createContext<AppContext>({
   context: { app: '', pmv: '', file: '' },
+  capabilities: { translationServiceEnabled: false },
   contentObjects: [],
   selectedContentObjects: [],
   setSelectedContentObjects: () => {},
