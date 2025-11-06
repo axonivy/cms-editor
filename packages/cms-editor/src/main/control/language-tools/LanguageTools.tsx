@@ -71,7 +71,7 @@ export const LanguageTools = () => {
             {hotkeys.languageManager.label}
             <DropdownMenuShortcut>{hotkeyText(hotkeys.languageManager.hotkey)}</DropdownMenuShortcut>
           </DropdownMenuItem>
-          {<TranslationWizardMenuItem onTranslationWizardOpenChange={onTranslationWizardOpenChange} />}
+          <TranslationWizardMenuItem onTranslationWizardOpenChange={onTranslationWizardOpenChange} />
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent>

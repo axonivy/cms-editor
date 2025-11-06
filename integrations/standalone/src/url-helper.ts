@@ -31,15 +31,12 @@ export function readonlyParam(): boolean {
   return false;
 }
 
-export function translationServiceEnabledParam(): boolean | undefined {
+export function translationServiceEnabledParam(): boolean {
   const translationServiceEnabled = parameter('translationServiceEnabled');
-  if (translationServiceEnabled === undefined) {
-    return;
+  if (translationServiceEnabled === 'false') {
+    return false;
   }
-  if (translationServiceEnabled === 'true') {
-    return true;
-  }
-  return false;
+  return true;
 }
 
 export function webSocketBaseParam(): string {

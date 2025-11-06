@@ -14,15 +14,11 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 
 const client = new CmsClientMock();
-const initializeResult = await client.initialize();
 const queryClient = initQueryClient();
 
 const theme = themeParam();
 const readonly = readonlyParam();
-const translationServiceEnabled = translationServiceEnabledParam();
-if (translationServiceEnabled !== undefined) {
-  initializeResult.capabilities.translationServiceEnabled = translationServiceEnabled;
-}
+const initializePromise = Promise.resolve({ capabilities: { translationServiceEnabled: translationServiceEnabledParam() } });
 
 initTranslation();
 
@@ -33,7 +29,7 @@ root.render(
         <QueryProvider client={queryClient}>
           <ReadonlyProvider readonly={readonly}>
             <HotkeysProvider initiallyActiveScopes={['global']}>
-              <CmsEditor context={{ app: '', pmv: 'pmv-name', file: '' }} capabilities={initializeResult.capabilities} />
+              <CmsEditor context={{ app: '', pmv: 'pmv-name', file: '' }} initializePromise={initializePromise} />
             </HotkeysProvider>
           </ReadonlyProvider>
         </QueryProvider>

@@ -1,5 +1,4 @@
 import type {
-  Capabilities,
   CmsActionArgs,
   CmsAddLocalesArgs,
   CmsCountLocaleValuesArgs,
@@ -24,7 +23,7 @@ import type {
   Void
 } from './editor';
 
-export type EditorProps = { context: CmsEditorDataContext; capabilities: Capabilities };
+export type EditorProps = { context: CmsEditorDataContext; initializePromise: Promise<CmsInitializeResult> };
 
 export type CmsDataObjectValues = MapStringString | MapStringBoolean | MapStringURI;
 export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;

@@ -34,7 +34,7 @@ export async function start(): Promise<void> {
 
   const initialize = async (connection: Connection) => {
     const client = await ClientJsonRpc.startClient(connection);
-    const initializeResult = await client.initialize({ app, pmv, file });
+    const initializePromise = client.initialize({ app, pmv, file });
     root.render(
       <React.StrictMode>
         <ThemeProvider defaultTheme={theme}>
@@ -42,7 +42,7 @@ export async function start(): Promise<void> {
             <QueryProvider client={queryClient}>
               <ReadonlyProvider readonly={readonly}>
                 <HotkeysProvider initiallyActiveScopes={['global']}>
-                  <CmsEditor context={{ app, pmv, file }} capabilities={initializeResult.capabilities} />
+                  <CmsEditor context={{ app, pmv, file }} initializePromise={initializePromise} />
                 </HotkeysProvider>
               </ReadonlyProvider>
             </QueryProvider>

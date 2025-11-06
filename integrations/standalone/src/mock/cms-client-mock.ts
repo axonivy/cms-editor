@@ -34,7 +34,7 @@ export class CmsClientMock implements Client {
   private localesData: Array<string> = locales;
 
   initialize(): Promise<CmsInitializeResult> {
-    return Promise.resolve({ capabilities: { translationServiceEnabled: true } });
+    throw new Error('Method not implemented.');
   }
 
   data(): Promise<CmsData> {
