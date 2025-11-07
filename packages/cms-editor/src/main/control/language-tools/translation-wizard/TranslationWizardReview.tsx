@@ -7,7 +7,14 @@ import {
   DialogTrigger,
   Flex,
   PanelMessage,
+  Separator,
   Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -15,7 +22,7 @@ import {
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { type ComponentProps } from 'react';
+import React, { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
@@ -76,10 +83,17 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
   const { context } = useAppContext();
 
   const query = useContentObjectTranslation(translationRequest);
+  const [striked, setStriked] = React.useState<string[]>([]);
 
   const { updateStringValuesMutation } = useUpdateValues();
   const applyTranslations = () => {
-    updateStringValuesMutation.mutate({ context, updateRequests: query.data ?? [] });
+    const filteredUpdates = (query.data ?? []).map(contentObject => ({
+      ...contentObject,
+      values: Object.fromEntries(
+        Object.entries(contentObject.values).filter(([languageTag]) => !striked.includes(`${contentObject.uri}:${languageTag}`))
+      )
+    }));
+    updateStringValuesMutation.mutate({ context, updateRequests: filteredUpdates });
     closeTranslationWizard();
   };
 
@@ -104,17 +118,39 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent query={query} />
+      <TranslationWizardReviewDialogContent
+        query={query}
+        sourceLanguage={translationRequest.sourceLanguageTag}
+        striked={striked}
+        setStriked={setStriked}
+      />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
-  query: { data, isPending, isError, error }
+  query: { data, isPending, isError, error },
+  striked,
+  sourceLanguage,
+  setStriked
 }: {
   query: UseQueryResult<Array<CmsStringDataObject>>;
+  striked: string[];
+  sourceLanguage: string;
+  setStriked: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
   const { t } = useTranslation();
+  const { contentObjects } = useAppContext();
+
+  const getOverriddenValue = (uri: string, languageTag: string) => {
+    const obj = contentObjects.find(co => co.uri === uri);
+    return obj?.values?.[languageTag] ?? null;
+  };
+
+  const getSourceValue = (uri: string) => {
+    const obj = contentObjects.find(co => co.uri === uri);
+    return obj?.values?.[sourceLanguage] ?? '-';
+  };
 
   if (isPending) {
     return (
@@ -134,16 +170,81 @@ const TranslationWizardReviewDialogContent = ({
     );
   }
 
-  return data?.map(contentObject => (
-    <Flex key={contentObject.uri}>
-      <span style={{ flex: 1 }}>{contentObject.uri}</span>
-      <Flex direction='column' gap={2} style={{ flex: 1 }}>
-        {Object.entries(contentObject.values).map(([languageTag, value]) => (
-          <span key={languageTag}>{`${languageTag}: ${value}`}</span>
-        ))}
-      </Flex>
+  const allLanguageTags = Array.from(new Set(data.flatMap(contentObject => Object.keys(contentObject.values)))).filter(
+    tag => tag !== sourceLanguage
+  );
+
+  return (
+    <Flex>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('common.label.cms')}</TableHead>
+            <TableHead>{t('common.label.sourceLanguage')}</TableHead>
+            {allLanguageTags.map(languageTag => (
+              <TableHead key={languageTag}>
+                {t('label.targetLanguages')} {languageTag}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map(contentObject => (
+            <TableRow key={contentObject.uri}>
+              <TableCell>{contentObject.uri}</TableCell>
+              <TableCell>{getSourceValue(contentObject.uri)}</TableCell>
+              {allLanguageTags.map(languageTag => {
+                const cellKey = `${contentObject.uri}:${languageTag}`;
+                const overriddenValue = getOverriddenValue(contentObject.uri, languageTag);
+                const hasOverridden = overriddenValue !== null;
+                const showValue = contentObject.values[languageTag];
+                const showOverridden = hasOverridden;
+                const isStrikedValue = striked.includes(cellKey + ':value');
+                const isStrikedOverridden = striked.includes(cellKey + ':overridden');
+
+                return (
+                  <TableCell key={languageTag} style={{ cursor: showValue || showOverridden ? 'pointer' : 'default' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      {showValue && (
+                        <span
+                          style={{ textDecoration: isStrikedValue ? 'line-through' : 'none' }}
+                          onClick={() =>
+                            setStriked(prev =>
+                              isStrikedValue ? prev.filter(tag => tag !== cellKey + ':value') : [...prev, cellKey + ':value']
+                            )
+                          }
+                        >
+                          {languageTag}: {showValue}
+                        </span>
+                      )}
+                      {showOverridden && (
+                        <>
+                          <Separator />
+                          <span
+                            style={{ textDecoration: isStrikedOverridden ? 'line-through' : 'none' }}
+                            onClick={() =>
+                              setStriked(prev =>
+                                isStrikedOverridden
+                                  ? prev.filter(tag => tag !== cellKey + ':overridden')
+                                  : [...prev, cellKey + ':overridden']
+                              )
+                            }
+                          >
+                            {overriddenValue}
+                          </span>
+                        </>
+                      )}
+                      {!showValue && !showOverridden && <span>-</span>}
+                    </div>
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </Flex>
-  ));
+  );
 };
 
 const useContentObjectTranslation = (translationRequest: CmsTranslationRequest) => {

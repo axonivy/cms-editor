@@ -11,6 +11,7 @@
       "cancel": "Abbrechen",
       "changeFile": "Datei ändern",
       "chooseFile": "Datei auswählen",
+      "cms": "CMS",
       "deselectAll": "Alle abwählen",
       "details": "Details",
       "info": "Info",
@@ -77,7 +78,8 @@
     "translationWizard": "Übersetzungsassistent"
   },
   "label": {
-    "contentObjects": "Inhaltsobjekte"
+    "contentObjects": "Inhaltsobjekte",
+    "targetLanguages": "__MISSING_TRANSLATION__"
   },
   "message": {
     "addFirstItem": "Fügen Sie Ihr erstes Inhaltsobjekt zum CMS hinzu",
