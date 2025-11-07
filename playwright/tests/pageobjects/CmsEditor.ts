@@ -71,7 +71,10 @@ export class CmsEditor {
 
   static async openMock(
     page: Page,
-    options?: { parameters?: { readonly?: boolean; app?: string; lng?: string }; defaultLanguages?: Array<string> }
+    options?: {
+      parameters?: { readonly?: boolean; app?: string; lng?: string; translationServiceEnabled?: boolean };
+      defaultLanguages?: Array<string>;
+    }
   ) {
     let params = '';
     if (options?.parameters) {

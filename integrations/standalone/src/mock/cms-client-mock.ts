@@ -17,6 +17,7 @@ import type {
   CmsDataObject,
   CmsDeleteArgs,
   CmsDeleteValueArgs,
+  CmsInitializeResult,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
@@ -31,6 +32,10 @@ import { locales, supportedLocales } from './meta';
 export class CmsClientMock implements Client {
   private cmsData: CmsData = contentObjects;
   private localesData: Array<string> = locales;
+
+  initialize(): Promise<CmsInitializeResult> {
+    throw new Error('Method not implemented.');
+  }
 
   data(): Promise<CmsData> {
     return Promise.resolve(this.cmsData);
