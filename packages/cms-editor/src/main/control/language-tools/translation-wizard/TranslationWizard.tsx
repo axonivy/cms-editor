@@ -1,4 +1,14 @@
-import { BasicCheckbox, BasicCollapsible, BasicDialogContent, BasicField, BasicSelect, Button, Flex } from '@axonivy/ui-components';
+import type { CmsValueDataObject } from '@axonivy/cms-editor-protocol';
+import {
+  BasicCheckbox,
+  BasicCollapsible,
+  BasicDialogContent,
+  BasicField,
+  BasicSelect,
+  Button,
+  Flex,
+  type MessageData
+} from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { type CheckedState } from '@radix-ui/react-checkbox';
 import { useMemo, useState } from 'react';
@@ -6,20 +16,25 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
 import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
-import { TranslationWizardReview } from './TranslationWizardReview';
+import './TranslationWizard.css';
+import { TranslationWizardReview, type DisabledWithReason } from './TranslationWizardReview';
 
 export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
 export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
   const { languages, defaultSourceLanguageTag } = useLanguages();
-  const { amountOfSelectedContentObjects, selectedContentObjectsUris } = useSelectedContentObjects();
 
   const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag ?? '');
   const onSourceTagLanguageChange = (languageTag: string) => {
     removeTargetLanguageTag(languageTag);
     setSourceLanguageTag(languageTag);
   };
+
+  const notTranslatableFilters = useNotTranslatableFilters(sourceLanguageTag);
+  const { allSelectedContentObjects, translatableSelectedContentObjectUris, selectedContentObjectsCollapsibleMessages } =
+    useTranslatableSelectedContentObjects(notTranslatableFilters);
+  const amountOfTranslatableSelectedContentObjects = translatableSelectedContentObjectUris.length;
 
   const [targetLanguageTags, setTargetLanguageTags] = useState<Array<string>>([]);
   const onTargetLanguageTagCheckedChange = (checked: CheckedState, languageTag: string) => {
@@ -37,15 +52,23 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
   const selectAll = () => setTargetLanguageTags(selectableTargetLanguageTags);
   const deselectAll = () => setTargetLanguageTags([]);
 
+  let translationDisabledWithReason: DisabledWithReason = { disabled: false };
+  const selectedContentObjectsError = selectedContentObjectsCollapsibleMessages.find(message => message.variant === 'error');
+  if (selectedContentObjectsError) {
+    translationDisabledWithReason = { disabled: true, reason: selectedContentObjectsError.message };
+  } else if (targetLanguageTags.length === 0) {
+    translationDisabledWithReason = { disabled: true, reason: t('dialog.translationWizard.noSelectedTargetLanguages') };
+  }
+
   return (
     <BasicDialogContent
       title={t('dialog.translationWizard.title')}
       description={t('dialog.translationWizard.description')}
       submit={
         <TranslationWizardReview
-          hasSelectedTargetLanguages={targetLanguageTags.length > 0}
+          disabledWithReason={translationDisabledWithReason}
           closeTranslationWizard={closeDialog}
-          translationRequest={{ sourceLanguageTag, targetLanguageTags, uris: selectedContentObjectsUris }}
+          translationRequest={{ sourceLanguageTag, targetLanguageTags, uris: translatableSelectedContentObjectUris }}
         />
       }
       cancel={
@@ -56,14 +79,25 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
     >
       <BasicCollapsible
         label={
-          amountOfSelectedContentObjects === 1
+          amountOfTranslatableSelectedContentObjects === 1
             ? t('dialog.translationWizard.amountOfContentObjectsSelectedSingular')
-            : t('dialog.translationWizard.amountOfContentObjectsSelectedPlural', { amount: amountOfSelectedContentObjects })
+            : t('dialog.translationWizard.amountOfContentObjectsSelectedPlural', { amount: amountOfTranslatableSelectedContentObjects })
         }
+        defaultOpen={false}
+        state={{ messages: selectedContentObjectsCollapsibleMessages }}
       >
         <Flex direction='column' gap={1}>
-          {selectedContentObjectsUris.map(uri => (
-            <span key={uri}>{uri}</span>
+          {allSelectedContentObjects.map(co => (
+            <span
+              key={co.uri}
+              className={
+                notTranslatableFilters.some(filter => !filter.condition(co))
+                  ? 'cms-editor-translation-wizard-ignored-content-object'
+                  : undefined
+              }
+            >
+              {co.uri}
+            </span>
           ))}
         </Flex>
       </BasicCollapsible>
@@ -131,16 +165,54 @@ export const useLanguages = () => {
   }, [locales, languageDisplayName, defaultLanguageTags]);
 };
 
-export const useSelectedContentObjects = () => {
+export const useTranslatableSelectedContentObjects = (notTranslatableFilters: Array<NotTranslatableFilter>) => {
   const { contentObjects, selectedContentObjects } = useAppContext();
-  let amountOfSelectedContentObjects;
-  let selectedContentObjectsUris;
-  if (selectedContentObjects.length === 0) {
-    amountOfSelectedContentObjects = contentObjects.length;
-    selectedContentObjectsUris = contentObjects.map(co => co.uri);
-  } else {
-    amountOfSelectedContentObjects = selectedContentObjects.length;
-    selectedContentObjectsUris = selectedContentObjects.map(index => contentObjects[index]?.uri).filter(uri => uri !== undefined);
+  const allSelectedContentObjects =
+    selectedContentObjects.length === 0
+      ? contentObjects
+      : selectedContentObjects.map(index => contentObjects[index]).filter(co => co !== undefined);
+  const { translatableSelectedContentObjectUris, messages: selectedContentObjectsCollapsibleMessages } =
+    useFilterNotTranslatableContentObjects(allSelectedContentObjects, notTranslatableFilters);
+  return { allSelectedContentObjects, translatableSelectedContentObjectUris, selectedContentObjectsCollapsibleMessages };
+};
+
+const useFilterNotTranslatableContentObjects = (
+  contentObjects: Array<CmsValueDataObject>,
+  notTranslatableFilters: Array<NotTranslatableFilter>
+) => {
+  const { t } = useTranslation();
+  let translatableContentObjects = contentObjects;
+  const messages: Array<MessageData> = [];
+  notTranslatableFilters.forEach(
+    filter => (translatableContentObjects = applyNotTranslatableFilter(translatableContentObjects, messages, filter))
+  );
+  if (translatableContentObjects.length === 0) {
+    messages.unshift({ variant: 'error', message: t('dialog.translationWizard.noTranslatableSelectedContentObjects') });
   }
-  return { amountOfSelectedContentObjects, selectedContentObjectsUris };
+  const translatableSelectedContentObjectUris = translatableContentObjects.map(co => co.uri);
+  return { translatableSelectedContentObjectUris, messages };
+};
+
+const applyNotTranslatableFilter = (
+  contentObjects: Array<CmsValueDataObject>,
+  messages: Array<MessageData>,
+  filter: NotTranslatableFilter
+) => {
+  const filteredContentObjects = contentObjects.filter(filter.condition);
+  if (filteredContentObjects.length !== contentObjects.length) {
+    messages.push(filter.message);
+  }
+  return filteredContentObjects;
+};
+
+type NotTranslatableFilter = { condition: (co: CmsValueDataObject) => boolean; message: MessageData };
+const useNotTranslatableFilters = (sourceLanguageTag: string): Array<NotTranslatableFilter> => {
+  const { t } = useTranslation();
+  return [
+    { condition: co => co.type !== 'FILE', message: { variant: 'warning', message: t('dialog.translationWizard.ignoreFiles') } },
+    {
+      condition: co => co.values[sourceLanguageTag] !== undefined,
+      message: { variant: 'warning', message: t('dialog.translationWizard.ignoreEmptySourceLanguageValues') }
+    }
+  ];
 };

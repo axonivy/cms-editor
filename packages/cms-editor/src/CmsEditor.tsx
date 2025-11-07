@@ -1,4 +1,4 @@
-import type { CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
+import type { Capabilities, CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
 import { Flex, PanelMessage, ResizableHandle, ResizablePanel, ResizablePanelGroup, Spinner, useHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -17,14 +17,15 @@ import { useQueryKeys } from './query/query-client';
 import { isCmsValueDataObject } from './utils/cms-utils';
 import { useKnownHotkeys } from './utils/hotkeys';
 
-function CmsEditor(props: EditorProps) {
+function CmsEditor({ context, initializePromise }: EditorProps) {
   const [detail, setDetail] = useState(true);
   const { t } = useTranslation();
 
-  const [context, setContext] = useState(props.context);
+  const [capabilities, setCapabilities] = useState<Capabilities>({ translationServiceEnabled: false });
   useEffect(() => {
-    setContext(props.context);
-  }, [props]);
+    initializePromise.then(result => setCapabilities(result.capabilities));
+  }, [initializePromise]);
+
   const [selectedContentObjects, setSelectedContentObjects] = useState<Array<number>>([]);
 
   const client = useClient();
@@ -63,6 +64,7 @@ function CmsEditor(props: EditorProps) {
     <AppProvider
       value={{
         context,
+        capabilities,
         contentObjects,
         selectedContentObjects,
         setSelectedContentObjects,

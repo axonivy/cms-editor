@@ -26,6 +26,7 @@ export interface CMS {
   cmsDeleteArgs: CmsDeleteArgs;
   cmsDeleteValueArgs: CmsDeleteValueArgs;
   cmsEditorDataContext: CmsEditorDataContext;
+  cmsInitializeResult: CmsInitializeResult;
   cmsReadArgs: CmsReadArgs;
   cmsRemoveLocalesArgs: CmsRemoveLocalesArgs;
   cmsStringDataObject: CmsStringDataObject[];
@@ -120,6 +121,12 @@ export interface CmsDeleteValueArgs {
 export interface CmsDeleteValueRequest {
   languageTag: string;
   uri: string;
+}
+export interface CmsInitializeResult {
+  capabilities: Capabilities;
+}
+export interface Capabilities {
+  translationServiceEnabled: boolean;
 }
 export interface CmsReadArgs {
   context: CmsEditorDataContext;

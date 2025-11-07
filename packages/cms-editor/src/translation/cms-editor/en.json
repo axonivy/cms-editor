@@ -11,7 +11,6 @@
       "cancel": "Cancel",
       "changeFile": "Change File",
       "chooseFile": "Choose File",
-      "cms": "CMS",
       "deselectAll": "Deselect All",
       "details": "Details",
       "info": "Info",
@@ -61,12 +60,16 @@
       "amountOfContentObjectsSelectedPlural": "{{amount}} Content Objects selected.",
       "amountOfContentObjectsSelectedSingular": "1 Content Object selected.",
       "description": "The value of the chosen source language is used to generate translations for the specified target languages of the selected Content Objects.",
+      "ignoreEmptySourceLanguageValues": "Some Content Objects have no value for the selected source language. These will be ignored.",
+      "ignoreFiles": "File Content Objects are not translatable and will be ignored.",
+      "noSelectedTargetLanguages": "Select at least one target language.",
+      "noTranslatableSelectedContentObjects": "No translatable Content Objects selected.",
       "review": {
         "description": "Review the changes before applying them.",
         "title": "Translation Review"
       },
       "title": "Translation Wizard",
-      "translateDisabled": "Select at least one target language."
+      "translationServiceNotConfigured": "The Translation Service is not configured on the Axon Ivy Engine."
     }
   },
   "hotkey": {

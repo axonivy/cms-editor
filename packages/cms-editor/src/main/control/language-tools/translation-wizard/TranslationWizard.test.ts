@@ -1,7 +1,7 @@
 import type { Client, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
 import { waitFor } from '@testing-library/react';
 import { customRenderHook } from '../../../../context/test-utils/test-utils';
-import { useLanguages, useSelectedContentObjects } from './TranslationWizard';
+import { useLanguages, useTranslatableSelectedContentObjects } from './TranslationWizard';
 
 describe('useLanguages', () => {
   test('languages', async () => {
@@ -68,33 +68,56 @@ class TestClient implements Partial<Client> {
   }
 }
 
-test('useSelectedContentObjects', () => {
-  let result = renderSelectedContentObjectsHook([], []).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(0);
-  expect(result.current.selectedContentObjectsUris).toEqual([]);
-
-  const contentObjects = [
-    { uri: 'contentObjectUri0' },
-    { uri: 'contentObjectUri1' },
-    { uri: 'contentObjectUri2' },
-    { uri: 'contentObjectUri3' }
+test('useTranslatableSelectedContentObjects', () => {
+  let contentObjects = [
+    { uri: 'contentObjectUri0', type: 'STRING' },
+    { uri: 'contentObjectUri1', type: 'FILE' },
+    { uri: 'contentObjectUri2', type: 'STRING' }
   ] as Array<CmsValueDataObject>;
-  result = renderSelectedContentObjectsHook(contentObjects, []).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(4);
-  expect(result.current.selectedContentObjectsUris).toEqual([
-    'contentObjectUri0',
-    'contentObjectUri1',
-    'contentObjectUri2',
-    'contentObjectUri3'
+  let result = renderSelectedContentObjectsHook(contentObjects, []).result;
+  expect(result.current.allSelectedContentObjects).toEqual(contentObjects);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual(['contentObjectUri0', 'contentObjectUri2']);
+  expect(result.current.selectedContentObjectsCollapsibleMessages).toEqual([{ variant: 'warning', message: 'notFileMessage' }]);
+
+  contentObjects = [
+    { uri: 'contentObjectUri0', type: 'STRING' },
+    { uri: 'contentObjectUri1', type: 'FILE' },
+    { uri: 'contentObjectUri2', type: 'STRING' },
+    { uri: 'notTranslatable', type: 'STRING' }
+  ] as Array<CmsValueDataObject>;
+  result = renderSelectedContentObjectsHook(contentObjects, [1, 2, 3]).result;
+  expect(result.current.allSelectedContentObjects).toEqual([contentObjects[1], contentObjects[2], contentObjects[3]]);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual(['contentObjectUri2']);
+  expect(result.current.selectedContentObjectsCollapsibleMessages).toEqual([
+    { variant: 'error', message: 'notTranslatableMessage' },
+    { variant: 'warning', message: 'notFileMessage' }
   ]);
 
+  contentObjects = [
+    { uri: 'contentObjectUri0', type: 'STRING' },
+    { uri: 'contentObjectUri1', type: 'FILE' },
+    { uri: 'contentObjectUri2', type: 'STRING' },
+    { uri: 'notTranslatable', type: 'STRING' }
+  ] as Array<CmsValueDataObject>;
   result = renderSelectedContentObjectsHook(contentObjects, [1, 3]).result;
-  expect(result.current.amountOfSelectedContentObjects).toBe(2);
-  expect(result.current.selectedContentObjectsUris).toEqual(['contentObjectUri1', 'contentObjectUri3']);
+  expect(result.current.allSelectedContentObjects).toEqual([contentObjects[1], contentObjects[3]]);
+  expect(result.current.translatableSelectedContentObjectUris).toEqual([]);
+  expect(result.current.selectedContentObjectsCollapsibleMessages).toEqual([
+    { variant: 'error', message: 'No translatable Content Objects selected.' },
+    { variant: 'error', message: 'notTranslatableMessage' },
+    { variant: 'warning', message: 'notFileMessage' }
+  ]);
 });
 
 const renderSelectedContentObjectsHook = (contentObjects: Array<CmsValueDataObject>, selectedContentObjects: Array<number>) => {
-  return customRenderHook(() => useSelectedContentObjects(), {
-    wrapperProps: { appContext: { contentObjects, selectedContentObjects } }
-  });
+  return customRenderHook(
+    () =>
+      useTranslatableSelectedContentObjects([
+        { condition: co => co.uri !== 'notTranslatable', message: { variant: 'error', message: 'notTranslatableMessage' } },
+        { condition: co => co.type !== 'FILE', message: { variant: 'warning', message: 'notFileMessage' } }
+      ]),
+    {
+      wrapperProps: { appContext: { contentObjects, selectedContentObjects } }
+    }
+  );
 };

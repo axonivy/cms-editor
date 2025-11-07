@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom/client';
 import { initTranslation } from './i18n';
 import './index.css';
 import { CmsClientMock } from './mock/cms-client-mock';
-import { readonlyParam, themeParam } from './url-helper';
+import { readonlyParam, themeParam, translationServiceEnabledParam } from './url-helper';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -18,6 +18,7 @@ const queryClient = initQueryClient();
 
 const theme = themeParam();
 const readonly = readonlyParam();
+const initializePromise = Promise.resolve({ capabilities: { translationServiceEnabled: translationServiceEnabledParam() } });
 
 initTranslation();
 
@@ -28,7 +29,7 @@ root.render(
         <QueryProvider client={queryClient}>
           <ReadonlyProvider readonly={readonly}>
             <HotkeysProvider initiallyActiveScopes={['global']}>
-              <CmsEditor context={{ app: '', pmv: 'pmv-name', file: '' }} />
+              <CmsEditor context={{ app: '', pmv: 'pmv-name', file: '' }} initializePromise={initializePromise} />
             </HotkeysProvider>
           </ReadonlyProvider>
         </QueryProvider>

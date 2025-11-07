@@ -10,6 +10,7 @@ import type {
   CmsDeleteArgs,
   CmsDeleteValueArgs,
   CmsEditorDataContext,
+  CmsInitializeResult,
   CmsReadArgs,
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
@@ -22,12 +23,13 @@ import type {
   Void
 } from './editor';
 
-export type EditorProps = { context: CmsEditorDataContext };
+export type EditorProps = { context: CmsEditorDataContext; initializePromise: Promise<CmsInitializeResult> };
 
 export type CmsDataObjectValues = MapStringString | MapStringBoolean | MapStringURI;
 export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;
 
 export interface Client {
+  initialize(args: CmsEditorDataContext): Promise<CmsInitializeResult>;
   data(args: CmsDataArgs): Promise<CmsData>;
   createString(args: CmsCreateStringArgs): Promise<Void>;
   createFile(args: CmsCreateFileArgs): Promise<Void>;
@@ -54,6 +56,7 @@ export interface MetaRequestTypes {
 }
 
 export interface RequestTypes extends MetaRequestTypes {
+  initialize: [CmsEditorDataContext, CmsInitializeResult];
   data: [CmsDataArgs, CmsData];
   createString: [CmsCreateStringArgs, Void];
   createFile: [CmsCreateFileArgs, Void];

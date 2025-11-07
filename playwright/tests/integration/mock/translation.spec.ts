@@ -16,36 +16,98 @@ test('keyboard support', async ({ page }) => {
   await expect(languageTools.translationWizard.locator).toBeHidden();
 });
 
-test('selected content objects', async ({ page }) => {
-  const languageTools = editor.main.control.languageTools;
-  const table = editor.main.table;
+test.describe('selected content objects', () => {
+  test('display amount and uris', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+    const table = editor.main.table;
 
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('102 Content Objects selected.');
-  await languageTools.translationWizard.cancel.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('99 Content Objects selected.');
+    await languageTools.translationWizard.cancel.click();
 
-  await table.row(0).locator.click();
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
-  await languageTools.translationWizard.selectedContentObjects.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.content).toHaveText('/Dialogs/agileBPM/define_WF/AddTask');
+    await table.row(0).locator.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.content).toHaveText('/Dialogs/agileBPM/define_WF/AddTask');
 
-  await languageTools.translationWizard.cancel.click();
-  await table.row(1).locator.click();
-  await page.keyboard.down('Shift');
-  await table.row(3).locator.click();
-  await page.keyboard.up('Shift');
-  await languageTools.trigger.click();
-  await languageTools.translationWizard.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('3 Content Objects selected.');
-  await languageTools.translationWizard.selectedContentObjects.trigger.click();
-  await expect(languageTools.translationWizard.selectedContentObjects.content.locator('span')).toHaveText([
-    '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-    '/Dialogs/agileBPM/define_WF/Case',
-    '/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'
-  ]);
+    await languageTools.translationWizard.cancel.click();
+    await table.row(1).locator.click();
+    await page.keyboard.down('Shift');
+    await table.row(3).locator.click();
+    await page.keyboard.up('Shift');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('3 Content Objects selected.');
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.content.locator('span')).toHaveText([
+      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
+      '/Dialogs/agileBPM/define_WF/Case',
+      '/Dialogs/agileBPM/define_WF/CommaSeparatedListOfUsers'
+    ]);
+  });
+
+  test('ignore not translatable content objects', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+    const table = editor.main.table;
+
+    await table.row(0).locator.click();
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.up('Shift');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveWarning();
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages({
+      variant: 'warning',
+      message: 'File Content Objects are not translatable and will be ignored.'
+    });
+
+    await languageTools.translationWizard.selectedContentObjects.trigger.click();
+    const contentObjects = languageTools.translationWizard.selectedContentObjects.content.locator('span');
+    await expect(contentObjects).toHaveText(['/Dialogs/trigger/selectParkingLot', '/Files/TextFile', '/Files/ImageFile']);
+    await expect(contentObjects.nth(0)).not.toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    await expect(contentObjects.nth(1)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    await expect(contentObjects.nth(2)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await languageTools.translationWizard.translationWizardReview.trigger.click();
+    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
+      '/Dialogs/trigger/selectParkingLot',
+      'Select parking lot',
+      "de: Translation of 'Select parking lot' from 'en' to 'de'",
+      'Parkplatz auswählen'
+    ]);
+
+    await languageTools.translationWizard.translationWizardReview.cancel.click();
+    await languageTools.translationWizard.cancel.click();
+    await table.row(-3).locator.click();
+    await editor.detail.value('English').delete.click();
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('0 Content Objects selected.');
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveError();
+    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages(
+      {
+        variant: 'error',
+        message: 'No translatable Content Objects selected.'
+      },
+      {
+        variant: 'warning',
+        message: 'Some Content Objects have no value for the selected source language. These will be ignored.'
+      }
+    );
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
+    await languageTools.translationWizard.translationWizardReview.trigger.hover();
+    await expect(page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
+  });
 });
 
 test.describe('source language', () => {
@@ -164,6 +226,19 @@ test.describe('target languages', () => {
     await expect(germanCheckbox).toBeChecked();
     await expect(languageTools.translationWizard.targetLanguages.selectDeselectAll).toHaveText('Deselect All');
   });
+
+  test('translate is disabled when no target language is selected', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
+    await languageTools.translationWizard.translationWizardReview.trigger.hover();
+    await expect(page.getByRole('tooltip')).toHaveText('Select at least one target language.');
+
+    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeEnabled();
+  });
 });
 
 test.describe('translation review', () => {
@@ -183,32 +258,29 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.trigger.click();
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/agileBPM/define_WF/AddTask',
-      ' Add a task to the sequence',
-      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
-      'Aufgabe zum Ablauf hinzufügen',
-      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-      ' Workflow Tasks',
-      "de: Translation of 'Workflow Tasks' from 'en' to 'de'",
-      'Workflow Aufgaben'
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
+      ['/Dialogs/agileBPM/define_WF/AddTask'],
+      ['Add a task to the sequence'],
+      ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
     await languageTools.translationWizard.targetLanguages.selectDeselectAll.click();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/agileBPM/define_WF/AddTask',
-      ' Add a task to the sequence',
-      "fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'",
-      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
-      'Aufgabe zum Ablauf hinzufügen',
-      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-      ' Workflow Tasks',
-      "fr: Translation of 'Workflow Tasks' from 'en' to 'fr'",
-      "de: Translation of 'Workflow Tasks' from 'en' to 'de'",
-      'Workflow Aufgaben'
-    ]);
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows(
+      [
+        ['/Dialogs/agileBPM/define_WF/AddTask'],
+        [' Add a task to the sequence'],
+        ["fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
+        ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
+      ],
+      [
+        ['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'],
+        [' Workflow Tasks'],
+        ["fr: Translation of 'Workflow Tasks' from 'en' to 'fr'"],
+        ["de: Translation of 'Workflow Tasks' from 'en' to 'de'"]
+      ]
+    );
 
     await languageTools.translationWizard.translationWizardReview.apply.click();
     await editor.main.table.expectToHaveRows(
@@ -257,4 +329,15 @@ test.describe('translation review', () => {
     await expect(languageTools.translationWizard.translationWizardReview.error).toHaveText('An error has occurred: Error: error message');
     await expect(languageTools.translationWizard.translationWizardReview.apply).toBeDisabled();
   });
+});
+
+test('translation service enabled', async ({ page }) => {
+  editor = await CmsEditor.openMock(page, { parameters: { translationServiceEnabled: false } });
+
+  const languageTools = editor.main.control.languageTools;
+
+  await languageTools.trigger.click();
+  await expect(languageTools.translationWizard.trigger).toBeDisabled();
+  await languageTools.translationWizard.trigger.locator('..').hover();
+  await expect(page.getByRole('tooltip')).toHaveText('The Translation Service is not configured on the Axon Ivy Engine.');
 });
