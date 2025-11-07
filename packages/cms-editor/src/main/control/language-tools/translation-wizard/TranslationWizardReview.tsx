@@ -7,15 +7,23 @@ import {
   DialogTrigger,
   Flex,
   PanelMessage,
+  Separator,
   Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { type ComponentProps } from 'react';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
@@ -28,60 +36,86 @@ type TranslationWizardProps = {
   translationRequest: CmsTranslationRequest;
 };
 
+const extractTargetLanguages = (data: CmsStringDataObject[], sourceLanguage: string): string[] => {
+  const uniqueTags = new Set(data.flatMap(obj => Object.keys(obj.values)));
+  uniqueTags.delete(sourceLanguage);
+  return Array.from(uniqueTags);
+};
+
+const useContentObjectTranslation = (translationRequest: CmsTranslationRequest) => {
+  const { context } = useAppContext();
+  const { translateKey } = useQueryKeys();
+  const client = useClient();
+
+  return useQuery({
+    queryKey: translateKey({ context, translationRequest }),
+    queryFn: () => client.translate({ context, translationRequest }),
+    structuralSharing: false,
+    retry: false
+  });
+};
+
 export const TranslationWizardReview = ({
   hasSelectedTargetLanguages,
   closeTranslationWizard,
   translationRequest
-}: TranslationWizardProps) => {
+}: TranslationWizardProps) => (
+  <Dialog>
+    <TranslationTriggerWithTooltip disabled={!hasSelectedTargetLanguages} />
+    <DialogContent>
+      <ReviewDialogContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
+    </DialogContent>
+  </Dialog>
+);
+
+const TranslationTriggerWithTooltip = ({ disabled }: { disabled: boolean }) => {
   const { t } = useTranslation();
+
+  if (!disabled) {
+    return <TranslationTrigger disabled={false} />;
+  }
+
   return (
-    <Dialog>
-      {hasSelectedTargetLanguages ? (
-        <TranslationWizardReviewTrigger disabled={false} />
-      ) : (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <TranslationWizardReviewTrigger disabled={true} />
-            </TooltipTrigger>
-            <TooltipContent>{t('dialog.translationWizard.translateDisabled')}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-      <DialogContent>
-        <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
-      </DialogContent>
-    </Dialog>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <TranslationTrigger disabled />
+        </TooltipTrigger>
+        <TooltipContent>{t('dialog.translationWizard.translateDisabled')}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
-const TranslationWizardReviewTrigger = ({ ...props }: ComponentProps<typeof Button>) => {
+const TranslationTrigger = ({ disabled }: { disabled: boolean }) => {
   const { t } = useTranslation();
+
   return (
     <DialogTrigger asChild>
-      <Button variant='primary' size='large' icon={IvyIcons.Check} {...props}>
+      <Button variant='primary' size='large' icon={IvyIcons.Check} disabled={disabled}>
         {t('common.label.translate')}
       </Button>
     </DialogTrigger>
   );
 };
 
-type TranslationWizardContentProps = {
-  closeTranslationWizard: () => void;
-  translationRequest: CmsTranslationRequest;
-};
-
-const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
+const ReviewDialogContent = ({
+  closeTranslationWizard,
+  translationRequest
+}: Omit<TranslationWizardProps, 'hasSelectedTargetLanguages'>) => {
   const { t } = useTranslation();
   const { context } = useAppContext();
-
   const query = useContentObjectTranslation(translationRequest);
-
   const { updateStringValuesMutation } = useUpdateValues();
-  const applyTranslations = () => {
-    updateStringValuesMutation.mutate({ context, updateRequests: query.data ?? [] });
+
+  const applyTranslations = useCallback(() => {
+    if (!query.data) return;
+
+    updateStringValuesMutation.mutate({ context, updateRequests: query.data });
     closeTranslationWizard();
-  };
+  }, [query.data, updateStringValuesMutation, context, closeTranslationWizard]);
+
+  const isSubmitDisabled = query.isPending || query.isError;
 
   return (
     <BasicDialogContent
@@ -93,28 +127,48 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
       submit={
-        <Button
-          variant='primary'
-          size='large'
-          icon={IvyIcons.Check}
-          onClick={applyTranslations}
-          disabled={query.isPending || query.isError}
-        >
+        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={applyTranslations} disabled={isSubmitDisabled}>
           {t('common.label.apply')}
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent query={query} />
+      <TranslationWizardReviewDialogContent query={query} sourceLanguage={translationRequest.sourceLanguageTag} />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
-  query: { data, isPending, isError, error }
+  query: { data, isPending, isError, error },
+  sourceLanguage
 }: {
-  query: UseQueryResult<Array<CmsStringDataObject>>;
+  query: UseQueryResult<CmsStringDataObject[]>;
+  sourceLanguage: string;
 }) => {
   const { t } = useTranslation();
+  const { contentObjects } = useAppContext();
+
+  const targetLanguages = useMemo(() => (data ? extractTargetLanguages(data, sourceLanguage) : []), [data, sourceLanguage]);
+
+  const getContentObjectValue = useCallback(
+    (uri: string, languageTag: string) => {
+      const obj = contentObjects.find(co => co.uri === uri);
+      return obj?.values?.[languageTag];
+    },
+    [contentObjects]
+  );
+
+  const getSourceValue = useCallback(
+    (uri: string) => getContentObjectValue(uri, sourceLanguage) ?? '-',
+    [getContentObjectValue, sourceLanguage]
+  );
+
+  const getOverriddenValue = useCallback(
+    (uri: string, languageTag: string): string | null => {
+      const value = getContentObjectValue(uri, languageTag);
+      return typeof value === 'string' ? value : null;
+    },
+    [getContentObjectValue]
+  );
 
   if (isPending) {
     return (
@@ -134,26 +188,83 @@ const TranslationWizardReviewDialogContent = ({
     );
   }
 
-  return data?.map(contentObject => (
-    <Flex key={contentObject.uri}>
-      <span style={{ flex: 1 }}>{contentObject.uri}</span>
-      <Flex direction='column' gap={2} style={{ flex: 1 }}>
-        {Object.entries(contentObject.values).map(([languageTag, value]) => (
-          <span key={languageTag}>{`${languageTag}: ${value}`}</span>
-        ))}
-      </Flex>
+  return (
+    <Flex>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t('common.label.cms')}</TableHead>
+            <TableHead>{t('common.label.sourceLanguage')}</TableHead>
+            {targetLanguages.map(languageTag => (
+              <TableHead key={languageTag}>
+                {t('common.label.targetLanguages')} {languageTag}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map(contentObject => (
+            <TableRow key={contentObject.uri}>
+              <TableCell>
+                <span>{contentObject.uri}</span>
+              </TableCell>
+              <TableCell>
+                <span>{getSourceValue(contentObject.uri)}</span>
+              </TableCell>
+              {targetLanguages.map(languageTag => (
+                <TranslationCell
+                  key={languageTag}
+                  contentObject={contentObject}
+                  languageTag={languageTag}
+                  overriddenValue={getOverriddenValue(contentObject.uri, languageTag)}
+                />
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </Flex>
-  ));
+  );
 };
 
-const useContentObjectTranslation = (translationRequest: CmsTranslationRequest) => {
-  const { context } = useAppContext();
-  const { translateKey } = useQueryKeys();
-  const client = useClient();
-  return useQuery({
-    queryKey: translateKey({ context, translationRequest }),
-    queryFn: async () => await client.translate({ context, translationRequest }),
-    structuralSharing: false,
-    retry: false
-  });
+const TranslationCell = ({
+  contentObject,
+  languageTag,
+  overriddenValue
+}: {
+  contentObject: CmsStringDataObject;
+  languageTag: string;
+  overriddenValue: string | null;
+}) => {
+  const translatedValue = contentObject.values[languageTag];
+  const hasTranslation = !!translatedValue;
+  const hasOverridden = overriddenValue !== null;
+  const hasContent = hasTranslation || hasOverridden;
+
+  if (!hasContent) {
+    return (
+      <TableCell>
+        <span>-</span>
+      </TableCell>
+    );
+  }
+
+  return (
+    <TableCell>
+      <Flex direction='column'>
+        {hasTranslation && (
+          <span>
+            {languageTag}: {translatedValue}
+          </span>
+        )}
+
+        {hasOverridden && (
+          <>
+            <Separator />
+            <span>{overriddenValue}</span>
+          </>
+        )}
+      </Flex>
+    </TableCell>
+  );
 };
