@@ -9,6 +9,7 @@ export class LanguageManager {
   readonly add: AddLanguage;
   readonly delete: Locator;
   readonly languages: Table;
+  readonly cancel: Locator;
   readonly save: LanguageManagerSaveConfirmation;
 
   constructor(page: Page, parent: Locator) {
@@ -17,6 +18,7 @@ export class LanguageManager {
     this.add = new AddLanguage(page, this.locator);
     this.delete = this.locator.getByRole('button', { name: 'Delete Language' });
     this.languages = new Table(this.locator);
+    this.cancel = this.locator.getByRole('button', { name: 'Cancel' });
     this.save = new LanguageManagerSaveConfirmation(page, this.locator);
   }
 
