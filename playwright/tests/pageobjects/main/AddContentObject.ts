@@ -14,6 +14,7 @@ export class AddContentObject {
   readonly type: Select;
   readonly fileFormatInfo: Message;
   readonly error: Message;
+  readonly cancel: Locator;
   readonly create: Locator;
 
   constructor(page: Page, parent: Locator) {
@@ -25,6 +26,7 @@ export class AddContentObject {
     this.type = new Select(this.page, this.locator, { name: 'Type' });
     this.fileFormatInfo = new Message(this.locator, { className: 'cms-editor-add-dialog-file-format-info' });
     this.error = new Message(this.locator, { className: 'cms-editor-add-dialog-error-message' });
+    this.cancel = this.locator.getByRole('button', { name: 'Cancel' });
     this.create = this.locator.getByRole('button', { name: 'Create Content Object' });
   }
 
