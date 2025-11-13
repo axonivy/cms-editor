@@ -1,7 +1,6 @@
 import type { Capabilities, CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
 import { Flex, PanelMessage, ResizableHandle, ResizablePanel, ResizablePanelGroup, Spinner, useHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './CmsEditor.css';
@@ -11,11 +10,9 @@ import { DetailToolbar } from './detail/DetailToolbar';
 import { useLanguages } from './hooks/use-languages';
 import { MainContent } from './main/MainContent';
 import { MainToolbar } from './main/MainToolbar';
-import { useClient } from './protocol/ClientContextProvider';
 import { useAction } from './protocol/use-action';
-import { useQueryKeys } from './query/query-client';
-import { isCmsValueDataObject } from './utils/cms-utils';
 import { useKnownHotkeys } from './utils/hotkeys';
+import { useData } from './utils/use-data';
 
 function CmsEditor({ context, initializePromise }: EditorProps) {
   const [detail, setDetail] = useState(true);
@@ -28,15 +25,8 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
 
   const [selectedContentObjects, setSelectedContentObjects] = useState<Array<number>>([]);
 
-  const client = useClient();
-  const { dataKey } = useQueryKeys();
-
   const { defaultLanguageTags, setDefaultLanguageTags, languageDisplayName } = useLanguages(context);
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: dataKey({ context, languageTags: defaultLanguageTags }),
-    queryFn: async () => await client.data({ context, languageTags: defaultLanguageTags }),
-    structuralSharing: false
-  });
+  const { data, isPending, isError, error } = useData(context, defaultLanguageTags);
 
   const hotkeys = useKnownHotkeys();
 
@@ -55,7 +45,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
     return <PanelMessage icon={IvyIcons.ErrorXMark} message={t('message.error', { error })} />;
   }
 
-  const contentObjects = data.data.filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject));
+  const contentObjects = data.data;
   const contentObject =
     selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined ? contentObjects[selectedContentObjects[0]] : undefined;
   const { mainTitle, detailTitle } = toolbarTitles(context.pmv, contentObject);
@@ -87,7 +77,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
             <ResizableHandle />
             <ResizablePanel defaultSize={25} minSize={10} className='cms-editor-detail-panel'>
               <Flex direction='column' className='cms-editor-panel-content'>
-                <DetailToolbar title={detailTitle} helpUrl={data.helpUrl} />
+                <DetailToolbar title={detailTitle} helpUrl={data.helpUrl ?? ''} />
                 <DetailContent key={contentObject?.uri} />
               </Flex>
             </ResizablePanel>

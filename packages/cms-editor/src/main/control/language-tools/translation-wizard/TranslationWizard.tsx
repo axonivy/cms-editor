@@ -7,6 +7,8 @@ import {
   BasicSelect,
   Button,
   Flex,
+  PanelMessage,
+  Spinner,
   type MessageData
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
@@ -16,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
 import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
+import { useData } from '../../../../utils/use-data';
 import './TranslationWizard.css';
 import { TranslationWizardReview, type DisabledWithReason } from './TranslationWizardReview';
 
@@ -23,6 +26,7 @@ export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
 export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
+  const { context, contentObjects, defaultLanguageTags } = useAppContext();
   const { languages, defaultSourceLanguageTag } = useLanguages();
 
   const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag ?? '');
@@ -31,9 +35,12 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
     setSourceLanguageTag(languageTag);
   };
 
+  const needsFetch = !defaultLanguageTags.includes(sourceLanguageTag);
+  const { data, isPending, isError, error } = useData(context, [sourceLanguageTag], { enabled: needsFetch });
+
   const notTranslatableFilters = useNotTranslatableFilters(sourceLanguageTag);
   const { allSelectedContentObjects, translatableSelectedContentObjectUris, selectedContentObjectsCollapsibleMessages } =
-    useTranslatableSelectedContentObjects(notTranslatableFilters);
+    useTranslatableSelectedContentObjects(needsFetch ? data.data : contentObjects, notTranslatableFilters);
   const amountOfTranslatableSelectedContentObjects = translatableSelectedContentObjectUris.length;
 
   const [targetLanguageTags, setTargetLanguageTags] = useState<Array<string>>([]);
@@ -46,6 +53,18 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
   };
   const removeTargetLanguageTag = (languageTag: string) =>
     setTargetLanguageTags(targetLanguageTags => targetLanguageTags.filter(tag => tag !== languageTag));
+
+  if (isPending) {
+    return (
+      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
+        <Spinner />
+      </Flex>
+    );
+  }
+
+  if (isError) {
+    return <PanelMessage icon={IvyIcons.ErrorXMark} message={t('message.error', { error })} />;
+  }
 
   const targetLanguages = languages.filter(language => language.value !== sourceLanguageTag);
   const selectableTargetLanguageTags = targetLanguages.map(language => language.value);
@@ -165,12 +184,15 @@ export const useLanguages = () => {
   }, [locales, languageDisplayName, defaultLanguageTags]);
 };
 
-export const useTranslatableSelectedContentObjects = (notTranslatableFilters: Array<NotTranslatableFilter>) => {
-  const { contentObjects, selectedContentObjects } = useAppContext();
+export const useTranslatableSelectedContentObjects = (
+  contentObjectsWithSourceLanguageValue: Array<CmsValueDataObject>,
+  notTranslatableFilters: Array<NotTranslatableFilter>
+) => {
+  const { selectedContentObjects } = useAppContext();
   const allSelectedContentObjects =
     selectedContentObjects.length === 0
-      ? contentObjects
-      : selectedContentObjects.map(index => contentObjects[index]).filter(co => co !== undefined);
+      ? contentObjectsWithSourceLanguageValue
+      : selectedContentObjects.map(index => contentObjectsWithSourceLanguageValue[index]).filter(co => co !== undefined);
   const { translatableSelectedContentObjectUris, messages: selectedContentObjectsCollapsibleMessages } =
     useFilterNotTranslatableContentObjects(allSelectedContentObjects, notTranslatableFilters);
   return { allSelectedContentObjects, translatableSelectedContentObjectUris, selectedContentObjectsCollapsibleMessages };

@@ -14,6 +14,7 @@ import type {
   CmsCreateFileArgs,
   CmsCreateStringArgs,
   CmsData,
+  CmsDataArgs,
   CmsDataObject,
   CmsDeleteArgs,
   CmsDeleteValueArgs,
@@ -37,8 +38,19 @@ export class CmsClientMock implements Client {
     throw new Error('Method not implemented.');
   }
 
-  data(): Promise<CmsData> {
-    return Promise.resolve(this.cmsData);
+  data(args: CmsDataArgs): Promise<CmsData> {
+    return Promise.resolve({
+      ...this.cmsData,
+      data: this.filterLanguageTags(this.cmsData.data, args.languageTags)
+    });
+  }
+
+  private filterLanguageTags(data: Array<CmsDataObject>, languageTags: Array<string>): Array<CmsDataObject> {
+    return data.map(co =>
+      isCmsValueDataObject(co)
+        ? { ...co, values: Object.fromEntries(Object.entries(co.values).filter(([key]) => languageTags.includes(key))) }
+        : co
+    );
   }
 
   createString(args: CmsCreateStringArgs): Promise<Void> {

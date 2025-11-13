@@ -49,62 +49,77 @@ test.describe('selected content objects', () => {
     ]);
   });
 
-  test('ignore not translatable content objects', async ({ page }) => {
-    const languageTools = editor.main.control.languageTools;
-    const table = editor.main.table;
+  test.describe('ignore not translatable content objects', () => {
+    test('ignore files and missing source language values', async ({ page }) => {
+      const languageTools = editor.main.control.languageTools;
+      const table = editor.main.table;
 
-    await table.row(0).locator.click();
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.down('Shift');
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.up('Shift');
-    await languageTools.trigger.click();
-    await languageTools.translationWizard.trigger.click();
-    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
-    await languageTools.translationWizard.selectedContentObjects.expectToHaveWarning();
-    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages({
-      variant: 'warning',
-      message: 'File Content Objects are not translatable and will be ignored.'
+      await table.row(0).locator.click();
+      await page.keyboard.press('ArrowUp');
+      await page.keyboard.down('Shift');
+      await page.keyboard.press('ArrowUp');
+      await page.keyboard.press('ArrowUp');
+      await page.keyboard.up('Shift');
+      await languageTools.trigger.click();
+      await languageTools.translationWizard.trigger.click();
+      await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+      await languageTools.translationWizard.selectedContentObjects.expectToHaveWarning();
+      await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages({
+        variant: 'warning',
+        message: 'File Content Objects are not translatable and will be ignored.'
+      });
+
+      await languageTools.translationWizard.selectedContentObjects.trigger.click();
+      const contentObjects = languageTools.translationWizard.selectedContentObjects.content.locator('span');
+      await expect(contentObjects).toHaveText(['/Dialogs/trigger/selectParkingLot', '/Files/TextFile', '/Files/ImageFile']);
+      await expect(contentObjects.nth(0)).not.toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+      await expect(contentObjects.nth(1)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+      await expect(contentObjects.nth(2)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+
+      await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+      await languageTools.translationWizard.translationWizardReview.trigger.click();
+      await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
+        '/Dialogs/trigger/selectParkingLot',
+        "de: Translation of 'Select parking lot' from 'en' to 'de'"
+      ]);
+
+      await languageTools.translationWizard.translationWizardReview.cancel.click();
+      await languageTools.translationWizard.cancel.click();
+      await table.row(-3).locator.click();
+      await editor.detail.value('English').delete.click();
+      await languageTools.trigger.click();
+      await languageTools.translationWizard.trigger.click();
+      await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('0 Content Objects selected.');
+      await languageTools.translationWizard.selectedContentObjects.expectToHaveError();
+      await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages(
+        {
+          variant: 'error',
+          message: 'No translatable Content Objects selected.'
+        },
+        {
+          variant: 'warning',
+          message: 'Some Content Objects have no value for the selected source language. These will be ignored.'
+        }
+      );
+
+      await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
+      await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
+      await languageTools.translationWizard.translationWizardReview.trigger.hover();
+      await expect(page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
     });
 
-    await languageTools.translationWizard.selectedContentObjects.trigger.click();
-    const contentObjects = languageTools.translationWizard.selectedContentObjects.content.locator('span');
-    await expect(contentObjects).toHaveText(['/Dialogs/trigger/selectParkingLot', '/Files/TextFile', '/Files/ImageFile']);
-    await expect(contentObjects.nth(0)).not.toHaveClass('cms-editor-translation-wizard-ignored-content-object');
-    await expect(contentObjects.nth(1)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
-    await expect(contentObjects.nth(2)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    test('do not treat values of languages not part of the default languages as missing', async () => {
+      const languageTools = editor.main.control.languageTools;
 
-    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
-    await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/trigger/selectParkingLot',
-      "de: Translation of 'Select parking lot' from 'en' to 'de'"
-    ]);
+      await expect(editor.main.table.headers).toHaveCount(2);
+      await expect(editor.main.table.header(1).content).toHaveText('English');
 
-    await languageTools.translationWizard.translationWizardReview.cancel.click();
-    await languageTools.translationWizard.cancel.click();
-    await table.row(-3).locator.click();
-    await editor.detail.value('English').delete.click();
-    await languageTools.trigger.click();
-    await languageTools.translationWizard.trigger.click();
-    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('0 Content Objects selected.');
-    await languageTools.translationWizard.selectedContentObjects.expectToHaveError();
-    await languageTools.translationWizard.selectedContentObjects.expectToHaveMessages(
-      {
-        variant: 'error',
-        message: 'No translatable Content Objects selected.'
-      },
-      {
-        variant: 'warning',
-        message: 'Some Content Objects have no value for the selected source language. These will be ignored.'
-      }
-    );
-
-    await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
-    await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
-    await languageTools.translationWizard.translationWizardReview.trigger.hover();
-    await expect(page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
+      await editor.main.table.row(0).locator.click();
+      await languageTools.trigger.click();
+      await languageTools.translationWizard.trigger.click();
+      await languageTools.translationWizard.sourceLanguage.select('German');
+      await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
+    });
   });
 });
 
