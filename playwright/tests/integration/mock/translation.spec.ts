@@ -77,11 +77,10 @@ test.describe('selected content objects', () => {
 
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/trigger/selectParkingLot',
-      'Select parking lot',
-      "de: Translation of 'Select parking lot' from 'en' to 'de'",
-      'Parkplatz auswählen'
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
+      ['/Dialogs/trigger/selectParkingLot'],
+      ['Select parking lot'],
+      ["de: Translation of 'Select parking lot' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();

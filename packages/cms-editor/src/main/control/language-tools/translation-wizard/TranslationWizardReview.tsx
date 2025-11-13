@@ -29,7 +29,7 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
-import { ContentObjectTranslations, getSourceValue, getTranslatedValue } from './ContentObjectTranslation';
+import { useContentObjectTranslations } from './content-Object-Translation';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
 
@@ -108,41 +108,39 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent
-        query={query}
-        translationRequest={translationRequest}
-        targetLanguageTags={translationRequest.targetLanguageTags}
-        sourceLanguageTag={translationRequest.sourceLanguageTag}
-      />
+      <TranslationWizardReviewDialogContent query={query} translationRequest={translationRequest} />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
   query: { data, isPending, isError, error },
-  translationRequest,
-  targetLanguageTags,
-  sourceLanguageTag
+  translationRequest
 }: {
   query: UseQueryResult<CmsStringDataObject[]>;
   translationRequest: CmsTranslationRequest;
-  sourceLanguageTag: string;
-  targetLanguageTags: string[];
 }) => {
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
 
-  const getFullDisplayName = (languageTag: string): string => {
-    return languageDisplayName.of(languageTag) ?? languageTag;
-  };
+  const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
 
-  const translations = ContentObjectTranslations([translationRequest]);
+  const translations = useContentObjectTranslations(translationRequest);
 
   const getOverriddenValue = (uri: string, languageTag: string): string | null => {
-    const sourceValue = getSourceValue(translations, uri);
-    const translatedValue = getTranslatedValue(translations, uri, languageTag);
-    if (translatedValue && translatedValue !== sourceValue) {
-      return translatedValue;
+    for (const contentObject of translations) {
+      if (contentObject.uri === uri) {
+        return contentObject.values[languageTag]?.originalvalue ?? null;
+      }
+    }
+    return null;
+  };
+
+  const getSourceValue = (uri: string, languageTag: string): string | null => {
+    for (const contentObject of translations) {
+      if (contentObject.uri === uri) {
+        return contentObject.source[languageTag] ?? null;
+      }
     }
     return null;
   };
@@ -172,9 +170,9 @@ const TranslationWizardReviewDialogContent = ({
           <TableRow>
             <TableHead>{t('common.label.path')}</TableHead>
             <TableHead>
-              {getFullDisplayName(sourceLanguageTag)} {'(' + t('common.label.sourceLanguage') + ')'}
+              {getFullDisplayName(translationRequest.sourceLanguageTag)} {'(' + t('common.label.sourceLanguage') + ')'}
             </TableHead>
-            {targetLanguageTags.map(languageTag => (
+            {translationRequest.targetLanguageTags.map(languageTag => (
               <TableHead key={languageTag}>{getFullDisplayName(languageTag)}</TableHead>
             ))}
           </TableRow>
@@ -186,9 +184,9 @@ const TranslationWizardReviewDialogContent = ({
                 <span>{contentObject.uri}</span>
               </TableCell>
               <TableCell>
-                <span>{getSourceValue(translations, contentObject.uri)}</span>
+                <span>{getSourceValue(contentObject.uri, translationRequest.sourceLanguageTag)}</span>
               </TableCell>
-              {targetLanguageTags.map(languageTag => (
+              {translationRequest.targetLanguageTags.map(languageTag => (
                 <TranslationCell
                   key={languageTag}
                   contentObject={contentObject}

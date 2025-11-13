@@ -1,7 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
 import { Collapsible } from '../abstract/Collapsible';
 import { Select } from '../abstract/Select';
-import { Table } from './Table';
 import { TranslationWizardReview } from './TranslationWizardReview';
 import { TranslationWizardTargetLanguages } from './TranslationWizardTargetLanguages';
 
@@ -13,7 +12,6 @@ export class TranslationWizard {
   readonly targetLanguages: TranslationWizardTargetLanguages;
   readonly cancel: Locator;
   readonly translationWizardReview: TranslationWizardReview;
-  readonly table: Table;
 
   constructor(page: Page, parent: Locator) {
     this.locator = page.getByRole('dialog');
@@ -23,6 +21,5 @@ export class TranslationWizard {
     this.targetLanguages = new TranslationWizardTargetLanguages(this.locator);
     this.cancel = this.locator.getByRole('button', { name: 'Cancel' });
     this.translationWizardReview = new TranslationWizardReview(page, this.locator);
-    this.table = new Table(this.locator);
   }
 }
