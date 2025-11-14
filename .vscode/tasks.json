@@ -6,7 +6,7 @@
     {
       "type": "shell",
       "label": "Start Standalone",
-      "command": "npm run dev",
+      "command": "pnpm run dev",
       "isBackground": true,
       "problemMatcher": [
         {

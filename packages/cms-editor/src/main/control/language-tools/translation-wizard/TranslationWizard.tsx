@@ -7,10 +7,10 @@ import {
   BasicSelect,
   Button,
   Flex,
+  type BasicCheckboxProps,
   type MessageData
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { type CheckedState } from '@radix-ui/react-checkbox';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
@@ -20,6 +20,8 @@ import './TranslationWizard.css';
 import { TranslationWizardReview, type DisabledWithReason } from './TranslationWizardReview';
 
 export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
+
+type CheckedState = Required<BasicCheckboxProps>['checked'];
 
 export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
