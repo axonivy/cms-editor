@@ -45,6 +45,9 @@
         "description": "保存すると、次の言語とそのすべての値が削除されます。本当に保存しますか？",
         "title": "保存確認"
       }
+    },
+    "translationWizard": {
+      "noTranslatableSelectedContentObjects": "翻訳可能なコンテンツオブジェクトは選択されません."
     }
   },
   "hotkey": {
