@@ -62,12 +62,14 @@
       "description": "The value of the chosen source language is used to generate translations for the specified target languages of the selected Content Objects.",
       "ignoreEmptySourceLanguageValues": "Some Content Objects have no value for the selected source language. These will be ignored.",
       "ignoreFiles": "File Content Objects are not translatable and will be ignored.",
+      "noDefaultLanguagesConfigured": "To use the Translation Wizard, select at least one language to be displayed in the Language Manager.",
       "noSelectedTargetLanguages": "Select at least one target language.",
       "noTranslatableSelectedContentObjects": "No translatable Content Objects selected.",
       "review": {
         "description": "Review the changes before applying them.",
         "title": "Translation Review"
       },
+      "sourceLanguageInfo": "Only languages configured to be displayed in the Language Manager can be chosen.",
       "title": "Translation Wizard",
       "translationServiceNotConfigured": "The Translation Service is not configured on the Axon Ivy Engine."
     }

@@ -21,8 +21,7 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
-
-export type DisabledWithReason = { disabled: boolean; reason?: string };
+import type { DisabledWithReason } from '../../../../utils/types';
 
 type TranslationWizardProps = {
   disabledWithReason: DisabledWithReason;
