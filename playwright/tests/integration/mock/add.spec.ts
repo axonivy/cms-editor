@@ -154,6 +154,9 @@ test('keyboard support', async () => {
   await expect(add.locator).toBeVisible();
   await expect(add.name.locator).toHaveValue('NewContentObject');
   await add.namespace.locator.fill('/A');
+  await keyboard.press('Tab');
+  await keyboard.press('Tab');
+  await keyboard.press('Tab');
   await keyboard.press('ControlOrMeta+Enter');
   await expect(add.name.locator).toHaveValue('');
   await add.name.locator.fill('TestContentObject');
@@ -161,6 +164,27 @@ test('keyboard support', async () => {
   await expect(add.locator).toBeHidden();
   await expect(editor.main.table.row(0).column(0).value(0)).toHaveText('/A/NewContentObject');
   await expect(editor.main.table.row(1).column(0).value(0)).toHaveText('/A/TestContentObject');
+});
+
+test('keyboard namespace', async () => {
+  const add = editor.main.control.add;
+  const keyboard = editor.page.keyboard;
+
+  await expect(add.locator).toBeHidden();
+  await keyboard.press('a');
+  await expect(add.locator).toBeVisible();
+  await expect(add.name.locator).toHaveValue('NewContentObject');
+  await add.namespace.locator.focus();
+  await keyboard.press('Enter');
+  await expect(add.namespace.options).toHaveCount(7);
+  await editor.page.keyboard.press('Enter');
+  await expect(add.namespace.locator).toHaveValue('/Dialogs/agileBPM/define_WF');
+  await editor.page.keyboard.press('Tab');
+  await editor.page.keyboard.press('Tab');
+  await editor.page.keyboard.press('Enter');
+
+  await expect(add.locator).toBeHidden();
+  await expect(editor.main.table.row(8).column(0).value(0)).toHaveText('/Dialogs/agileBPM/define_WF/NewContentObject');
 });
 
 test.describe('disable dialog while create request is pending', () => {
