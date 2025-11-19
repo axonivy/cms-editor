@@ -155,6 +155,10 @@ const AddContentObjectContent = ({
   const enter = useHotkeys(
     ['Enter', 'mod+Enter'],
     e => {
+      if (document.activeElement?.getAttribute('role') === 'combobox') {
+        return;
+      }
+
       if (!allInputsValid) {
         return;
       }
