@@ -62,12 +62,14 @@
       "description": "Der Wert der gewählten Quellsprache wird verwendet, um Übersetzungen für die angegebenen Zielsprachen der ausgewählten Inhaltsobjekte zu generieren.",
       "ignoreEmptySourceLanguageValues": "Einige Inhaltsobjekte haben keinen Wert für die ausgewählte Quellsprache. Diese werden ignoriert.",
       "ignoreFiles": "Dateiinhaltsobjekte sind nicht übersetzbar und werden ignoriert.",
+      "noDefaultLanguagesConfigured": "Um den Übersetzungsassistenten zu verwenden, wählen Sie mindestens eine Sprache in der Sprachenverwaltung aus, die angezeigt werden soll.",
       "noSelectedTargetLanguages": "Wähle mindestens eine Zielsprache aus.",
       "noTranslatableSelectedContentObjects": "Keine übersetzbaren Inhaltsobjekte ausgewählt.",
       "review": {
         "description": "Überprüfe die Änderungen, bevor sie angewendet werden.",
         "title": "Übersetzungsüberprüfung"
       },
+      "sourceLanguageInfo": "Nur Sprachen, die in der Sprachenverwaltung zur Anzeige konfiguriert sind, können ausgewählt werden.",
       "title": "Übersetzungsassistent",
       "translationServiceNotConfigured": "Der Übersetzungsdienst ist auf der Axon Ivy Engine nicht konfiguriert."
     }

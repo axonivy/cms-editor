@@ -20,12 +20,12 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../context/AppContext';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
+import type { DisabledWithReason } from '../../../utils/types';
 import { LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS, LanguageManagerContent } from './language-manager/LanguageManager';
 import { TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS, TranslationWizardContent } from './translation-wizard/TranslationWizard';
 
 export const LanguageTools = () => {
   const { t } = useTranslation();
-  const { capabilities } = useAppContext();
 
   const { open: languageManagerDialogOpen, onOpenChange: onLanguageManagerOpenChange } =
     useDialogHotkeys(LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS);
@@ -39,10 +39,12 @@ export const LanguageTools = () => {
     keyup: true,
     enabled: !languageManagerDialogOpen
   });
+
+  const translationWizardDisabledWithReason = useTranslationWizardDisabledWithReason();
   useHotkeys(hotkeys.translationWizard.hotkey, () => onTranslationWizardOpenChange(true), {
     scopes: ['global'],
     keyup: true,
-    enabled: capabilities.translationServiceEnabled && !translationWizardOpen
+    enabled: !translationWizardDisabledWithReason.disabled && !translationWizardOpen
   });
 
   return (
@@ -71,7 +73,10 @@ export const LanguageTools = () => {
             {hotkeys.languageManager.label}
             <DropdownMenuShortcut>{hotkeyText(hotkeys.languageManager.hotkey)}</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <TranslationWizardMenuItem onTranslationWizardOpenChange={onTranslationWizardOpenChange} />
+          <TranslationWizardMenuItem
+            onTranslationWizardOpenChange={onTranslationWizardOpenChange}
+            disabledWithReason={translationWizardDisabledWithReason}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
       <DialogContent>
@@ -87,11 +92,10 @@ export const LanguageTools = () => {
 
 type TranslationWizardMenuItemProps = {
   onTranslationWizardOpenChange: (open: boolean) => void;
+  disabledWithReason: DisabledWithReason;
 };
 
-const TranslationWizardMenuItem = ({ onTranslationWizardOpenChange }: TranslationWizardMenuItemProps) => {
-  const { t } = useTranslation();
-  const { capabilities } = useAppContext();
+const TranslationWizardMenuItem = ({ onTranslationWizardOpenChange, disabledWithReason }: TranslationWizardMenuItemProps) => {
   const hotkeys = useKnownHotkeys();
 
   const menuItemContent = (
@@ -102,19 +106,37 @@ const TranslationWizardMenuItem = ({ onTranslationWizardOpenChange }: Translatio
     </>
   );
 
-  if (capabilities.translationServiceEnabled) {
-    return <DropdownMenuItem onClick={() => onTranslationWizardOpenChange(true)}>{menuItemContent}</DropdownMenuItem>;
+  if (disabledWithReason.disabled) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <DropdownMenuItem disabled>{menuItemContent}</DropdownMenuItem>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{disabledWithReason.reason}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   }
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span>
-            <DropdownMenuItem disabled>{menuItemContent}</DropdownMenuItem>
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>{t('dialog.translationWizard.translationServiceNotConfigured')}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
+  return <DropdownMenuItem onClick={() => onTranslationWizardOpenChange(true)}>{menuItemContent}</DropdownMenuItem>;
+};
+
+export const useTranslationWizardDisabledWithReason = () => {
+  const { t } = useTranslation();
+  const { defaultLanguageTags, capabilities } = useAppContext();
+  if (!capabilities.translationServiceEnabled) {
+    return {
+      disabled: true,
+      reason: t('dialog.translationWizard.translationServiceNotConfigured')
+    };
+  }
+  if (defaultLanguageTags.length === 0) {
+    return {
+      disabled: true,
+      reason: t('dialog.translationWizard.noDefaultLanguagesConfigured')
+    };
+  }
+  return { disabled: false };
 };

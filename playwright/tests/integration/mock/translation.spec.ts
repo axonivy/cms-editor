@@ -114,16 +114,16 @@ test.describe('source language', () => {
 
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
-    await languageTools.translationWizard.sourceLanguage.expectToHaveOptions('English', 'German');
+    await languageTools.translationWizard.sourceLanguage.expectToHaveOptions('English');
 
     await languageTools.translationWizard.cancel.click();
     await languageTools.trigger.click();
     await languageTools.languageManager.trigger.click();
-    await languageTools.languageManager.addLanguage(1);
+    await languageTools.languageManager.checkboxOfRow(1).check();
     await languageTools.languageManager.save.trigger.click();
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
-    await languageTools.translationWizard.sourceLanguage.expectToHaveOptions('English', 'French', 'German');
+    await languageTools.translationWizard.sourceLanguage.expectToHaveOptions('English', 'German');
   });
 
   test('default value', async () => {
@@ -145,15 +145,6 @@ test.describe('source language', () => {
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
     await expect(languageTools.translationWizard.sourceLanguage.locator).toHaveText('German');
-
-    await languageTools.translationWizard.cancel.click();
-    await languageTools.trigger.click();
-    await languageTools.languageManager.trigger.click();
-    await languageTools.languageManager.checkboxOfRow(1).uncheck();
-    await languageTools.languageManager.save.trigger.click();
-    await languageTools.trigger.click();
-    await languageTools.translationWizard.trigger.click();
-    await expect(languageTools.translationWizard.sourceLanguage.locator).toHaveText('English');
   });
 });
 
@@ -176,6 +167,11 @@ test.describe('target languages', () => {
     const languageTools = editor.main.control.languageTools;
     const englishCheckbox = languageTools.translationWizard.targetLanguages.language('English').checkbox;
     const germanCheckbox = languageTools.translationWizard.targetLanguages.language('German').checkbox;
+
+    await languageTools.trigger.click();
+    await languageTools.languageManager.trigger.click();
+    await languageTools.languageManager.checkboxOfRow(1).check();
+    await languageTools.languageManager.save.trigger.click();
 
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
@@ -328,6 +324,9 @@ test('translation service enabled', async ({ page }) => {
   editor = await CmsEditor.openMock(page, { parameters: { translationServiceEnabled: false } });
 
   const languageTools = editor.main.control.languageTools;
+
+  await page.keyboard.press('t');
+  await expect(languageTools.translationWizard.locator).toBeHidden();
 
   await languageTools.trigger.click();
   await expect(languageTools.translationWizard.trigger).toBeDisabled();
