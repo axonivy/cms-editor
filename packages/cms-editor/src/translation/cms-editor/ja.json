@@ -23,7 +23,13 @@
       "save": "保存",
       "theme": "テーマ",
       "value": "値",
-      "values": "値"
+      "values": "値",
+      "apply": "適用",
+      "deselectAll": "すべて選択解除",
+      "selectAll": "すべて選択",
+      "sourceLanguage": "ソース言語",
+      "targetLanguages": "ターゲット言語",
+      "translate": "翻訳"
     }
   },
   "dialog": {
@@ -32,7 +38,9 @@
       "createTooltip": "さらにコンテンツオブジェクトを追加するには、{{modifier}} を長押しします。",
       "description": "追加したいコンテンツオブジェクトの名前、名前空間、値を選択してください。",
       "fileFormatInfo": "すべてのファイルは同じタイプでなければなりません。 アップロードした最初のファイルがファイルのタイプを決定します。",
-      "title": "コンテンツオブジェクトを追加"
+      "title": "コンテンツオブジェクトを追加",
+      "noDefaultLanguages": "Language Manager に表示する言語がチェックされていません。これは検出された最初の言語です。",
+      "noLanguages": "CMS に言語が存在しません。Language Manager を使用して言語を追加してください。"
     },
     "languageManager": {
       "description": "CMSの言語を編集します。 表示したい言語を確認してください。",
@@ -44,14 +52,33 @@
       "saveConfirmation": {
         "description": "保存すると、次の言語とそのすべての値が削除されます。本当に保存しますか？",
         "title": "保存確認"
-      }
-    }
+      },
+      "title": "Language Manager"
+    },
+    "translationWizard": {
+      "noTranslatableSelectedContentObjects": "翻訳可能なコンテンツオブジェクトが選択されていません。",
+      "amountOfContentObjectsSelectedPlural": "{{amount}} 個のコンテンツオブジェクトを選択しました。",
+      "amountOfContentObjectsSelectedSingular": "1 個のコンテンツオブジェクトを選択しました。",
+      "description": "選択したソース言語の値は、選択したコンテンツオブジェクトの指定されたターゲット言語の翻訳を生成するために使用されます。",
+      "ignoreEmptySourceLanguageValues": "選択したソース言語の一部のコンテンツオブジェクトに値がありません。これらは無視されます。",
+      "ignoreFiles": "ファイルコンテンツオブジェクトは翻訳不能なので無視されます。",
+      "noSelectedTargetLanguages": "少なくとも 1 つのターゲット言語を選択してください。",
+      "review": {
+        "description": "それらを適用する前に変更を確認してください。",
+        "title": "翻訳レビュー"
+      },
+      "title": "Translation Wizard",
+      "translationServiceNotConfigured": "Axon Ivy Engine で翻訳サービスが設定されていません。"
+    },
+    "languageTools": "言語ツール"
   },
   "hotkey": {
     "addContentObject": "コンテンツオブジェクトを追加 ({{hotkey}})",
     "addLanguage": "言語を追加 ({{hotkey}})",
     "deleteContentObject": "コンテンツオブジェクトを削除 ({{hotkey}})",
-    "deleteLanguage": "言語を削除 ({{hotkey}})"
+    "deleteLanguage": "言語を削除 ({{hotkey}})",
+    "languageManager": "Language Manager",
+    "translationWizard": "Translation Wizard"
   },
   "message": {
     "emptyName": "名前を空にすることはできません。",
