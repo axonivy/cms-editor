@@ -29,7 +29,7 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
-import { useContentObjectTranslations } from './content-Object-Translation';
+import { useContentObjectTranslations } from './use-content-object-translations';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
 
@@ -124,26 +124,7 @@ const TranslationWizardReviewDialogContent = ({
   const { languageDisplayName } = useAppContext();
 
   const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
-
-  const translations = useContentObjectTranslations(translationRequest);
-
-  const getOverriddenValue = (uri: string, languageTag: string): string | null => {
-    for (const contentObject of translations) {
-      if (contentObject.uri === uri) {
-        return contentObject.values[languageTag]?.originalvalue ?? null;
-      }
-    }
-    return null;
-  };
-
-  const getSourceValue = (uri: string, languageTag: string): string | null => {
-    for (const contentObject of translations) {
-      if (contentObject.uri === uri) {
-        return contentObject.source[languageTag] ?? null;
-      }
-    }
-    return null;
-  };
+  const translations = useContentObjectTranslations(translationRequest, data ?? []);
 
   if (isPending) {
     return (
@@ -178,20 +159,20 @@ const TranslationWizardReviewDialogContent = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map(contentObject => (
+          {translations.map(contentObject => (
             <TableRow key={contentObject.uri}>
               <TableCell>
                 <span>{contentObject.uri}</span>
               </TableCell>
               <TableCell>
-                <span>{getSourceValue(contentObject.uri, translationRequest.sourceLanguageTag)}</span>
+                <span>{contentObject.sourceValue}</span>
               </TableCell>
               {translationRequest.targetLanguageTags.map(languageTag => (
                 <TranslationCell
                   key={languageTag}
-                  contentObject={contentObject}
+                  contentObject={contentObject.values[languageTag]?.value ?? null}
                   languageTag={languageTag}
-                  overriddenValue={getOverriddenValue(contentObject.uri, languageTag)}
+                  overriddenValue={contentObject.values[languageTag]?.originalvalue ?? null}
                 />
               ))}
             </TableRow>
@@ -207,12 +188,11 @@ const TranslationCell = ({
   languageTag,
   overriddenValue
 }: {
-  contentObject: CmsStringDataObject;
+  contentObject: string | null;
   languageTag: string;
   overriddenValue: string | null;
 }) => {
-  const translatedValue = contentObject.values[languageTag];
-  const hasTranslation = !!translatedValue;
+  const hasTranslation = !!contentObject;
   const hasOverridden = overriddenValue !== null;
 
   return (
@@ -220,7 +200,7 @@ const TranslationCell = ({
       <Flex direction='column'>
         {hasTranslation && (
           <span>
-            {languageTag}: {translatedValue}
+            {languageTag}: {contentObject}
           </span>
         )}
 
