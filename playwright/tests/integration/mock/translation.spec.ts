@@ -77,9 +77,10 @@ test.describe('selected content objects', () => {
 
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/trigger/selectParkingLot',
-      "de: Translation of 'Select parking lot' from 'en' to 'de'"
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
+      ['/Dialogs/trigger/selectParkingLot'],
+      ['Select parking lot'],
+      ["de: Translation of 'Select parking lot' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
@@ -252,24 +253,29 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.trigger.click();
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/agileBPM/define_WF/AddTask',
-      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
-      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-      "de: Translation of 'Workflow Tasks' from 'en' to 'de'"
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
+      ['/Dialogs/agileBPM/define_WF/AddTask'],
+      ['Add a task to the sequence'],
+      ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
     await languageTools.translationWizard.targetLanguages.selectDeselectAll.click();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
-    await expect(languageTools.translationWizard.translationWizardReview.locator.locator('span')).toHaveText([
-      '/Dialogs/agileBPM/define_WF/AddTask',
-      "fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'",
-      "de: Translation of 'Add a task to the sequence' from 'en' to 'de'",
-      '/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks',
-      "fr: Translation of 'Workflow Tasks' from 'en' to 'fr'",
-      "de: Translation of 'Workflow Tasks' from 'en' to 'de'"
-    ]);
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows(
+      [
+        ['/Dialogs/agileBPM/define_WF/AddTask'],
+        [' Add a task to the sequence'],
+        ["fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
+        ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
+      ],
+      [
+        ['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'],
+        [' Workflow Tasks'],
+        ["fr: Translation of 'Workflow Tasks' from 'en' to 'fr'"],
+        ["de: Translation of 'Workflow Tasks' from 'en' to 'de'"]
+      ]
+    );
 
     await languageTools.translationWizard.translationWizardReview.apply.click();
     await editor.main.table.expectToHaveRows(
