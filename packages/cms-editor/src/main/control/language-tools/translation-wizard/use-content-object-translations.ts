@@ -1,5 +1,6 @@
-import type { CmsStringDataObject, CmsTranslationRequest, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
+import type { CmsStringDataObject, CmsTranslationRequest } from '@axonivy/cms-editor-protocol';
 import { useAppContext } from '../../../../context/AppContext';
+import { isCmsStringDataObject } from '../../../../utils/cms-utils';
 
 export type ContentObjectTranslation = {
   uri: string;
@@ -14,7 +15,7 @@ export type ContentObjectTranslation = {
 };
 
 const aggregateContentObjectTranslation = (
-  contentObject: CmsValueDataObject,
+  contentObject: CmsStringDataObject,
   translationRequest: CmsTranslationRequest,
   contentObjects: CmsStringDataObject[]
 ): ContentObjectTranslation => {
@@ -22,7 +23,7 @@ const aggregateContentObjectTranslation = (
   const sourceValue = existingValues?.values[translationRequest.sourceLanguageTag];
   const values: Record<string, { originalvalue?: string; value: string }> = {};
   translationRequest.targetLanguageTags.forEach((l: string) => {
-    const translatedValue = contentObject.values[l] as string;
+    const translatedValue = contentObject.values[l] ?? '';
     const originalvalue = existingValues?.values[l];
 
     values[l] = {
@@ -44,8 +45,4 @@ export const useContentObjectTranslations = (
   const { contentObjects } = useAppContext();
   const filtered = contentObjects.filter(isCmsStringDataObject);
   return data.map(contentObject => aggregateContentObjectTranslation(contentObject, translationRequest, filtered));
-};
-
-export const isCmsStringDataObject = (contentObject: CmsValueDataObject): contentObject is CmsStringDataObject => {
-  return typeof contentObject === 'object' && typeof contentObject.uri === 'string' && typeof contentObject.values === 'object';
 };
