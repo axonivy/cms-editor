@@ -16,23 +16,23 @@ export type ContentObjectTranslation = {
 const aggregateContentObjectTranslation = (
   contentObject: CmsValueDataObject,
   translationRequest: CmsTranslationRequest,
-  contentObjects: CmsValueDataObject[]
+  contentObjects: CmsStringDataObject[]
 ): ContentObjectTranslation => {
   const existingValues = contentObjects.find(obj => obj.uri === contentObject.uri);
   const sourceValue = existingValues?.values[translationRequest.sourceLanguageTag];
   const values: Record<string, { originalvalue?: string; value: string }> = {};
   translationRequest.targetLanguageTags.forEach((l: string) => {
-    const translatedValue = contentObject.values[l];
+    const translatedValue = contentObject.values[l] as string;
     const originalvalue = existingValues?.values[l];
 
     values[l] = {
-      originalvalue: typeof originalvalue === 'string' ? originalvalue : undefined,
-      value: typeof translatedValue === 'string' ? translatedValue : ''
+      originalvalue,
+      value: translatedValue
     };
   });
   return {
     uri: contentObject.uri,
-    sourceValue: typeof sourceValue === 'string' ? sourceValue : '',
+    sourceValue: sourceValue ?? '',
     values
   };
 };
@@ -42,5 +42,10 @@ export const useContentObjectTranslations = (
   data: CmsStringDataObject[]
 ): Array<ContentObjectTranslation> => {
   const { contentObjects } = useAppContext();
-  return data.map(contentObject => aggregateContentObjectTranslation(contentObject, translationRequest, contentObjects));
+  const filtered = contentObjects.filter(isCmsStringDataObject);
+  return data.map(contentObject => aggregateContentObjectTranslation(contentObject, translationRequest, filtered));
+};
+
+export const isCmsStringDataObject = (contentObject: CmsValueDataObject): contentObject is CmsStringDataObject => {
+  return typeof contentObject === 'object' && typeof contentObject.uri === 'string' && typeof contentObject.values === 'object';
 };
