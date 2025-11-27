@@ -7,23 +7,29 @@ import {
   BasicSelect,
   Button,
   Flex,
+  type BasicCheckboxProps,
   type MessageData
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { type CheckedState } from '@radix-ui/react-checkbox';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
 import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
+import type { DisabledWithReason } from '../../../../utils/types';
 import './TranslationWizard.css';
-import { TranslationWizardReview, type DisabledWithReason } from './TranslationWizardReview';
+import { TranslationWizardReview } from './TranslationWizardReview';
 
 export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
 
+type CheckedState = Required<BasicCheckboxProps>['checked'];
+
 export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => void }) => {
   const { t } = useTranslation();
-  const { languages, defaultSourceLanguageTag } = useLanguages();
+  const { context, defaultLanguageTags, languageDisplayName } = useAppContext();
+
+  const sourceLanguages = toLanguages(defaultLanguageTags, languageDisplayName);
+  const defaultSourceLanguageTag = defaultLanguageTag(defaultLanguageTags);
 
   const [sourceLanguageTag, setSourceLanguageTag] = useState(defaultSourceLanguageTag ?? '');
   const onSourceTagLanguageChange = (languageTag: string) => {
@@ -47,7 +53,8 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
   const removeTargetLanguageTag = (languageTag: string) =>
     setTargetLanguageTags(targetLanguageTags => targetLanguageTags.filter(tag => tag !== languageTag));
 
-  const targetLanguages = languages.filter(language => language.value !== sourceLanguageTag);
+  const locales = useMeta('meta/locales', context, []).data;
+  const targetLanguages = toLanguages(locales, languageDisplayName).filter(language => language.value !== sourceLanguageTag);
   const selectableTargetLanguageTags = targetLanguages.map(language => language.value);
   const selectAll = () => setTargetLanguageTags(selectableTargetLanguageTags);
   const deselectAll = () => setTargetLanguageTags([]);
@@ -101,8 +108,11 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
           ))}
         </Flex>
       </BasicCollapsible>
-      <BasicField label={t('common.label.sourceLanguage')}>
-        <BasicSelect value={sourceLanguageTag} items={languages} onValueChange={onSourceTagLanguageChange} />
+      <BasicField
+        label={t('common.label.sourceLanguage')}
+        message={{ variant: 'info', message: t('dialog.translationWizard.sourceLanguageInfo') }}
+      >
+        <BasicSelect value={sourceLanguageTag} items={sourceLanguages} onValueChange={onSourceTagLanguageChange} />
       </BasicField>
       <BasicField
         label={t('common.label.targetLanguages')}
@@ -145,24 +155,6 @@ const TargetLanguagesControl = ({ selectAll, deselectAll, areAllSelected }: Targ
       {t('common.label.selectAll')}
     </Button>
   );
-};
-
-export const useLanguages = () => {
-  const { context, defaultLanguageTags, languageDisplayName } = useAppContext();
-  const locales = useMeta('meta/locales', context, []).data;
-
-  return useMemo(() => {
-    const languages = toLanguages(locales, languageDisplayName);
-
-    let defaultSourceLanguageTag;
-    if (defaultLanguageTags.length > 0) {
-      defaultSourceLanguageTag = defaultLanguageTag(defaultLanguageTags);
-    } else {
-      defaultSourceLanguageTag = defaultLanguageTag(locales);
-    }
-
-    return { languages, defaultSourceLanguageTag };
-  }, [locales, languageDisplayName, defaultLanguageTags]);
 };
 
 export const useTranslatableSelectedContentObjects = (notTranslatableFilters: Array<NotTranslatableFilter>) => {

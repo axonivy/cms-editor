@@ -85,7 +85,10 @@ const ContextHelper = ({
   );
 };
 
-export const customRender = (ui: React.ReactElement, options?: RenderOptions & { wrapperProps: ContextHelperProps }) => {
+export const customRender = (
+  ui: React.ReactElement,
+  options?: RenderOptions & { wrapperProps: ContextHelperProps }
+): ReturnType<typeof render> => {
   return render(ui, {
     wrapper: props => <ContextHelper {...props} {...options?.wrapperProps} />,
     ...options

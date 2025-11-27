@@ -32,6 +32,7 @@ import { useQueryKeys } from '../../../../query/query-client';
 import { useContentObjectTranslations } from './use-content-object-translations';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
+import type { DisabledWithReason } from '../../../../utils/types';
 
 type TranslationWizardProps = {
   disabledWithReason: DisabledWithReason;

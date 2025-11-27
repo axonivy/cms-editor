@@ -6,17 +6,17 @@ This repo contains the web-based CMS Editor client.
 
 ### Available Scripts
 
-`npm install`: Install all packages
+`pnpm install`: Install all packages
 
-`npm run package`: Build the lib output
+`pnpm run package`: Build the lib output
 
-`npm run dev`: Start the dev server
+`pnpm run dev`: Start the dev server
 
 #### Run tests
 
-`npm run test`: Run unit tests
+`pnpm run test`: Run unit tests
 
-`npm run webtest`: Run Playwright tests
+`pnpm run webtest`: Run Playwright tests
 
 ### VSCode dev environment
 
