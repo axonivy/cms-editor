@@ -24,7 +24,7 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useMemo, type ComponentProps } from 'react';
+import { useMemo, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
@@ -126,13 +126,13 @@ const TranslationWizardReviewDialogContent = ({
 
   const translations = useContentObjectTranslations(translationRequest, data ?? []);
 
-  const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>>>(() => {
+  const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, ReactNode>>>(() => {
     const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
-    const baseColumns: Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>> = [
+    const baseColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = [
       {
         accessorKey: 'uri',
         header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
-        cell: cell => <span>{cell.getValue().value}</span>
+        cell: cell => <span>{cell.getValue()}</span>
       },
       {
         accessorKey: 'sourceValue',
@@ -142,20 +142,21 @@ const TranslationWizardReviewDialogContent = ({
             name={`${getFullDisplayName(translationRequest.sourceLanguageTag)} (${t('common.label.sourceLanguage')})`}
           />
         ),
-        cell: cell => <span>{cell.getValue().value}</span>
+        cell: cell => <span>{cell.getValue()}</span>
       }
     ];
 
-    const targetColumns: Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>> =
-      translationRequest.targetLanguageTags.map(languageTag => ({
-        accessorKey: `target-${languageTag}`,
-        accessorFn: row => row.values[languageTag],
-        header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
-        cell: cell => {
-          const value = cell.getValue();
-          return <TranslationCell contentObject={value?.value} languageTag={languageTag} overriddenValue={value?.originalvalue ?? null} />;
-        }
-      }));
+    const targetColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = translationRequest.targetLanguageTags.map(languageTag => ({
+      accessorKey: `target-${languageTag}`,
+      header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
+      cell: cell => {
+        const originalRow = cell.row.original;
+        const value = originalRow.values?.[languageTag];
+        return (
+          <TranslationCell contentObject={value?.value ?? null} languageTag={languageTag} overriddenValue={value?.originalvalue ?? null} />
+        );
+      }
+    }));
 
     return [...baseColumns, ...targetColumns];
   }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t]);
