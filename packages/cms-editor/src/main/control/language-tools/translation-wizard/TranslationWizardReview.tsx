@@ -8,12 +8,12 @@ import {
   Flex,
   PanelMessage,
   Separator,
+  SortableHeader,
   Spinner,
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
+  TableResizableHeader,
   TableRow,
   Tooltip,
   TooltipContent,
@@ -23,13 +23,14 @@ import {
 import { IvyIcons } from '@axonivy/ui-icons';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { type ComponentProps } from 'react';
+import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import { useMemo, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
-import { useContentObjectTranslations } from './use-content-object-translations';
+import { useContentObjectTranslations, type ContentObjectTranslation } from './use-content-object-translations';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
 
@@ -123,8 +124,47 @@ const TranslationWizardReviewDialogContent = ({
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
 
-  const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
   const translations = useContentObjectTranslations(translationRequest, data ?? []);
+
+  const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>>>(() => {
+    const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
+    const baseColumns: Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>> = [
+      {
+        accessorKey: 'uri',
+        header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
+        cell: cell => <span>{cell.getValue().value}</span>
+      },
+      {
+        accessorKey: 'sourceValue',
+        header: ({ column }) => (
+          <SortableHeader
+            column={column}
+            name={`${getFullDisplayName(translationRequest.sourceLanguageTag)} (${t('common.label.sourceLanguage')})`}
+          />
+        ),
+        cell: cell => <span>{cell.getValue().value}</span>
+      }
+    ];
+
+    const targetColumns: Array<ColumnDef<ContentObjectTranslation, { originalvalue?: string; value: string }>> =
+      translationRequest.targetLanguageTags.map(languageTag => ({
+        accessorKey: `target-${languageTag}`,
+        accessorFn: row => row.values[languageTag],
+        header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
+        cell: cell => {
+          const value = cell.getValue();
+          return <TranslationCell contentObject={value?.value} languageTag={languageTag} overriddenValue={value?.originalvalue ?? null} />;
+        }
+      }));
+
+    return [...baseColumns, ...targetColumns];
+  }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t]);
+
+  const table = useReactTable({
+    data: translations,
+    columns,
+    getCoreRowModel: getCoreRowModel()
+  });
 
   if (isPending) {
     return (
@@ -147,33 +187,12 @@ const TranslationWizardReviewDialogContent = ({
   return (
     <Flex>
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t('common.label.path')}</TableHead>
-            <TableHead>
-              {getFullDisplayName(translationRequest.sourceLanguageTag)} {'(' + t('common.label.sourceLanguage') + ')'}
-            </TableHead>
-            {translationRequest.targetLanguageTags.map(languageTag => (
-              <TableHead key={languageTag}>{getFullDisplayName(languageTag)}</TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
+        <TableResizableHeader headerGroups={table.getHeaderGroups()}></TableResizableHeader>
         <TableBody>
-          {translations.map(contentObject => (
-            <TableRow key={contentObject.uri}>
-              <TableCell>
-                <span>{contentObject.uri}</span>
-              </TableCell>
-              <TableCell>
-                <span>{contentObject.sourceValue}</span>
-              </TableCell>
-              {translationRequest.targetLanguageTags.map(languageTag => (
-                <TranslationCell
-                  key={languageTag}
-                  contentObject={contentObject.values[languageTag]?.value ?? null}
-                  languageTag={languageTag}
-                  overriddenValue={contentObject.values[languageTag]?.originalvalue ?? null}
-                />
+          {table.getRowModel().rows.map(row => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
               ))}
             </TableRow>
           ))}
@@ -196,22 +215,20 @@ const TranslationCell = ({
   const hasOverridden = overriddenValue !== null;
 
   return (
-    <TableCell>
-      <Flex direction='column'>
-        {hasTranslation && (
-          <span>
-            {languageTag}: {contentObject}
-          </span>
-        )}
+    <Flex direction='column'>
+      {hasTranslation && (
+        <span>
+          {languageTag}: {contentObject}
+        </span>
+      )}
 
-        {hasOverridden && (
-          <>
-            <Separator />
-            <span>{overriddenValue}</span>
-          </>
-        )}
-      </Flex>
-    </TableCell>
+      {hasOverridden && (
+        <>
+          <Separator />
+          <span>{overriddenValue}</span>
+        </>
+      )}
+    </Flex>
   );
 };
 
