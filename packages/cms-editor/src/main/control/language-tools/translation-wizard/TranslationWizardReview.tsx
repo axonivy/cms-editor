@@ -30,6 +30,7 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
+import './TranslationWizardReview.css';
 import { useContentObjectTranslations, type ContentObjectTranslation } from './use-content-object-translations';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
@@ -55,7 +56,12 @@ export const TranslationWizardReview = ({ disabledWithReason, closeTranslationWi
       ) : (
         <TranslationWizardReviewTrigger disabled={disabledWithReason.disabled} />
       )}
-      <DialogContent>
+      <DialogContent
+        style={{
+          width: 'auto',
+          maxWidth: '60vw'
+        }}
+      >
         <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
       </DialogContent>
     </Dialog>
@@ -96,6 +102,7 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
 
   return (
     <BasicDialogContent
+      style={{ maxHeight: '60vh' }}
       title={t('dialog.translationWizard.review.title')}
       description={t('dialog.translationWizard.review.description')}
       cancel={
@@ -186,9 +193,9 @@ const TranslationWizardReviewDialogContent = ({
   }
 
   return (
-    <Flex style={{ maxHeight: '400', overflowY: 'auto' }}>
-      <Table>
-        <TableResizableHeader headerGroups={table.getHeaderGroups()}></TableResizableHeader>
+    <Flex>
+      <Table style={{ width: 'auto' }}>
+        <TableResizableHeader headerGroups={table.getHeaderGroups()} className='cms-editor-translation-wizard-review-table-header' />
         <TableBody>
           {table.getRowModel().rows.map(row => (
             <TableRow key={row.id}>
