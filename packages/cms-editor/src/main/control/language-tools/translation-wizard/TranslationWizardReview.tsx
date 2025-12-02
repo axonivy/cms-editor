@@ -147,7 +147,7 @@ const TranslationWizardReviewDialogContent = ({
     ];
 
     const targetColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = translationRequest.targetLanguageTags.map(languageTag => ({
-      accessorKey: `target-${languageTag}`,
+      id: `target-${languageTag}`,
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
@@ -186,7 +186,7 @@ const TranslationWizardReviewDialogContent = ({
   }
 
   return (
-    <Flex>
+    <Flex style={{ maxHeight: '400', overflowY: 'auto' }}>
       <Table>
         <TableResizableHeader headerGroups={table.getHeaderGroups()}></TableResizableHeader>
         <TableBody>
