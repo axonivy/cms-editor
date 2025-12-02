@@ -1,4 +1,5 @@
 import type { CmsStringDataObject, CmsTranslationRequest } from '@axonivy/cms-editor-protocol';
+import { useMemo } from 'react';
 import { useAppContext } from '../../../../context/AppContext';
 import { isCmsStringDataObject } from '../../../../utils/cms-utils';
 
@@ -43,6 +44,9 @@ export const useContentObjectTranslations = (
   data: CmsStringDataObject[]
 ): Array<ContentObjectTranslation> => {
   const { contentObjects } = useAppContext();
-  const filtered = contentObjects.filter(isCmsStringDataObject);
-  return data.map(contentObject => aggregateContentObjectTranslation(contentObject, translationRequest, filtered));
+  const filtered = useMemo(() => contentObjects.filter(isCmsStringDataObject), [contentObjects]);
+  return useMemo(
+    () => data.map(contentObject => aggregateContentObjectTranslation(contentObject, translationRequest, filtered)),
+    [data, translationRequest, filtered]
+  );
 };
