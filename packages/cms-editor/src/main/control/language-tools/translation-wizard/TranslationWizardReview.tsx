@@ -24,7 +24,7 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useMemo, type ComponentProps, type ReactNode } from 'react';
+import { useMemo, useState, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
@@ -93,10 +93,43 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
   const query = useContentObjectTranslation(translationRequest);
   const { updateStringValuesMutation } = useUpdateValues();
 
+  const [strikedItems, setStrikedItems] = useState<Map<string, Set<string>>>(new Map());
+
+  const toggleStrike = (uri: string, languageTag: string) => {
+    setStrikedItems(prev => {
+      const newMap = new Map(prev);
+      const languageSet = new Set(newMap.get(uri) || []);
+
+      if (languageSet.has(languageTag)) {
+        languageSet.delete(languageTag);
+        if (languageSet.size === 0) {
+          newMap.delete(uri);
+        } else {
+          newMap.set(uri, languageSet);
+        }
+      } else {
+        languageSet.add(languageTag);
+        newMap.set(uri, languageSet);
+      }
+
+      return newMap;
+    });
+  };
+
   const applyTranslations = () => {
     if (!query.data) return;
 
-    updateStringValuesMutation.mutate({ context, updateRequests: query.data });
+    const filteredUpdates = query.data.map(contentObject => {
+      const ignoredLanguages = strikedItems.get(contentObject.uri) ?? new Set<string>();
+
+      const filteredValues = Object.fromEntries(
+        Object.entries(contentObject.values ?? {}).filter(([languageTag]) => !ignoredLanguages.has(languageTag))
+      );
+
+      return { ...contentObject, values: filteredValues };
+    });
+
+    updateStringValuesMutation.mutate({ context, updateRequests: filteredUpdates });
     closeTranslationWizard();
   };
 
@@ -118,17 +151,26 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent query={query} translationRequest={translationRequest} />
+      <TranslationWizardReviewDialogContent
+        query={query}
+        translationRequest={translationRequest}
+        strikedItems={strikedItems}
+        toggleStrike={toggleStrike}
+      />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
   query: { data, isPending, isError, error },
-  translationRequest
+  translationRequest,
+  strikedItems,
+  toggleStrike
 }: {
   query: UseQueryResult<CmsStringDataObject[]>;
   translationRequest: CmsTranslationRequest;
+  strikedItems: Map<string, Set<string>>;
+  toggleStrike: (uri: string, languageTag: string) => void;
 }) => {
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
@@ -161,14 +203,21 @@ const TranslationWizardReviewDialogContent = ({
       cell: cell => {
         const originalRow = cell.row.original;
         const value = originalRow.values?.[languageTag];
+        const isStriked = strikedItems.get(originalRow.uri)?.has(languageTag) ?? false;
         return (
-          <TranslationCell contentObject={value?.value ?? null} languageTag={languageTag} overriddenValue={value?.originalvalue ?? null} />
+          <TranslationCell
+            contentObject={value?.value ?? null}
+            languageTag={languageTag}
+            overriddenValue={value?.originalvalue ?? null}
+            isStriked={isStriked}
+            onToggleStrike={() => toggleStrike(originalRow.uri, languageTag)}
+          />
         );
       }
     }));
 
     return [...baseColumns, ...targetColumns];
-  }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t]);
+  }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t, strikedItems, toggleStrike]);
 
   const table = useReactTable({
     data: translations,
@@ -215,19 +264,23 @@ const TranslationWizardReviewDialogContent = ({
 const TranslationCell = ({
   contentObject,
   languageTag,
-  overriddenValue
+  overriddenValue,
+  isStriked,
+  onToggleStrike
 }: {
   contentObject: string | null;
   languageTag: string;
   overriddenValue: string | null;
+  isStriked: boolean;
+  onToggleStrike: () => void;
 }) => {
   const hasTranslation = !!contentObject;
   const hasOverridden = overriddenValue !== null;
 
   return (
-    <Flex direction='column'>
+    <Flex style={{ cursor: 'pointer' }} onClick={onToggleStrike} direction='column'>
       {hasTranslation && (
-        <span>
+        <span style={{ textDecoration: isStriked ? 'line-through' : 'none' }}>
           {languageTag}: {contentObject}
         </span>
       )}
@@ -235,7 +288,7 @@ const TranslationCell = ({
       {hasOverridden && (
         <>
           <Separator />
-          <span>{overriddenValue}</span>
+          <span style={{ textDecoration: !isStriked ? 'line-through' : 'none' }}>{overriddenValue}</span>
         </>
       )}
     </Flex>
