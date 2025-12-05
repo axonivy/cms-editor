@@ -172,6 +172,7 @@ const TranslationWizardReviewDialogContent = ({
 
   const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, ReactNode>>>(() => {
     const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
+
     const baseColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = [
       {
         accessorKey: 'uri',
@@ -195,13 +196,81 @@ const TranslationWizardReviewDialogContent = ({
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
+        const value = originalRow.values[languageTag];
+        const translationValue = value?.value ?? '';
+        const originalValue = value?.originalvalue ?? null;
 
-        return <TranslationCell originalRow={originalRow} languageTag={languageTag} setTranslationData={setTranslationData} />;
+        if (originalValue === null) {
+          return <TranslationCellSimple languageTag={languageTag} translationValue={translationValue} />;
+        }
+
+        return (
+          <TranslationCellWithToggle
+            originalRow={originalRow}
+            languageTag={languageTag}
+            translationValue={translationValue}
+            originalValue={originalValue}
+            setTranslationData={setTranslationData}
+          />
+        );
       }
     }));
 
     return [...baseColumns, ...targetColumns];
   }, [translationRequest, languageDisplayName, t, setTranslationData]);
+
+  const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
+    <Flex>
+      <span>
+        {languageTag}: {translationValue}
+      </span>
+    </Flex>
+  );
+  const TranslationCellWithToggle = ({
+    originalRow,
+    languageTag,
+    translationValue,
+    originalValue,
+    setTranslationData
+  }: {
+    originalRow: ContentObjectTranslation;
+    languageTag: string;
+    translationValue: string;
+    originalValue: string;
+    setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
+  }) => {
+    const [isTranslationSelected, setIsTranslationSelected] = useState(true);
+
+    const handleClick = () => {
+      const newTranslatedState = !isTranslationSelected;
+      setIsTranslationSelected(newTranslatedState);
+
+      setTranslationData(prev => {
+        const newData = structuredClone(prev);
+        const contentObject = newData.find(value => value.uri === originalRow.uri);
+        if (!contentObject) {
+          return newData;
+        }
+
+        if (newTranslatedState) {
+          contentObject.values[languageTag] = translationValue;
+        } else {
+          contentObject.values[languageTag] = originalValue ?? '';
+        }
+        return newData;
+      });
+    };
+
+    return (
+      <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
+        <span style={{ textDecoration: !isTranslationSelected ? 'line-through' : 'none' }}>
+          {languageTag}: {translationValue}
+        </span>
+        <Separator />
+        <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
+      </Flex>
+    );
+  };
 
   const table = useReactTable({
     data: translations,
@@ -223,61 +292,6 @@ const TranslationWizardReviewDialogContent = ({
           ))}
         </TableBody>
       </Table>
-    </Flex>
-  );
-};
-const TranslationCell = ({
-  originalRow,
-  languageTag,
-  setTranslationData
-}: {
-  originalRow: ContentObjectTranslation;
-  languageTag: string;
-  setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
-}) => {
-  const [isTranslationSelected, setIsTranslationSelected] = useState(true);
-
-  const value = originalRow.values[languageTag];
-
-  const translationValue = value?.value ?? '';
-  const originalValue = value?.originalvalue ?? null;
-  const hasOriginalValue = originalValue !== null;
-
-  const handleClick = () => {
-    const newTranslatedState = !isTranslationSelected;
-    setIsTranslationSelected(newTranslatedState);
-
-    setTranslationData(prev => {
-      const newData = structuredClone(prev);
-      const contentObject = newData.find(value => value.uri === originalRow.uri);
-      if (!contentObject) {
-        return newData;
-      }
-
-      if (newTranslatedState) {
-        contentObject.values[languageTag] = translationValue;
-      } else {
-        contentObject.values[languageTag] = originalValue ?? '';
-      }
-      return newData;
-    });
-  };
-
-  return (
-    <Flex
-      style={{ cursor: hasOriginalValue ? 'pointer' : 'default' }}
-      onClick={hasOriginalValue ? handleClick : undefined}
-      direction='column'
-    >
-      <span style={{ textDecoration: !isTranslationSelected && hasOriginalValue ? 'line-through' : 'none' }}>
-        {languageTag}: {translationValue}
-      </span>
-      {hasOriginalValue && (
-        <>
-          <Separator />
-          <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
-        </>
-      )}
     </Flex>
   );
 };
