@@ -56,28 +56,44 @@ export const TranslationWizardReview = ({ disabledWithReason, closeTranslationWi
       ) : (
         <TranslationWizardReviewTrigger disabled={disabledWithReason.disabled} />
       )}
-      <TranslationDialogContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
+      <DialogContent
+        style={{
+          width: 'auto',
+          maxWidth: '60vw',
+          height: 'auto',
+          maxHeight: '80vh'
+        }}
+      >
+        <TranslationDialogContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
+      </DialogContent>
     </Dialog>
   );
 };
 
 const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
   const query = useContentObjectTranslation(translationRequest);
-  return (
-    <DialogContent
-      style={{
-        width: 'auto',
-        maxWidth: '60vw',
-        height: 'auto',
-        maxHeight: '80vh'
-      }}
-    >
-      <TranslationWizardReviewContent
-        closeTranslationWizard={closeTranslationWizard}
-        translationRequest={translationRequest}
-        query={query}
+  const { t } = useTranslation();
+
+  if (query.isPending) {
+    return (
+      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
+        <Spinner className='cms-editor-translation-wizard-review-spinner' />
+      </Flex>
+    );
+  }
+
+  if (query.isError) {
+    return (
+      <PanelMessage
+        icon={IvyIcons.ErrorXMark}
+        message={t('message.error', { error: query.error })}
+        className='cms-editor-translation-wizard-review-error'
       />
-    </DialogContent>
+    );
+  }
+
+  return (
+    <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} query={query} />
   );
 };
 
@@ -136,25 +152,18 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent
-        query={query}
-        translationRequest={translationRequest}
-        translationData={translationData}
-        setTranslationData={setTranslationData}
-      />
+      <TranslationWizardReviewDialogContent query={query} translationRequest={translationRequest} setTranslationData={setTranslationData} />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
-  query: { data, isPending, isError, error },
+  query: { data },
   translationRequest,
-  translationData,
   setTranslationData
 }: {
   query: UseQueryResult<CmsStringDataObject[]>;
   translationRequest: CmsTranslationRequest;
-  translationData: CmsStringDataObject[];
   setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
   const { t } = useTranslation();
@@ -194,7 +203,6 @@ const TranslationWizardReviewDialogContent = ({
             translationValue={value?.value ?? ''}
             languageTag={languageTag}
             originalValue={value?.originalvalue ?? null}
-            translationData={translationData}
             setTranslationData={setTranslationData}
           />
         );
@@ -202,38 +210,13 @@ const TranslationWizardReviewDialogContent = ({
     }));
 
     return [...baseColumns, ...targetColumns];
-  }, [
-    translationRequest.targetLanguageTags,
-    translationRequest.sourceLanguageTag,
-    languageDisplayName,
-    t,
-    translationData,
-    setTranslationData
-  ]);
+  }, [translationRequest.targetLanguageTags, translationRequest.sourceLanguageTag, languageDisplayName, t, setTranslationData]);
 
   const table = useReactTable({
     data: translations,
     columns,
     getCoreRowModel: getCoreRowModel()
   });
-
-  if (isPending) {
-    return (
-      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
-        <Spinner className='cms-editor-translation-wizard-review-spinner' />
-      </Flex>
-    );
-  }
-
-  if (isError) {
-    return (
-      <PanelMessage
-        icon={IvyIcons.ErrorXMark}
-        message={t('message.error', { error })}
-        className='cms-editor-translation-wizard-review-error'
-      />
-    );
-  }
 
   return (
     <Flex>
@@ -263,7 +246,6 @@ const TranslationCell = ({
   translationValue: string;
   languageTag: string;
   originalValue: string | null;
-  translationData: CmsStringDataObject[];
   setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
   const hasTranslation = !!translationValue;
@@ -292,9 +274,9 @@ const TranslationCell = ({
   };
 
   return (
-    <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
+    <Flex style={{ cursor: hasOverridden ? 'pointer' : 'default' }} onClick={hasOverridden ? handleClick : undefined} direction='column'>
       {hasTranslation && (
-        <span style={{ textDecoration: !isTranslationSelected ? 'line-through' : 'none' }}>
+        <span style={{ textDecoration: !isTranslationSelected && hasOverridden ? 'line-through' : 'none' }}>
           {languageTag}: {translationValue}
         </span>
       )}
