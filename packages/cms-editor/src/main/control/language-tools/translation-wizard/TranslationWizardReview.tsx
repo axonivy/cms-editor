@@ -56,17 +56,28 @@ export const TranslationWizardReview = ({ disabledWithReason, closeTranslationWi
       ) : (
         <TranslationWizardReviewTrigger disabled={disabledWithReason.disabled} />
       )}
-      <DialogContent
-        style={{
-          width: 'auto',
-          maxWidth: '60vw',
-          height: 'auto',
-          maxHeight: '80vh'
-        }}
-      >
-        <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
-      </DialogContent>
+      <TranslationDialogContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
     </Dialog>
+  );
+};
+
+const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
+  const query = useContentObjectTranslation(translationRequest);
+  return (
+    <DialogContent
+      style={{
+        width: 'auto',
+        maxWidth: '60vw',
+        height: 'auto',
+        maxHeight: '80vh'
+      }}
+    >
+      <TranslationWizardReviewContent
+        closeTranslationWizard={closeTranslationWizard}
+        translationRequest={translationRequest}
+        query={query}
+      />
+    </DialogContent>
   );
 };
 
@@ -87,49 +98,23 @@ type TranslationWizardContentProps = {
   translationRequest: CmsTranslationRequest;
 };
 
-const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
+type TranslationWizardReviewContentProps = {
+  closeTranslationWizard: () => void;
+  translationRequest: CmsTranslationRequest;
+  query: UseQueryResult<CmsStringDataObject[], Error>;
+};
+
+const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, query }: TranslationWizardReviewContentProps) => {
   const { t } = useTranslation();
   const { context } = useAppContext();
-  const query = useContentObjectTranslation(translationRequest);
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const [strikedItems, setStrikedItems] = useState<Map<string, Set<string>>>(new Map());
-
-  const toggleStrike = (uri: string, languageTag: string) => {
-    setStrikedItems(prev => {
-      const newMap = new Map(prev);
-      const languageSet = new Set(newMap.get(uri) || []);
-
-      if (languageSet.has(languageTag)) {
-        languageSet.delete(languageTag);
-        if (languageSet.size === 0) {
-          newMap.delete(uri);
-        } else {
-          newMap.set(uri, languageSet);
-        }
-      } else {
-        languageSet.add(languageTag);
-        newMap.set(uri, languageSet);
-      }
-
-      return newMap;
-    });
-  };
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(query.data ?? []);
 
   const applyTranslations = () => {
-    if (!query.data) return;
+    if (!translationData) return;
 
-    const filteredUpdates = query.data.map(contentObject => {
-      const ignoredLanguages = strikedItems.get(contentObject.uri) ?? new Set<string>();
-
-      const filteredValues = Object.fromEntries(
-        Object.entries(contentObject.values ?? {}).filter(([languageTag]) => !ignoredLanguages.has(languageTag))
-      );
-
-      return { ...contentObject, values: filteredValues };
-    });
-
-    updateStringValuesMutation.mutate({ context, updateRequests: filteredUpdates });
+    updateStringValuesMutation.mutate({ context, updateRequests: translationData });
     closeTranslationWizard();
   };
 
@@ -154,8 +139,8 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
       <TranslationWizardReviewDialogContent
         query={query}
         translationRequest={translationRequest}
-        strikedItems={strikedItems}
-        toggleStrike={toggleStrike}
+        translationData={translationData}
+        setTranslationData={setTranslationData}
       />
     </BasicDialogContent>
   );
@@ -164,13 +149,13 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
 const TranslationWizardReviewDialogContent = ({
   query: { data, isPending, isError, error },
   translationRequest,
-  strikedItems,
-  toggleStrike
+  translationData,
+  setTranslationData
 }: {
   query: UseQueryResult<CmsStringDataObject[]>;
   translationRequest: CmsTranslationRequest;
-  strikedItems: Map<string, Set<string>>;
-  toggleStrike: (uri: string, languageTag: string) => void;
+  translationData: CmsStringDataObject[];
+  setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
@@ -202,22 +187,29 @@ const TranslationWizardReviewDialogContent = ({
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
-        const value = originalRow.values?.[languageTag];
-        const isStriked = strikedItems.get(originalRow.uri)?.has(languageTag) ?? false;
+        const value = originalRow.values[languageTag];
         return (
           <TranslationCell
-            contentObject={value?.value ?? null}
+            uri={originalRow.uri}
+            translationValue={value?.value ?? ''}
             languageTag={languageTag}
-            overriddenValue={value?.originalvalue ?? null}
-            isStriked={isStriked}
-            onToggleStrike={() => toggleStrike(originalRow.uri, languageTag)}
+            originalValue={value?.originalvalue ?? null}
+            translationData={translationData}
+            setTranslationData={setTranslationData}
           />
         );
       }
     }));
 
     return [...baseColumns, ...targetColumns];
-  }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t, strikedItems, toggleStrike]);
+  }, [
+    translationRequest.targetLanguageTags,
+    translationRequest.sourceLanguageTag,
+    languageDisplayName,
+    t,
+    translationData,
+    setTranslationData
+  ]);
 
   const table = useReactTable({
     data: translations,
@@ -260,35 +252,56 @@ const TranslationWizardReviewDialogContent = ({
     </Flex>
   );
 };
-
 const TranslationCell = ({
-  contentObject,
+  uri,
+  translationValue,
   languageTag,
-  overriddenValue,
-  isStriked,
-  onToggleStrike
+  originalValue,
+  setTranslationData
 }: {
-  contentObject: string | null;
+  uri: string;
+  translationValue: string;
   languageTag: string;
-  overriddenValue: string | null;
-  isStriked: boolean;
-  onToggleStrike: () => void;
+  originalValue: string | null;
+  translationData: CmsStringDataObject[];
+  setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
-  const hasTranslation = !!contentObject;
-  const hasOverridden = overriddenValue !== null;
+  const hasTranslation = !!translationValue;
+  const hasOverridden = originalValue !== null;
+
+  const [isTranslationSelected, setIsTranslationSelected] = useState(true);
+
+  const handleClick = () => {
+    const newTranslatedState = !isTranslationSelected;
+    setIsTranslationSelected(newTranslatedState);
+
+    setTranslationData(prev => {
+      const newData = structuredClone(prev);
+      const contentObject = newData.find(value => value.uri === uri);
+      if (!contentObject) {
+        return newData;
+      }
+
+      if (newTranslatedState) {
+        contentObject.values[languageTag] = translationValue;
+      } else {
+        contentObject.values[languageTag] = originalValue ?? '';
+      }
+      return newData;
+    });
+  };
 
   return (
-    <Flex style={{ cursor: 'pointer' }} onClick={onToggleStrike} direction='column'>
+    <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
       {hasTranslation && (
-        <span style={{ textDecoration: isStriked ? 'line-through' : 'none' }}>
-          {languageTag}: {contentObject}
+        <span style={{ textDecoration: !isTranslationSelected ? 'line-through' : 'none' }}>
+          {languageTag}: {translationValue}
         </span>
       )}
-
       {hasOverridden && (
         <>
           <Separator />
-          <span style={{ textDecoration: !isStriked ? 'line-through' : 'none' }}>{overriddenValue}</span>
+          <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
         </>
       )}
     </Flex>
