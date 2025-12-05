@@ -21,7 +21,6 @@ import {
   TooltipTrigger
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState, type ComponentProps, type ReactNode } from 'react';
@@ -93,7 +92,11 @@ const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }
   }
 
   return (
-    <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} query={query} />
+    <TranslationWizardReviewContent
+      closeTranslationWizard={closeTranslationWizard}
+      translationRequest={translationRequest}
+      data={query.data}
+    />
   );
 };
 
@@ -117,24 +120,20 @@ type TranslationWizardContentProps = {
 type TranslationWizardReviewContentProps = {
   closeTranslationWizard: () => void;
   translationRequest: CmsTranslationRequest;
-  query: UseQueryResult<CmsStringDataObject[], Error>;
+  data: CmsStringDataObject[];
 };
 
-const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, query }: TranslationWizardReviewContentProps) => {
+const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, data }: TranslationWizardReviewContentProps) => {
   const { t } = useTranslation();
   const { context } = useAppContext();
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(query.data ?? []);
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(data ?? []);
 
   const applyTranslations = () => {
-    if (!translationData) return;
-
     updateStringValuesMutation.mutate({ context, updateRequests: translationData });
     closeTranslationWizard();
   };
-
-  const isSubmitDisabled = query.isPending || query.isError;
 
   return (
     <BasicDialogContent
@@ -147,22 +146,22 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
       submit={
-        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={applyTranslations} disabled={isSubmitDisabled}>
+        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={applyTranslations}>
           {t('common.label.apply')}
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent query={query} translationRequest={translationRequest} setTranslationData={setTranslationData} />
+      <TranslationWizardReviewDialogContent data={data} translationRequest={translationRequest} setTranslationData={setTranslationData} />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
-  query: { data },
+  data,
   translationRequest,
   setTranslationData
 }: {
-  query: UseQueryResult<CmsStringDataObject[]>;
+  data: CmsStringDataObject[];
   translationRequest: CmsTranslationRequest;
   setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
@@ -196,21 +195,13 @@ const TranslationWizardReviewDialogContent = ({
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
-        const value = originalRow.values[languageTag];
-        return (
-          <TranslationCell
-            uri={originalRow.uri}
-            translationValue={value?.value ?? ''}
-            languageTag={languageTag}
-            originalValue={value?.originalvalue ?? null}
-            setTranslationData={setTranslationData}
-          />
-        );
+
+        return <TranslationCell originalRow={originalRow} languageTag={languageTag} setTranslationData={setTranslationData} />;
       }
     }));
 
     return [...baseColumns, ...targetColumns];
-  }, [translationRequest.targetLanguageTags, translationRequest.sourceLanguageTag, languageDisplayName, t, setTranslationData]);
+  }, [translationRequest, languageDisplayName, t, setTranslationData]);
 
   const table = useReactTable({
     data: translations,
@@ -236,22 +227,21 @@ const TranslationWizardReviewDialogContent = ({
   );
 };
 const TranslationCell = ({
-  uri,
-  translationValue,
+  originalRow,
   languageTag,
-  originalValue,
   setTranslationData
 }: {
-  uri: string;
-  translationValue: string;
+  originalRow: ContentObjectTranslation;
   languageTag: string;
-  originalValue: string | null;
   setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
 }) => {
-  const hasTranslation = !!translationValue;
-  const hasOverridden = originalValue !== null;
-
   const [isTranslationSelected, setIsTranslationSelected] = useState(true);
+
+  const value = originalRow.values[languageTag];
+
+  const translationValue = value?.value ?? '';
+  const originalValue = value?.originalvalue ?? null;
+  const hasOriginalValue = originalValue !== null;
 
   const handleClick = () => {
     const newTranslatedState = !isTranslationSelected;
@@ -259,7 +249,7 @@ const TranslationCell = ({
 
     setTranslationData(prev => {
       const newData = structuredClone(prev);
-      const contentObject = newData.find(value => value.uri === uri);
+      const contentObject = newData.find(value => value.uri === originalRow.uri);
       if (!contentObject) {
         return newData;
       }
@@ -274,13 +264,15 @@ const TranslationCell = ({
   };
 
   return (
-    <Flex style={{ cursor: hasOverridden ? 'pointer' : 'default' }} onClick={hasOverridden ? handleClick : undefined} direction='column'>
-      {hasTranslation && (
-        <span style={{ textDecoration: !isTranslationSelected && hasOverridden ? 'line-through' : 'none' }}>
-          {languageTag}: {translationValue}
-        </span>
-      )}
-      {hasOverridden && (
+    <Flex
+      style={{ cursor: hasOriginalValue ? 'pointer' : 'default' }}
+      onClick={hasOriginalValue ? handleClick : undefined}
+      direction='column'
+    >
+      <span style={{ textDecoration: !isTranslationSelected && hasOriginalValue ? 'line-through' : 'none' }}>
+        {languageTag}: {translationValue}
+      </span>
+      {hasOriginalValue && (
         <>
           <Separator />
           <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
