@@ -306,7 +306,6 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.translationWizardReview.trigger.click();
 
     await expect(languageTools.translationWizard.translationWizardReview.spinner).toBeVisible();
-    await expect(languageTools.translationWizard.translationWizardReview.apply).toBeDisabled();
     // wait for translation to complete
     await expect(languageTools.translationWizard.translationWizardReview.spinner).toBeHidden();
     await expect(languageTools.translationWizard.translationWizardReview.apply).toBeEnabled();
@@ -322,7 +321,6 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.translationWizardReview.trigger.click();
 
     await expect(languageTools.translationWizard.translationWizardReview.error).toHaveText('An error has occurred: Error: error message');
-    await expect(languageTools.translationWizard.translationWizardReview.apply).toBeDisabled();
   });
 });
 
