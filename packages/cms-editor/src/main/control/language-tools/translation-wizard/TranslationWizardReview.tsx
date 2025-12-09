@@ -95,7 +95,7 @@ const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }
     <TranslationWizardReviewContent
       closeTranslationWizard={closeTranslationWizard}
       translationRequest={translationRequest}
-      data={query.data}
+      data={query.data ?? []}
     />
   );
 };
@@ -120,7 +120,7 @@ type TranslationWizardContentProps = {
 type TranslationWizardReviewContentProps = {
   closeTranslationWizard: () => void;
   translationRequest: CmsTranslationRequest;
-  data: CmsStringDataObject[];
+  data: Array<CmsStringDataObject>;
 };
 
 const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, data }: TranslationWizardReviewContentProps) => {
@@ -161,9 +161,9 @@ const TranslationWizardReviewDialogContent = ({
   translationRequest,
   setTranslationData
 }: {
-  data: CmsStringDataObject[];
+  data: Array<CmsStringDataObject>;
   translationRequest: CmsTranslationRequest;
-  setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
+  setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
 }) => {
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
@@ -226,6 +226,7 @@ const TranslationWizardReviewDialogContent = ({
       </span>
     </Flex>
   );
+
   const TranslationCellWithToggle = ({
     originalRow,
     languageTag,
@@ -237,7 +238,7 @@ const TranslationWizardReviewDialogContent = ({
     languageTag: string;
     translationValue: string;
     originalValue: string;
-    setTranslationData: React.Dispatch<React.SetStateAction<CmsStringDataObject[]>>;
+    setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
   }) => {
     const [isTranslationSelected, setIsTranslationSelected] = useState(true);
 
@@ -255,7 +256,7 @@ const TranslationWizardReviewDialogContent = ({
         if (newTranslatedState) {
           contentObject.values[languageTag] = translationValue;
         } else {
-          contentObject.values[languageTag] = originalValue ?? '';
+          contentObject.values[languageTag] = originalValue;
         }
         return newData;
       });

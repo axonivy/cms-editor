@@ -18,7 +18,7 @@ export type ContentObjectTranslation = {
 const aggregateContentObjectTranslation = (
   contentObject: CmsStringDataObject,
   translationRequest: CmsTranslationRequest,
-  contentObjects: CmsStringDataObject[]
+  contentObjects: Array<CmsStringDataObject>
 ): ContentObjectTranslation => {
   const existingValues = contentObjects.find(obj => obj.uri === contentObject.uri);
   const sourceValue = existingValues?.values[translationRequest.sourceLanguageTag];
@@ -41,7 +41,7 @@ const aggregateContentObjectTranslation = (
 
 export const useContentObjectTranslations = (
   translationRequest: CmsTranslationRequest,
-  data: CmsStringDataObject[]
+  data: Array<CmsStringDataObject>
 ): Array<ContentObjectTranslation> => {
   const { contentObjects } = useAppContext();
   const filtered = useMemo(() => contentObjects.filter(isCmsStringDataObject), [contentObjects]);
