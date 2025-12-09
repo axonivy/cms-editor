@@ -21,10 +21,9 @@ import {
   TooltipTrigger
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useMemo, type ComponentProps, type ReactNode } from 'react';
+import { useMemo, useState, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
@@ -64,9 +63,40 @@ export const TranslationWizardReview = ({ disabledWithReason, closeTranslationWi
           maxHeight: '80vh'
         }}
       >
-        <TranslationWizardReviewContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
+        <TranslationDialogContent closeTranslationWizard={closeTranslationWizard} translationRequest={translationRequest} />
       </DialogContent>
     </Dialog>
+  );
+};
+
+const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
+  const query = useContentObjectTranslation(translationRequest);
+  const { t } = useTranslation();
+
+  if (query.isPending) {
+    return (
+      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
+        <Spinner className='cms-editor-translation-wizard-review-spinner' />
+      </Flex>
+    );
+  }
+
+  if (query.isError) {
+    return (
+      <PanelMessage
+        icon={IvyIcons.ErrorXMark}
+        message={t('message.error', { error: query.error })}
+        className='cms-editor-translation-wizard-review-error'
+      />
+    );
+  }
+
+  return (
+    <TranslationWizardReviewContent
+      closeTranslationWizard={closeTranslationWizard}
+      translationRequest={translationRequest}
+      data={query.data ?? []}
+    />
   );
 };
 
@@ -87,20 +117,23 @@ type TranslationWizardContentProps = {
   translationRequest: CmsTranslationRequest;
 };
 
-const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest }: TranslationWizardContentProps) => {
+type TranslationWizardReviewContentProps = {
+  closeTranslationWizard: () => void;
+  translationRequest: CmsTranslationRequest;
+  data: Array<CmsStringDataObject>;
+};
+
+const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, data }: TranslationWizardReviewContentProps) => {
   const { t } = useTranslation();
   const { context } = useAppContext();
-  const query = useContentObjectTranslation(translationRequest);
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const applyTranslations = () => {
-    if (!query.data) return;
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(data ?? []);
 
-    updateStringValuesMutation.mutate({ context, updateRequests: query.data });
+  const applyTranslations = () => {
+    updateStringValuesMutation.mutate({ context, updateRequests: translationData });
     closeTranslationWizard();
   };
-
-  const isSubmitDisabled = query.isPending || query.isError;
 
   return (
     <BasicDialogContent
@@ -113,22 +146,24 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
         </Button>
       }
       submit={
-        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={applyTranslations} disabled={isSubmitDisabled}>
+        <Button variant='primary' size='large' icon={IvyIcons.Check} onClick={applyTranslations}>
           {t('common.label.apply')}
         </Button>
       }
     >
-      <TranslationWizardReviewDialogContent query={query} translationRequest={translationRequest} />
+      <TranslationWizardReviewDialogContent data={data} translationRequest={translationRequest} setTranslationData={setTranslationData} />
     </BasicDialogContent>
   );
 };
 
 const TranslationWizardReviewDialogContent = ({
-  query: { data, isPending, isError, error },
-  translationRequest
+  data,
+  translationRequest,
+  setTranslationData
 }: {
-  query: UseQueryResult<CmsStringDataObject[]>;
+  data: Array<CmsStringDataObject>;
   translationRequest: CmsTranslationRequest;
+  setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
 }) => {
   const { t } = useTranslation();
   const { languageDisplayName } = useAppContext();
@@ -137,6 +172,7 @@ const TranslationWizardReviewDialogContent = ({
 
   const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, ReactNode>>>(() => {
     const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
+
     const baseColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = [
       {
         accessorKey: 'uri',
@@ -160,39 +196,88 @@ const TranslationWizardReviewDialogContent = ({
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
-        const value = originalRow.values?.[languageTag];
+        const value = originalRow.values[languageTag];
+        const translationValue = value?.value ?? '';
+        const originalValue = value?.originalvalue ?? null;
+
+        if (originalValue === null) {
+          return <TranslationCellSimple languageTag={languageTag} translationValue={translationValue} />;
+        }
+
         return (
-          <TranslationCell contentObject={value?.value ?? null} languageTag={languageTag} overriddenValue={value?.originalvalue ?? null} />
+          <TranslationCellWithToggle
+            originalRow={originalRow}
+            languageTag={languageTag}
+            translationValue={translationValue}
+            originalValue={originalValue}
+            setTranslationData={setTranslationData}
+          />
         );
       }
     }));
 
     return [...baseColumns, ...targetColumns];
-  }, [translationRequest.sourceLanguageTag, translationRequest.targetLanguageTags, languageDisplayName, t]);
+  }, [translationRequest, languageDisplayName, t, setTranslationData]);
+
+  const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
+    <Flex>
+      <span>
+        {languageTag}: {translationValue}
+      </span>
+    </Flex>
+  );
+
+  const TranslationCellWithToggle = ({
+    originalRow,
+    languageTag,
+    translationValue,
+    originalValue,
+    setTranslationData
+  }: {
+    originalRow: ContentObjectTranslation;
+    languageTag: string;
+    translationValue: string;
+    originalValue: string;
+    setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
+  }) => {
+    const [isTranslationSelected, setIsTranslationSelected] = useState(true);
+
+    const handleClick = () => {
+      const newTranslatedState = !isTranslationSelected;
+      setIsTranslationSelected(newTranslatedState);
+
+      setTranslationData(prev => {
+        const newData = structuredClone(prev);
+        const contentObject = newData.find(value => value.uri === originalRow.uri);
+        if (!contentObject) {
+          return newData;
+        }
+
+        if (newTranslatedState) {
+          contentObject.values[languageTag] = translationValue;
+        } else {
+          contentObject.values[languageTag] = originalValue;
+        }
+        return newData;
+      });
+    };
+
+    return (
+      <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
+        <span style={{ textDecoration: !isTranslationSelected ? 'line-through' : 'none' }}>
+          {languageTag}: {translationValue}
+        </span>
+        <Separator />
+        <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
+      </Flex>
+    );
+  };
 
   const table = useReactTable({
     data: translations,
     columns,
     getCoreRowModel: getCoreRowModel()
   });
-
-  if (isPending) {
-    return (
-      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
-        <Spinner className='cms-editor-translation-wizard-review-spinner' />
-      </Flex>
-    );
-  }
-
-  if (isError) {
-    return (
-      <PanelMessage
-        icon={IvyIcons.ErrorXMark}
-        message={t('message.error', { error })}
-        className='cms-editor-translation-wizard-review-error'
-      />
-    );
-  }
 
   return (
     <Flex>
@@ -208,36 +293,6 @@ const TranslationWizardReviewDialogContent = ({
           ))}
         </TableBody>
       </Table>
-    </Flex>
-  );
-};
-
-const TranslationCell = ({
-  contentObject,
-  languageTag,
-  overriddenValue
-}: {
-  contentObject: string | null;
-  languageTag: string;
-  overriddenValue: string | null;
-}) => {
-  const hasTranslation = !!contentObject;
-  const hasOverridden = overriddenValue !== null;
-
-  return (
-    <Flex direction='column'>
-      {hasTranslation && (
-        <span>
-          {languageTag}: {contentObject}
-        </span>
-      )}
-
-      {hasOverridden && (
-        <>
-          <Separator />
-          <span>{overriddenValue}</span>
-        </>
-      )}
     </Flex>
   );
 };

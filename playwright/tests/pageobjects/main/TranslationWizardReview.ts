@@ -13,8 +13,8 @@ export class TranslationWizardReview {
   constructor(page: Page, parent: Locator) {
     this.locator = page.getByRole('dialog', { name: 'Translation Review' });
     this.trigger = parent.getByRole('button', { name: 'Translate' });
-    this.spinner = this.locator.locator('.cms-editor-translation-wizard-review-spinner');
-    this.error = this.locator.locator('.cms-editor-translation-wizard-review-error');
+    this.spinner = page.getByRole('dialog').locator('.cms-editor-translation-wizard-review-spinner');
+    this.error = page.getByRole('dialog').locator('.cms-editor-translation-wizard-review-error');
     this.cancel = this.locator.getByRole('button', { name: 'Cancel' });
     this.apply = this.locator.getByRole('button', { name: 'Apply' });
     this.table = new Table(this.locator);
