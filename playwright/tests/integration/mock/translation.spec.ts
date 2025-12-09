@@ -322,6 +322,71 @@ test.describe('translation review', () => {
 
     await expect(languageTools.translationWizard.translationWizardReview.error).toHaveText('An error has occurred: Error: error message');
   });
+
+  test('choose values to apply', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+
+    await editor.main.control.add.addString('AnObjectWithNoOriginalValue', '/Dialogs/agileBPM/define_WF', { English: 'No Original Value' });
+    await languageTools.trigger.click();
+    await languageTools.languageManager.trigger.click();
+    await languageTools.languageManager.addLanguage(1);
+    await languageTools.languageManager.checkboxOfRow(2).check();
+    await languageTools.languageManager.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
+    page.keyboard.down('Shift');
+    await await editor.main.table.row(2).locator.click();
+    page.keyboard.up('Shift');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await languageTools.translationWizard.targetLanguages.selectDeselectAll.click();
+    await languageTools.translationWizard.translationWizardReview.trigger.click();
+    await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows(
+      [
+        ['/Dialogs/agileBPM/define_WF/AddTask'],
+        [' Add a task to the sequence'],
+        ["fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
+        ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
+      ],
+      [
+        ['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'],
+        [' Workflow Tasks'],
+        ["fr: Translation of 'Workflow Tasks' from 'en' to 'fr'"],
+        ["de: Translation of 'Workflow Tasks' from 'en' to 'de'"]
+      ],
+      [
+        ['/Dialogs/agileBPM/define_WF/AnObjectWithNoOriginalValue'],
+        [' No Original Value'],
+        ["fr: Translation of 'No Original Value' from 'en' to 'fr'"],
+        ["de: Translation of 'No Original Value' from 'en' to 'de'"]
+      ]
+    );
+    await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
+    await languageTools.translationWizard.translationWizardReview.apply.click();
+    await editor.main.table.expectToHaveRows(
+      [['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence'], ['Aufgabe zum Ablauf hinzufügen']],
+      [['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'], ['Workflow Tasks'], ["Translation of 'Workflow Tasks' from 'en' to 'de'"]],
+      [['/Dialogs/agileBPM/define_WF/AnObjectWithNoOriginalValue'], ['No Original Value'], ["Translation of 'No Original Value' from 'en' to 'de'"]]
+    );
+
+    await editor.main.table.row(0).locator.click();
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AddTask', {
+      English: 'Add a task to the sequence',
+      French: "Translation of 'Add a task to the sequence' from 'en' to 'fr'",
+      German: 'Aufgabe zum Ablauf hinzufügen'
+    });
+    await editor.main.table.row(1).locator.click();
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks', {
+      English: 'Workflow Tasks',
+      French: "Translation of 'Workflow Tasks' from 'en' to 'fr'",
+      German: "Translation of 'Workflow Tasks' from 'en' to 'de'"
+    });
+    await editor.main.table.row(2).locator.click();
+    await editor.detail.expectToHaveStringValues('/Dialogs/agileBPM/define_WF/AnObjectWithNoOriginalValue', {
+      English: 'No Original Value',
+      French: "Translation of 'No Original Value' from 'en' to 'fr'",
+      German: "Translation of 'No Original Value' from 'en' to 'de'"
+    });
+  });
 });
 
 test('translation service enabled', async ({ page }) => {
