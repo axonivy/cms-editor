@@ -200,7 +200,7 @@ const TranslationWizardReviewDialogContent = ({
         const translationValue = value?.value ?? '';
         const originalValue = value?.originalvalue ?? null;
 
-        if (originalValue === null) {
+        if (originalValue === '' || originalValue === null) {
           return <TranslationCellSimple languageTag={languageTag} translationValue={translationValue} />;
         }
 
