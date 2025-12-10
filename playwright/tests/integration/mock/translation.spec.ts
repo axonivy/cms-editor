@@ -361,6 +361,21 @@ test.describe('translation review', () => {
       ]
     );
     await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
+
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
+
+    await page.getByLabel('Translation Review').getByText('Workflow Aufgaben').click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
+
+    await page.getByLabel('Translation Review').getByText("de: Translation of 'Workflow Tasks' from 'en' to 'de'").click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(1)).toHaveCSS('text-decoration-line', 'line-through');
+
+    await page.getByLabel('Translation Review').getByText("de: Translation of 'No Original Value' from 'en' to 'de'").click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(2).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
+
     await languageTools.translationWizard.translationWizardReview.apply.click();
     await editor.main.table.expectToHaveRows(
       [['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence'], ['Aufgabe zum Ablauf hinzufügen']],
