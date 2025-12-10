@@ -50,7 +50,8 @@ export class Table {
 
   async expectToHaveRows(...rows: Array<Array<Array<string>>>) {
     for (let i = 0; i < rows.length; i++) {
-      await this.row(i).expectToHaveColumns(...rows[i]!);
+      const flattenedColumns = rows[i]!.map(col => (Array.isArray(col) ? col : [col]));
+      await this.row(i).expectToHaveColumns(...flattenedColumns);
     }
   }
 }
