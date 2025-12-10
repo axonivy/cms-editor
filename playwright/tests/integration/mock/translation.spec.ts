@@ -362,20 +362,6 @@ test.describe('translation review', () => {
     );
     await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
 
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
-
-    await page.getByLabel('Translation Review').getByText('Workflow Aufgaben').click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
-
-    await page.getByLabel('Translation Review').getByText("de: Translation of 'Workflow Tasks' from 'en' to 'de'").click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(1)).toHaveCSS('text-decoration-line', 'line-through');
-
-    await page.getByLabel('Translation Review').getByText("de: Translation of 'No Original Value' from 'en' to 'de'").click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(2).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
-
     await languageTools.translationWizard.translationWizardReview.apply.click();
     await editor.main.table.expectToHaveRows(
       [['/Dialogs/agileBPM/define_WF/AddTask'], ['Add a task to the sequence'], ['Aufgabe zum Ablauf hinzufügen']],
@@ -401,6 +387,47 @@ test.describe('translation review', () => {
       French: "Translation of 'No Original Value' from 'en' to 'fr'",
       German: "Translation of 'No Original Value' from 'en' to 'de'"
     });
+  });
+
+  test('strike-through for non-selected translation values', async ({ page }) => {
+    const languageTools = editor.main.control.languageTools;
+
+    await editor.main.control.add.addString('AnObjectWithNoOriginalValue', '/Dialogs/agileBPM/define_WF', { English: 'No Original Value' });
+    await languageTools.trigger.click();
+    await languageTools.languageManager.trigger.click();
+    await languageTools.languageManager.addLanguage(1);
+    await languageTools.languageManager.checkboxOfRow(2).check();
+    await languageTools.languageManager.save.trigger.click();
+    await editor.main.table.row(0).locator.click();
+    page.keyboard.down('Control');
+    await editor.main.table.row(2).locator.click();
+    page.keyboard.up('Control');
+    await languageTools.trigger.click();
+    await languageTools.translationWizard.trigger.click();
+    await languageTools.translationWizard.targetLanguages.selectDeselectAll.click();
+    await languageTools.translationWizard.translationWizardReview.trigger.click();
+
+    const firstTranslationCell = languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator;
+    const firstTranslationOption = firstTranslationCell.locator("div[style*='cursor: pointer']").first();
+
+    await languageTools.translationWizard.translationWizardReview.table.isElementClickable(firstTranslationOption);
+
+    await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
+
+    await page.getByLabel('Translation Review').getByText("de: Translation of 'Add a task to the sequence' from 'en' to 'de").click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).toHaveCSS('text-decoration-line', 'line-through');
+    await page.getByLabel('Translation Review').getByText("de: Translation of 'Add a task to the sequence' from 'en' to 'de'").click();
+
+    const secondTranslationCell = languageTools.translationWizard.translationWizardReview.table.row(1).column(3).locator;
+    const secondTranslationOption = secondTranslationCell.locator("div[style*='cursor: pointer']").first();
+    await languageTools.translationWizard.translationWizardReview.table.isElementNotClickable(secondTranslationOption);
+
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
+
+    await languageTools.translationWizard.translationWizardReview.apply.click();
   });
 });
 

@@ -54,6 +54,26 @@ export class Table {
       await this.row(i).expectToHaveColumns(...flattenedColumns);
     }
   }
+
+  async isElementClickable(locator: Locator): Promise<void> {
+    await expect(locator).toBeVisible();
+    await expect(locator).toBeEnabled();
+    await locator.click({ trial: true });
+  }
+
+  async isElementNotClickable(locator: Locator): Promise<void> {
+    const isVisible = await locator.isVisible();
+    if (!isVisible) return;
+
+    const isEnabled = await locator.isEnabled();
+    if (!isEnabled) return;
+
+    try {
+      await locator.click({ trial: true });
+    } catch {
+      return;
+    }
+  }
 }
 
 export class Header {
