@@ -50,28 +50,7 @@ export class Table {
 
   async expectToHaveRows(...rows: Array<Array<Array<string>>>) {
     for (let i = 0; i < rows.length; i++) {
-      const flattenedColumns = rows[i]!.map(col => (Array.isArray(col) ? col : [col]));
-      await this.row(i).expectToHaveColumns(...flattenedColumns);
-    }
-  }
-
-  async isElementClickable(locator: Locator): Promise<void> {
-    await expect(locator).toBeVisible();
-    await expect(locator).toBeEnabled();
-    await locator.click({ trial: true });
-  }
-
-  async isElementNotClickable(locator: Locator): Promise<void> {
-    const isVisible = await locator.isVisible();
-    if (!isVisible) return;
-
-    const isEnabled = await locator.isEnabled();
-    if (!isEnabled) return;
-
-    try {
-      await locator.click({ trial: true });
-    } catch {
-      return;
+      await this.row(i).expectToHaveColumns(...rows[i]!);
     }
   }
 }

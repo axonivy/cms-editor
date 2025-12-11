@@ -220,7 +220,7 @@ const TranslationWizardReviewDialogContent = ({
   }, [translationRequest, languageDisplayName, t, setTranslationData]);
 
   const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
-    <Flex>
+    <Flex className='cms-editor-translation-wizard-review-cell-simple'>
       <span>
         {languageTag}: {translationValue}
       </span>
@@ -263,12 +263,17 @@ const TranslationWizardReviewDialogContent = ({
     };
 
     return (
-      <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
-        <span style={{ textDecoration: !isTranslationSelected ? 'line-through' : 'none' }}>
+      <Flex
+        className='cms-editor-translation-wizard-review-cell-toggle'
+        style={{ cursor: 'pointer' }}
+        onClick={handleClick}
+        direction='column'
+      >
+        <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>
           {languageTag}: {translationValue}
         </span>
         <Separator />
-        <span style={{ textDecoration: isTranslationSelected ? 'line-through' : 'none' }}>{originalValue}</span>
+        <span className={isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{originalValue}</span>
       </Flex>
     );
   };

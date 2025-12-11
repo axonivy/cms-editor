@@ -360,7 +360,7 @@ test.describe('translation review', () => {
         ["de: Translation of 'No Original Value' from 'en' to 'de'"]
       ]
     );
-    await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
+    await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
 
     await languageTools.translationWizard.translationWizardReview.apply.click();
     await editor.main.table.expectToHaveRows(
@@ -407,27 +407,17 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.targetLanguages.selectDeselectAll.click();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
 
-    const firstTranslationCell = languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator;
-    const firstTranslationOption = firstTranslationCell.locator("div[style*='cursor: pointer']").first();
+    await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveClass('cms-editor-translation-wizard-review-line-through');
 
-    await languageTools.translationWizard.translationWizardReview.table.isElementClickable(firstTranslationOption);
+    await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).toHaveClass('cms-editor-translation-wizard-review-line-through');
 
-    await page.getByLabel('Translation Review').getByText('Aufgabe zum Ablauf hinzufügen').click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveCSS('text-decoration-line', 'line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveCSS('text-decoration-line', 'line-through');
+    await languageTools.translationWizard.translationWizardReview.table.row(1).column(3).locator.click();
 
-    await page.getByLabel('Translation Review').getByText("de: Translation of 'Add a task to the sequence' from 'en' to 'de").click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).toHaveCSS('text-decoration-line', 'line-through');
-    await page.getByLabel('Translation Review').getByText("de: Translation of 'Add a task to the sequence' from 'en' to 'de'").click();
-
-    const secondTranslationCell = languageTools.translationWizard.translationWizardReview.table.row(1).column(3).locator;
-    const secondTranslationOption = secondTranslationCell.locator("div[style*='cursor: pointer']").first();
-    await languageTools.translationWizard.translationWizardReview.table.isElementNotClickable(secondTranslationOption);
-
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveCSS('text-decoration-line', 'line-through');
-
-    await languageTools.translationWizard.translationWizardReview.apply.click();
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
   });
 });
 
