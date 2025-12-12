@@ -1,4 +1,4 @@
-import type { CmsStringDataObject, CmsTranslationRequest } from '@axonivy/cms-editor-protocol';
+import type { CmsStringDataObject, CmsTranslationRequest, CmsTranslationResponse } from '@axonivy/cms-editor-protocol';
 import {
   BasicDialogContent,
   Button,
@@ -120,7 +120,7 @@ type TranslationWizardContentProps = {
 type TranslationWizardReviewContentProps = {
   closeTranslationWizard: () => void;
   translationRequest: CmsTranslationRequest;
-  data: Array<CmsStringDataObject>;
+  data: Array<CmsTranslationResponse>;
 };
 
 const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, data }: TranslationWizardReviewContentProps) => {
@@ -128,10 +128,19 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
   const { context } = useAppContext();
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(data ?? []);
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(
+    (data ?? []).map(d => ({
+      uri: d.uri,
+      type: 'STRING',
+      values: Object.fromEntries(Object.entries(d.values).map(([lang, val]) => [lang, val.translation]))
+    }))
+  );
 
   const applyTranslations = () => {
-    updateStringValuesMutation.mutate({ context, updateRequests: translationData });
+    updateStringValuesMutation.mutate({
+      context,
+      updateRequests: translationData
+    });
     closeTranslationWizard();
   };
 
@@ -161,7 +170,7 @@ const TranslationWizardReviewDialogContent = ({
   translationRequest,
   setTranslationData
 }: {
-  data: Array<CmsStringDataObject>;
+  data: Array<CmsTranslationResponse>;
   translationRequest: CmsTranslationRequest;
   setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
 }) => {
@@ -248,17 +257,26 @@ const TranslationWizardReviewDialogContent = ({
 
       setTranslationData(prev => {
         const newData = structuredClone(prev);
-        const contentObject = newData.find(value => value.uri === originalRow.uri);
+
+        const cmsData: CmsStringDataObject[] = newData.map(d => ({
+          uri: d.uri,
+          type: 'STRING',
+          values: Object.fromEntries(Object.entries(d.values).map(([lang, val]) => [lang, val]))
+        }));
+
+        const contentObject = cmsData.find(value => value.uri === originalRow.uri);
         if (!contentObject) {
-          return newData;
+          return cmsData;
         }
 
-        if (newTranslatedState) {
-          contentObject.values[languageTag] = translationValue;
-        } else {
-          contentObject.values[languageTag] = originalValue;
+        if (contentObject.values[languageTag]) {
+          if (newTranslatedState) {
+            contentObject.values[languageTag] = translationValue;
+          } else {
+            contentObject.values[languageTag] = originalValue;
+          }
         }
-        return newData;
+        return cmsData;
       });
     };
 
