@@ -1,4 +1,4 @@
-import type { CmsStringDataObject, CmsTranslationRequest, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
+import type { CmsTranslationRequest, CmsTranslationResponse, CmsValueDataObject } from '@axonivy/cms-editor-protocol';
 import { customRenderHook } from '../../../../context/test-utils/test-utils';
 import { useContentObjectTranslations } from './use-content-object-translations';
 
@@ -40,21 +40,18 @@ const renderContentObjectTranslationHook = () => {
     uris: ['/Dialogs/agileBPM/define_WF/DeleteStep', '/Dialogs/agileBPM/task_Form/Description', '/Dialogs/agileBPM/define_WF/Cancel']
   };
 
-  const data: CmsStringDataObject[] = [
+  const data: Array<CmsTranslationResponse> = [
     {
       uri: '/Dialogs/agileBPM/define_WF/DeleteStep',
-      type: 'STRING',
-      values: { fr: 'Supprimer', de: 'Löschen' }
+      values: { fr: { translation: 'Supprimer', original: '' }, de: { translation: 'Löschen', original: '' } }
     },
     {
       uri: '/Dialogs/agileBPM/task_Form/Description',
-      type: 'STRING',
-      values: { fr: 'Description', de: 'Beschreibung' }
+      values: { fr: { translation: 'Description', original: 'Description' }, de: { translation: 'Beschreibung', original: '' } }
     },
     {
       uri: '/Dialogs/agileBPM/define_WF/Cancel',
-      type: 'STRING',
-      values: { de: 'Abbrechen', fr: 'Annuler' }
+      values: { fr: { translation: 'Annuler', original: '' }, de: { translation: 'Abbrechen', original: '' } }
     }
   ];
 

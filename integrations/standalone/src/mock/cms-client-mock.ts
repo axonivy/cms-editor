@@ -23,6 +23,7 @@ import type {
   CmsRemoveLocalesArgs,
   CmsStringDataObject,
   CmsTranslationArgs,
+  CmsTranslationResponse,
   CmsUpdateValuesArgs,
   MetaRequestTypes,
   Void
@@ -151,7 +152,7 @@ export class CmsClientMock implements Client {
     values: Object.fromEntries(Object.entries(co.values).filter(entry => !locales.includes(entry[0])))
   });
 
-  async translate(args: CmsTranslationArgs): Promise<Array<CmsStringDataObject>> {
+  async translate(args: CmsTranslationArgs): Promise<Array<CmsTranslationResponse>> {
     if (args.translationRequest.uris[0]?.endsWith('TranslateIsPending')) {
       await new Promise(res => setTimeout(res, 1000));
     } else if (args.translationRequest.uris[0]?.endsWith('TranslateIsError')) {
@@ -171,7 +172,10 @@ export class CmsClientMock implements Client {
     return Object.fromEntries(
       args.translationRequest.targetLanguageTags.map(tag => [
         tag,
-        `Translation of '${co.values[sourceLanguageTag]}' from '${sourceLanguageTag}' to '${tag}'`
+        {
+          original: co.values[tag] ?? '',
+          translation: `Translation of '${co.values[sourceLanguageTag] ?? ''}' from '${sourceLanguageTag}' to '${tag}'`
+        }
       ])
     );
   };
