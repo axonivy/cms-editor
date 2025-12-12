@@ -4,3 +4,7 @@
   background: var(--N25);
   z-index: 2;
 }
+
+.cms-editor-translation-wizard-review-line-through {
+  text-decoration-line: line-through;
+}
