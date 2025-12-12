@@ -123,18 +123,20 @@ type TranslationWizardReviewContentProps = {
   data: Array<CmsTranslationResponse>;
 };
 
+export function initializeTranslationData(data: Array<CmsTranslationResponse> = []): Array<CmsStringDataObject> {
+  return data.map(d => ({
+    uri: d.uri,
+    type: 'STRING',
+    values: Object.fromEntries(Object.entries(d.values).map(([lang, val]) => [lang, val.translation]))
+  }));
+}
+
 const TranslationWizardReviewContent = ({ closeTranslationWizard, translationRequest, data }: TranslationWizardReviewContentProps) => {
   const { t } = useTranslation();
   const { context } = useAppContext();
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(
-    (data ?? []).map(d => ({
-      uri: d.uri,
-      type: 'STRING',
-      values: Object.fromEntries(Object.entries(d.values).map(([lang, val]) => [lang, val.translation]))
-    }))
-  );
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(initializeTranslationData(data));
 
   const applyTranslations = () => {
     updateStringValuesMutation.mutate({
@@ -256,13 +258,7 @@ const TranslationWizardReviewDialogContent = ({
       setIsTranslationSelected(newTranslatedState);
 
       setTranslationData(prev => {
-        const newData = structuredClone(prev);
-
-        const cmsData: CmsStringDataObject[] = newData.map(d => ({
-          uri: d.uri,
-          type: 'STRING',
-          values: Object.fromEntries(Object.entries(d.values).map(([lang, val]) => [lang, val]))
-        }));
+        const cmsData = structuredClone(prev);
 
         const contentObject = cmsData.find(value => value.uri === originalRow.uri);
         if (!contentObject) {

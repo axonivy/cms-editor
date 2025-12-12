@@ -40,7 +40,7 @@ const renderContentObjectTranslationHook = () => {
     uris: ['/Dialogs/agileBPM/define_WF/DeleteStep', '/Dialogs/agileBPM/task_Form/Description', '/Dialogs/agileBPM/define_WF/Cancel']
   };
 
-  const data: CmsTranslationResponse[] = [
+  const data: Array<CmsTranslationResponse> = [
     {
       uri: '/Dialogs/agileBPM/define_WF/DeleteStep',
       values: { fr: { translation: 'Supprimer', original: '' }, de: { translation: 'Löschen', original: '' } }
