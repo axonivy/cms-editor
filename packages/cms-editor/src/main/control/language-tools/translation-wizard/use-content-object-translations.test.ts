@@ -10,24 +10,24 @@ test('useContentObjectTranslations', () => {
       uri: '/Dialogs/agileBPM/define_WF/DeleteStep',
       sourceValue: 'Delete',
       values: {
-        de: { originalvalue: 'Löschen', value: 'Löschen' },
-        fr: { originalvalue: undefined, value: 'Supprimer' }
+        de: { originalvalue: 'original Data Löschen', value: 'Löschen' },
+        fr: { originalvalue: 'original Data Supprimer', value: 'Supprimer' }
       }
     },
     {
       uri: '/Dialogs/agileBPM/task_Form/Description',
       sourceValue: 'Description',
       values: {
-        de: { originalvalue: undefined, value: 'Beschreibung' },
-        fr: { originalvalue: 'Description', value: 'Description' }
+        de: { originalvalue: 'original Data Beschreibung', value: 'Beschreibung' },
+        fr: { originalvalue: 'original Data Description', value: 'Description' }
       }
     },
     {
       uri: '/Dialogs/agileBPM/define_WF/Cancel',
       sourceValue: 'Cancel',
       values: {
-        de: { originalvalue: undefined, value: 'Abbrechen' },
-        fr: { originalvalue: undefined, value: 'Annuler' }
+        de: { originalvalue: '', value: 'Abbrechen' },
+        fr: { originalvalue: '', value: 'Annuler' }
       }
     }
   ]);
@@ -43,11 +43,17 @@ const renderContentObjectTranslationHook = () => {
   const data: Array<CmsTranslationResponse> = [
     {
       uri: '/Dialogs/agileBPM/define_WF/DeleteStep',
-      values: { fr: { translation: 'Supprimer', original: '' }, de: { translation: 'Löschen', original: '' } }
+      values: {
+        fr: { translation: 'Supprimer', original: 'original Data Supprimer' },
+        de: { translation: 'Löschen', original: 'original Data Löschen' }
+      }
     },
     {
       uri: '/Dialogs/agileBPM/task_Form/Description',
-      values: { fr: { translation: 'Description', original: 'Description' }, de: { translation: 'Beschreibung', original: '' } }
+      values: {
+        fr: { translation: 'Description', original: 'original Data Description' },
+        de: { translation: 'Beschreibung', original: 'original Data Beschreibung' }
+      }
     },
     {
       uri: '/Dialogs/agileBPM/define_WF/Cancel',
