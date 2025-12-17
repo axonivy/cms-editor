@@ -216,7 +216,7 @@ const TranslationWizardReviewDialogContent = ({
         const originalValue = value?.originalvalue ?? null;
 
         if (originalValue === '' || originalValue === null) {
-          return <TranslationCellSimple languageTag={languageTag} translationValue={translationValue} />;
+          return <TranslationCellSimple translationValue={translationValue} />;
         }
 
         return (
@@ -262,11 +262,9 @@ const TranslationWizardReviewDialogContent = ({
   );
 };
 
-const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
+const TranslationCellSimple = ({ translationValue }: { translationValue: string }) => (
   <Flex className='cms-editor-translation-wizard-review-cell-simple'>
-    <span>
-      {languageTag}: {translationValue}
-    </span>
+    <span>{translationValue}</span>
   </Flex>
 );
 
@@ -315,9 +313,7 @@ const TranslationCellWithToggle = ({
       onClick={handleClick}
       direction='column'
     >
-      <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>
-        {languageTag}: {translationValue}
-      </span>
+      <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{translationValue}</span>
       <Separator />
       <span className={isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{originalValue}</span>
     </Flex>

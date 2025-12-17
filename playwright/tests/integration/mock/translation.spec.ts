@@ -80,7 +80,7 @@ test.describe('selected content objects', () => {
     await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
       ['/Dialogs/trigger/selectParkingLot'],
       ['Select parking lot'],
-      ["de: Translation of 'Select parking lot' from 'en' to 'de'"]
+      ["Translation of 'Select parking lot' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
@@ -256,7 +256,7 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.translationWizardReview.table.expectToHaveRows([
       ['/Dialogs/agileBPM/define_WF/AddTask'],
       ['Add a task to the sequence'],
-      ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
+      ["Translation of 'Add a task to the sequence' from 'en' to 'de'"]
     ]);
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
@@ -266,14 +266,14 @@ test.describe('translation review', () => {
       [
         ['/Dialogs/agileBPM/define_WF/AddTask'],
         [' Add a task to the sequence'],
-        ["fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
-        ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'"]
+        ["Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
+        ["Translation of 'Add a task to the sequence' from 'en' to 'de'"]
       ],
       [
         ['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'],
         [' Workflow Tasks'],
-        ["fr: Translation of 'Workflow Tasks' from 'en' to 'fr'"],
-        ["de: Translation of 'Workflow Tasks' from 'en' to 'de'"]
+        ["Translation of 'Workflow Tasks' from 'en' to 'fr'"],
+        ["Translation of 'Workflow Tasks' from 'en' to 'de'"]
       ]
     );
 
@@ -344,20 +344,20 @@ test.describe('translation review', () => {
       [
         ['/Dialogs/agileBPM/define_WF/AddTask'],
         ['Add a task to the sequence'],
-        ["fr: Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
-        ["de: Translation of 'Add a task to the sequence' from 'en' to 'de'", 'Aufgabe zum Ablauf hinzufügen']
+        ["Translation of 'Add a task to the sequence' from 'en' to 'fr'"],
+        ["Translation of 'Add a task to the sequence' from 'en' to 'de'", 'Aufgabe zum Ablauf hinzufügen']
       ],
       [
         ['/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks'],
         ['Workflow Tasks'],
-        ["fr: Translation of 'Workflow Tasks' from 'en' to 'fr'"],
-        ["de: Translation of 'Workflow Tasks' from 'en' to 'de'", 'Workflow Aufgaben']
+        ["Translation of 'Workflow Tasks' from 'en' to 'fr'"],
+        ["Translation of 'Workflow Tasks' from 'en' to 'de'", 'Workflow Aufgaben']
       ],
       [
         ['/Dialogs/agileBPM/define_WF/AnObjectWithNoOriginalValue'],
         ['No Original Value'],
-        ["fr: Translation of 'No Original Value' from 'en' to 'fr'"],
-        ["de: Translation of 'No Original Value' from 'en' to 'de'"]
+        ["Translation of 'No Original Value' from 'en' to 'fr'"],
+        ["Translation of 'No Original Value' from 'en' to 'de'"]
       ]
     );
     await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
