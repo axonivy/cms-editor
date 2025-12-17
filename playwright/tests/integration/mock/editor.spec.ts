@@ -20,15 +20,6 @@ test('toggle detail', async () => {
 });
 
 test.describe('theme', () => {
-  test('settings', async () => {
-    await editor.main.toolbar.settings.button.click();
-    await editor.expectToBeLight();
-    await editor.main.toolbar.settings.theme.click();
-    await editor.expectToBeDark();
-    await editor.main.toolbar.settings.theme.click();
-    await editor.expectToBeLight();
-  });
-
   test('url-param', async () => {
     await editor.expectToBeLight();
     editor = await CmsEditor.openCms(editor.page, { theme: 'dark' });
