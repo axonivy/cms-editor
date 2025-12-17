@@ -18,7 +18,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger
+  TooltipTrigger,
+  useTableSort
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -181,6 +182,8 @@ const TranslationWizardReviewDialogContent = ({
 
   const translations = useContentObjectTranslations(translationRequest, data ?? []);
 
+  const sort = useTableSort();
+
   const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, ReactNode>>>(() => {
     const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
 
@@ -204,6 +207,7 @@ const TranslationWizardReviewDialogContent = ({
 
     const targetColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = translationRequest.targetLanguageTags.map(languageTag => ({
       id: `target-${languageTag}`,
+      accessorFn: row => row.values[languageTag]?.value ?? '',
       header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
       cell: cell => {
         const originalRow = cell.row.original;
@@ -230,72 +234,14 @@ const TranslationWizardReviewDialogContent = ({
     return [...baseColumns, ...targetColumns];
   }, [translationRequest, languageDisplayName, t, setTranslationData]);
 
-  const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
-    <Flex className='cms-editor-translation-wizard-review-cell-simple'>
-      <span>
-        {languageTag}: {translationValue}
-      </span>
-    </Flex>
-  );
-
-  const TranslationCellWithToggle = ({
-    originalRow,
-    languageTag,
-    translationValue,
-    originalValue,
-    setTranslationData
-  }: {
-    originalRow: ContentObjectTranslation;
-    languageTag: string;
-    translationValue: string;
-    originalValue: string;
-    setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
-  }) => {
-    const [isTranslationSelected, setIsTranslationSelected] = useState(true);
-
-    const handleClick = () => {
-      const newTranslatedState = !isTranslationSelected;
-      setIsTranslationSelected(newTranslatedState);
-
-      setTranslationData(prev => {
-        const cmsData = structuredClone(prev);
-
-        const contentObject = cmsData.find(value => value.uri === originalRow.uri);
-        if (!contentObject) {
-          return cmsData;
-        }
-
-        if (contentObject.values[languageTag]) {
-          if (newTranslatedState) {
-            contentObject.values[languageTag] = translationValue;
-          } else {
-            contentObject.values[languageTag] = originalValue;
-          }
-        }
-        return cmsData;
-      });
-    };
-
-    return (
-      <Flex
-        className='cms-editor-translation-wizard-review-cell-toggle'
-        style={{ cursor: 'pointer' }}
-        onClick={handleClick}
-        direction='column'
-      >
-        <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>
-          {languageTag}: {translationValue}
-        </span>
-        <Separator />
-        <span className={isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{originalValue}</span>
-      </Flex>
-    );
-  };
-
   const table = useReactTable({
+    ...sort.options,
     data: translations,
     columns,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      ...sort.tableState
+    }
   });
 
   return (
@@ -312,6 +258,68 @@ const TranslationWizardReviewDialogContent = ({
           ))}
         </TableBody>
       </Table>
+    </Flex>
+  );
+};
+
+const TranslationCellSimple = ({ languageTag, translationValue }: { languageTag: string; translationValue: string }) => (
+  <Flex className='cms-editor-translation-wizard-review-cell-simple'>
+    <span>
+      {languageTag}: {translationValue}
+    </span>
+  </Flex>
+);
+
+const TranslationCellWithToggle = ({
+  originalRow,
+  languageTag,
+  translationValue,
+  originalValue,
+  setTranslationData
+}: {
+  originalRow: ContentObjectTranslation;
+  languageTag: string;
+  translationValue: string;
+  originalValue: string;
+  setTranslationData: React.Dispatch<React.SetStateAction<Array<CmsStringDataObject>>>;
+}) => {
+  const [isTranslationSelected, setIsTranslationSelected] = useState(true);
+
+  const handleClick = () => {
+    const newTranslatedState = !isTranslationSelected;
+    setIsTranslationSelected(newTranslatedState);
+
+    setTranslationData(prev => {
+      const cmsData = structuredClone(prev);
+
+      const contentObject = cmsData.find(value => value.uri === originalRow.uri);
+      if (!contentObject) {
+        return cmsData;
+      }
+
+      if (contentObject.values[languageTag]) {
+        if (newTranslatedState) {
+          contentObject.values[languageTag] = translationValue;
+        } else {
+          contentObject.values[languageTag] = originalValue;
+        }
+      }
+      return cmsData;
+    });
+  };
+
+  return (
+    <Flex
+      className='cms-editor-translation-wizard-review-cell-toggle'
+      style={{ cursor: 'pointer' }}
+      onClick={handleClick}
+      direction='column'
+    >
+      <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>
+        {languageTag}: {translationValue}
+      </span>
+      <Separator />
+      <span className={isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{originalValue}</span>
     </Flex>
   );
 };
