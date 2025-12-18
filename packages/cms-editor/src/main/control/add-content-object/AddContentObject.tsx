@@ -42,6 +42,7 @@ import { isCmsFileDataObject, isCmsStringDataObject, isCmsValueDataObject, remov
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
 import { toLanguages, type Language } from '../../../utils/language-utils';
+import { normalizeUri } from './normalize-uri';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
 const DIALOG_HOTKEY_IDS = ['addContentObjectDialog'];
@@ -105,6 +106,7 @@ const AddContentObjectContent = ({
 
   const [name, setName] = useState('NewContentObject');
   const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObjects));
+  const uri = normalizeUri(`${namespace}/${name}`);
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
   const [values, setValues] = useState<MapStringString>(() => allValuesEmpty());
@@ -123,7 +125,6 @@ const AddContentObjectContent = ({
   const { dataKey } = useQueryKeys();
 
   const addContentObject = (event: React.MouseEvent<HTMLButtonElement> | KeyboardEvent) => {
-    const uri = `${namespace.startsWith('/') ? '' : '/'}${namespace}${namespace === '' ? '' : '/'}${name}`;
     mutate(
       { context, uri, type, values, fileExtension },
       {
@@ -149,7 +150,7 @@ const AddContentObjectContent = ({
     );
   };
 
-  const { nameMessage, valuesMessage } = useValidateAddContentObject(name, namespace, values, contentObjects);
+  const { nameMessage, valuesMessage } = useValidateAddContentObject(name, normalizeUri(namespace), values, contentObjects);
   const allInputsValid = !nameMessage && !valuesMessage;
 
   const enter = useHotkeys(
@@ -224,7 +225,7 @@ const AddContentObjectContent = ({
           disabled: isPending,
           message: valuesMessage ?? languageTagsMessage
         };
-        const contentObject = { uri: `${namespace}/${name}`, type, values, fileExtension } as CmsStringDataObject | CmsFileDataObject;
+        const contentObject: CmsStringDataObject | CmsFileDataObject = { uri, type, values, fileExtension };
         return isCmsFileDataObject(contentObject) ? (
           <FileValueField key={language.value} contentObject={contentObject} setFileExtension={setFileExtension} {...props} />
         ) : (
