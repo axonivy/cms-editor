@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { CmsEditor } from '../pageobjects/CmsEditor';
+import { app, CmsEditor } from '../pageobjects/CmsEditor';
 
 test('load data', async ({ page }) => {
-  const editor = await CmsEditor.openCms(page);
+  const editor = await CmsEditor.openCms(page, { app: app, pmv: 'cms-test-project' });
   await expect(editor.main.table.rows).toHaveCount(3);
 
   await editor.main.table.row(0).locator.click();
@@ -16,4 +16,11 @@ test('load data', async ({ page }) => {
   await editor.main.table.row(2).locator.click();
   await editor.main.table.row(2).expectToHaveStringColumns(['/folder/stringTwo'], ['valueTwo']);
   await editor.detail.expectToHaveStringValues('/folder/stringTwo', { English: 'valueTwo', German: '' });
+});
+
+test('load data - absolute file path', async ({ page }) => {
+  const file = process.env.ABSOLUTE_PROJECT_PATH + '/cms/cms_en.yaml';
+  const editor = await CmsEditor.openCms(page, { file });
+  await expect(editor.main.toolbar.title).toContainText('cms-test-project');
+  await expect(editor.main.table.rows).toHaveCount(3);
 });

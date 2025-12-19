@@ -19,20 +19,18 @@ test('toggle detail', async () => {
   await expect(editor.detail.locator).toBeVisible();
 });
 
-test.describe('theme', () => {
-  test('url-param', async () => {
-    await editor.expectToBeLight();
-    editor = await CmsEditor.openCms(editor.page, { theme: 'dark' });
-    await editor.expectToBeDark();
-  });
+test('theme', async () => {
+  await editor.expectToBeLight();
+  editor = await CmsEditor.openMock(editor.page, { parameters: { theme: 'dark' } });
+  await editor.expectToBeDark();
 });
 
 test('readonly', async () => {
   await expect(editor.main.control.locator).toBeVisible();
-  editor = await CmsEditor.openCms(editor.page, { readonly: true });
+  editor = await CmsEditor.openMock(editor.page, { parameters: { readonly: true } });
   await expect(editor.main.control.locator).toBeHidden();
   await editor.main.table.row(0).locator.click();
-  await expect(editor.detail.value('English').filePicker).toHaveAttribute('aria-disabled', 'true');
+  await expect(editor.detail.value('English').textbox.locator).toBeDisabled();
 });
 
 test('toolbar titles', async () => {
