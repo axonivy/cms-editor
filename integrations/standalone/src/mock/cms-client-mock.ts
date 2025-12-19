@@ -42,6 +42,7 @@ export class CmsClientMock implements Client {
   data(args: CmsDataArgs): Promise<CmsData> {
     return Promise.resolve({
       ...this.cmsData,
+      context: args.context,
       data: this.cmsData.data.map(co => this.filterNotRequestedLanguageValues(co, args))
     });
   }

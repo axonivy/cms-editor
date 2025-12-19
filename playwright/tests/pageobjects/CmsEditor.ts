@@ -6,8 +6,7 @@ import { MainPanel } from './main/MainPanel';
 export const server = process.env.BASE_URL ?? 'http://localhost:8080/';
 export const user = 'Developer';
 const ws = process.env.TEST_WS ?? '~Developer-cms-test-project';
-const app = process.env.TEST_APP ?? 'Developer-cms-test-project';
-const pmv = 'cms-test-project';
+export const app = process.env.TEST_APP ?? 'Developer-cms-test-project';
 
 const tmpDir = '/tmp';
 
@@ -34,12 +33,9 @@ export class CmsEditor {
     await expect(this.html).toHaveClass('dark');
   }
 
-  static async openCms(page: Page, options?: { pmv?: string; readonly?: boolean; theme?: string }) {
+  static async openCms(page: Page, options?: { app?: string; pmv?: string; file?: string; readonly?: boolean; theme?: string }) {
     const serverUrl = server.replace(/^https?:\/\//, '');
-    let url = `?server=${serverUrl}${ws}&app=${app}`;
-    if (!options?.pmv) {
-      url += `&pmv=${pmv}`;
-    }
+    let url = `?server=${serverUrl}${ws}`;
     if (options) {
       url += `&${this.params(options)}`;
     }
@@ -66,13 +62,13 @@ export class CmsEditor {
     if (!result.ok) {
       throw Error(`Failed to create project: ${result.status}`);
     }
-    return await this.openCms(page, { pmv: name });
+    return await this.openCms(page, { app, pmv: name });
   }
 
   static async openMock(
     page: Page,
     options?: {
-      parameters?: { readonly?: boolean; app?: string; lng?: string; translationServiceEnabled?: boolean };
+      parameters?: { readonly?: boolean; app?: string; theme?: string; lng?: string; translationServiceEnabled?: boolean };
       defaultLanguages?: Array<string>;
     }
   ) {

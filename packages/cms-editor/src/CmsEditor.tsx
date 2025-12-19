@@ -58,7 +58,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
   const contentObjects = data.data.filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject));
   const contentObject =
     selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined ? contentObjects[selectedContentObjects[0]] : undefined;
-  const { mainTitle, detailTitle } = toolbarTitles(context.pmv, contentObject);
+  const { mainTitle, detailTitle } = toolbarTitles(data.context.pmv, contentObject);
 
   return (
     <AppProvider
