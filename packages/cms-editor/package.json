@@ -1,6 +1,6 @@
 {
   "name": "@axonivy/cms-editor",
-  "version": "13.2.0-next",
+  "version": "13.2.1-next",
   "license": "Apache-2.0",
   "author": "Axon Ivy AG",
   "homepage": "https://developer.axonivy.com/",
@@ -17,7 +17,7 @@
   "types": "lib/index.d.ts",
   "main": "lib/editor.js",
   "dependencies": {
-    "@axonivy/cms-editor-protocol": "workspace:~13.2.0-next",
+    "@axonivy/cms-editor-protocol": "workspace:~13.2.1-next",
     "@tanstack/react-virtual": "^3.12.0"
   },
   "peerDependencies": {

@@ -1,10 +1,10 @@
 {
   "name": "@axonivy/cms-editor-standalone",
   "private": true,
-  "version": "13.2.0-next",
+  "version": "13.2.1-next",
   "dependencies": {
-    "@axonivy/cms-editor": "workspace:~13.2.0-next",
-    "@axonivy/cms-editor-protocol": "workspace:~13.2.0-next",
+    "@axonivy/cms-editor": "workspace:~13.2.1-next",
+    "@axonivy/cms-editor-protocol": "workspace:~13.2.1-next",
     "@axonivy/jsonrpc": "~13.2.0-next.934.4686e45",
     "@axonivy/ui-components": "~13.2.0-next.934.4686e45",
     "@axonivy/ui-icons": "~13.2.0-next.934.4686e45",
