@@ -55,7 +55,6 @@ export class CmsEditor {
         name,
         groupId: `cms.test.${name}`,
         projectId: `cms-test-${name}`,
-        defaultNamespace: name,
         path: `${tmpDir}/${name}`
       })
     });
