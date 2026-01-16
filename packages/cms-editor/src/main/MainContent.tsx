@@ -151,7 +151,10 @@ export const MainContent = () => {
     mutate({ context, uris: selectedContentObjectUris });
   };
 
-  const ref = useHotkeys(hotkeys.deleteContentObject.hotkey, () => deleteContentObjects(), { scopes: ['global'], enabled: !readonly });
+  const ref = useHotkeys<HTMLDivElement>(hotkeys.deleteContentObject.hotkey, () => deleteContentObjects(), {
+    scopes: ['global'],
+    enabled: !readonly
+  });
 
   if (contentObjects === undefined || contentObjects.length === 0) {
     return (

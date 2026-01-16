@@ -147,7 +147,7 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
   };
 
   const hotkeys = useKnownHotkeys();
-  const deleteRef = useHotkeys(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), {
+  const deleteRef = useHotkeys<HTMLTableElement>(hotkeys.deleteLanguage.hotkey, () => deleteSelectedLanguage(), {
     scopes: LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS
   });
 
