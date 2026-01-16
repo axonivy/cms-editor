@@ -1,5 +1,14 @@
 import type { Capabilities, CmsDataObject, EditorProps } from '@axonivy/cms-editor-protocol';
-import { Flex, PanelMessage, ResizableHandle, ResizablePanel, ResizablePanelGroup, Spinner, useHotkeys } from '@axonivy/ui-components';
+import {
+  Flex,
+  PanelMessage,
+  ResizableGroup,
+  ResizableHandle,
+  ResizablePanel,
+  Spinner,
+  useDefaultLayout,
+  useHotkeys
+} from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -20,6 +29,7 @@ import { useKnownHotkeys } from './utils/hotkeys';
 function CmsEditor({ context, initializePromise }: EditorProps) {
   const [detail, setDetail] = useState(true);
   const { t } = useTranslation();
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({ groupId: 'cms-editor-resize', storage: localStorage });
 
   const [capabilities, setCapabilities] = useState<Capabilities>({ translationServiceEnabled: false });
   useEffect(() => {
@@ -75,8 +85,8 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
         languageDisplayName
       }}
     >
-      <ResizablePanelGroup direction='horizontal'>
-        <ResizablePanel defaultSize={75} minSize={50} className='cms-editor-main-panel'>
+      <ResizableGroup orientation='horizontal' defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
+        <ResizablePanel id='main' defaultSize='75%' minSize='50%' className='cms-editor-main-panel'>
           <Flex direction='column' className='cms-editor-panel-content'>
             <MainToolbar title={mainTitle} />
             <MainContent />
@@ -85,7 +95,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
         {detail && (
           <>
             <ResizableHandle />
-            <ResizablePanel defaultSize={25} minSize={10} className='cms-editor-detail-panel'>
+            <ResizablePanel id='sidebar' defaultSize='25%' minSize='20%' className='cms-editor-detail-panel'>
               <Flex direction='column' className='cms-editor-panel-content'>
                 <DetailToolbar title={detailTitle} helpUrl={data.helpUrl} />
                 <DetailContent key={contentObject?.uri} />
@@ -93,7 +103,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
             </ResizablePanel>
           </>
         )}
-      </ResizablePanelGroup>
+      </ResizableGroup>
     </AppProvider>
   );
 }
