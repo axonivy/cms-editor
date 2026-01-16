@@ -153,7 +153,7 @@ const AddContentObjectContent = ({
   const { nameMessage, valuesMessage } = useValidateAddContentObject(name, normalizeUri(namespace), values, contentObjects);
   const allInputsValid = !nameMessage && !valuesMessage;
 
-  const enter = useHotkeys(
+  const enter = useHotkeys<HTMLDivElement>(
     ['Enter', 'mod+Enter'],
     e => {
       if (document.activeElement?.getAttribute('role') === 'combobox') {
