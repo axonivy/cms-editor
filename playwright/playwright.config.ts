@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [['./tests/custom-reporter.ts'], ['junit', { outputFile: 'report.xml' }], ['list']] : 'html',
+  reporter: process.env.CI ? [['junit', { outputFile: 'report.xml', includeProjectInTestName: true }], ['list']] : 'html',
   use: {
     actionTimeout: 0,
     baseURL: process.env.CI ? 'http://localhost:4173' : 'http://localhost:3003',
