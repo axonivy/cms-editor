@@ -17,8 +17,7 @@ tsGen.DEFAULT_OPTIONS.bannerComment = `
 `;
 
 const tsOut = path.resolve('./src/editor.ts');
-var schemaUri =
-  'https://jenkins.ivyteam.io/job/core_json-schema/job/master/lastSuccessfulBuild/artifact/workspace/ch.ivyteam.ivy.cms.editor.lsp.schema/target/schema/cms/13.2.1/cms-tsgen.json';
+var schemaUri = 'https://jenkins.ivyteam.io/job/core_json-schema/job/master/lastSuccessfulBuild/artifact/workspace/ch.ivyteam.ivy.cms.editor.lsp.schema/target/editor.ts/14.0/cms-tsgen.json';
 
 const args = process.argv.slice(2);
 if (args.length > 0) {
