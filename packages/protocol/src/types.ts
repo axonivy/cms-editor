@@ -1,5 +1,4 @@
 import type {
-  CmsActionArgs,
   CmsAddLocalesArgs,
   CmsCountLocaleValuesArgs,
   CmsCreateFileArgs,
@@ -27,6 +26,12 @@ export type EditorProps = { context: CmsEditorDataContext; initializePromise: Pr
 
 export type CmsDataObjectValues = MapStringString | MapStringBoolean | MapStringURI;
 export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;
+
+export interface CmsActionArgs {
+  context: CmsEditorDataContext;
+  actionId: 'openUrl';
+  payload: string;
+}
 
 export interface Client {
   initialize(args: CmsEditorDataContext): Promise<CmsInitializeResult>;

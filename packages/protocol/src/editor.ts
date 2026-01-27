@@ -15,7 +15,6 @@ export type CmsValueDataObject =
 export type CmsDataObject = CmsFolderDataObject | CmsValueDataObject;
 
 export interface CMS {
-  cmsActionArgs: CmsActionArgs;
   cmsAddLocalesArgs: CmsAddLocalesArgs;
   cmsCountLocaleValuesArgs: CmsCountLocaleValuesArgs;
   cmsCreateFileArgs: CmsCreateFileArgs;
@@ -37,19 +36,14 @@ export interface CMS {
   void: Void;
   [k: string]: unknown;
 }
-export interface CmsActionArgs {
-  actionId: "openUrl";
+export interface CmsAddLocalesArgs {
   context: CmsEditorDataContext;
-  payload: string;
+  locales: string[];
 }
 export interface CmsEditorDataContext {
   app: string;
   file: string;
   pmv: string;
-}
-export interface CmsAddLocalesArgs {
-  context: CmsEditorDataContext;
-  locales: string[];
 }
 export interface CmsCountLocaleValuesArgs {
   context: CmsEditorDataContext;
