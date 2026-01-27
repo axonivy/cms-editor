@@ -51,7 +51,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
   const hotkeys = useKnownHotkeys();
 
   const openUrl = useAction('openUrl');
-  useHotkeys(hotkeys.openHelp.hotkey, () => openUrl(data?.helpUrl), { scopes: ['global'] });
+  useHotkeys(hotkeys.openHelp.hotkey, () => openUrl({ url: data?.helpUrl ?? '' }), { scopes: ['global'] });
 
   if (isPending) {
     return (

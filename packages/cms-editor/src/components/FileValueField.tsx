@@ -63,7 +63,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
   };
 
   const url = contentObject.values[baseProps.language.value];
-  const openUrl = useAction('openUrl');
+  const openFile = useAction('openFile');
 
   const readonly = useReadonly();
 
@@ -77,7 +77,11 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button icon={IvyIcons.Download} aria-label={t('value.openFile')} onClick={() => openUrl(url as string)} />
+                <Button
+                  icon={IvyIcons.Download}
+                  aria-label={t('value.openFile')}
+                  onClick={() => openFile({ url: url ?? '', co: contentObject.uri })}
+                />
               </TooltipTrigger>
               <TooltipContent>{t('value.openFile')}</TooltipContent>
             </Tooltip>
