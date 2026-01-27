@@ -23,7 +23,7 @@ export const DetailToolbar = ({ title, helpUrl }: DetailToolbarProps) => {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button icon={IvyIcons.Help} onClick={() => openUrl(helpUrl)} aria-label={openHelp.label} />
+            <Button icon={IvyIcons.Help} onClick={() => openUrl({ url: helpUrl })} aria-label={openHelp.label} />
           </TooltipTrigger>
           <TooltipContent>{openHelp.label}</TooltipContent>
         </Tooltip>

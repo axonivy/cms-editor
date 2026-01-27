@@ -27,11 +27,9 @@ export type EditorProps = { context: CmsEditorDataContext; initializePromise: Pr
 export type CmsDataObjectValues = MapStringString | MapStringBoolean | MapStringURI;
 export type CmsCreateObjectArgs = CmsCreateStringArgs | CmsCreateFileArgs;
 
-export interface CmsActionArgs {
+export type CmsActionArgs = {
   context: CmsEditorDataContext;
-  actionId: 'openUrl';
-  payload: string;
-}
+} & ({ actionId: 'openUrl'; url: string } | { actionId: 'openFile'; url: string; co: string });
 
 export interface Client {
   initialize(args: CmsEditorDataContext): Promise<CmsInitializeResult>;

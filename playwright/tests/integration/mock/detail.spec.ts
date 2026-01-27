@@ -157,13 +157,15 @@ test('openFile', async () => {
 
   const msg0 = editor.consoleLog();
   await editor.detail.value('English').fileButton.click();
-  expect(await msg0).toContain('openUrl');
-  expect(await msg0).toContain('/test/cm/test$1/Files/TextFile?l=en');
+  expect(await msg0).toContain('openFile');
+  expect(await msg0).toContain(`"url":"/test/cm/test$1/Files/TextFile?l=en"`);
+  expect(await msg0).toContain(`"co":"/Files/TextFile"`);
 
   const msg1 = editor.consoleLog();
   await editor.detail.value('German').fileButton.click();
-  expect(await msg1).toContain('openUrl');
-  expect(await msg1).toContain('/test/cm/test$1/Files/TextFile?l=de');
+  expect(await msg1).toContain('openFile');
+  expect(await msg1).toContain(`"url":"/test/cm/test$1/Files/TextFile?l=de"`);
+  expect(await msg0).toContain(`"co":"/Files/TextFile"`);
 });
 
 test('deleteValueButtonState', async () => {
