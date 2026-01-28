@@ -14,7 +14,7 @@ export const useValidateAddContentObject = (
   const nameIsTaken = useCallback(() => {
     const ns = namespace === '' || namespace.startsWith('/') ? namespace : `/${namespace}`;
     const uri = `${ns}/${name}`.toLowerCase();
-    return contentObjects.some(co => co.uri.toLowerCase() === uri);
+    return contentObjects.some(co => co.uri.toLowerCase() === uri || co.uri.toLowerCase().includes(uri + '/'));
   }, [contentObjects, name, namespace]);
 
   const nameMessage = useMemo<MessageData | undefined>(() => {
