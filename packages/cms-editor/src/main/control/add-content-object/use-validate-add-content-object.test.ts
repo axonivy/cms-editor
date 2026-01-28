@@ -37,7 +37,13 @@ test('nameMessage', () => {
       contentObjects: [{ uri: '/testNamespace/testName' } as CmsDataObject]
     }).result.current.nameMessage
   ).toEqual(nameIsTakenMessage);
-
+  expect(
+    renderUseValidateAddContentObject({
+      name: 'testNamespace',
+      namespace: '',
+      contentObjects: [{ uri: '/testNamespace/testName' } as CmsDataObject]
+    }).result.current.nameMessage
+  ).toEqual(nameIsTakenMessage);
   expect(renderUseValidateAddContentObject({ name: 'testName' }).result.current.nameMessage).toBeUndefined();
 });
 
