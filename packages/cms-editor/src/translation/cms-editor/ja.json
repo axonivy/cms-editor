@@ -37,8 +37,7 @@
       "description": "追加したいコンテンツオブジェクトの名前、名前空間、値を選択してください。",
       "fileFormatInfo": "すべてのファイルは同じタイプでなければなりません。 アップロードした最初のファイルがファイルのタイプを決定します。",
       "title": "コンテンツオブジェクトを追加",
-      "noDefaultLanguages": "Language Manager に表示する言語がチェックされていません。これは検出された最初の言語です。",
-      "noLanguages": "CMS に言語が存在しません。Language Manager を使用して言語を追加してください。"
+      "noDefaultLanguages": "Language Manager に表示する言語がチェックされていません。これは検出された最初の言語です。"
     },
     "languageManager": {
       "description": "CMSの言語を編集します。 表示したい言語を確認してください。",

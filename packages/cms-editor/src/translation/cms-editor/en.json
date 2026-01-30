@@ -37,7 +37,7 @@
       "description": "Choose the name, namespace, and values of the Content Object you want to add.",
       "fileFormatInfo": "All files must be of the same type. The first file uploaded will determine the file type.",
       "noDefaultLanguages": "No languages are checked to be displayed in the Language Manager. This is the first language found.",
-      "noLanguages": "No languages are present in the CMS. Add languages using the Language Manager.",
+      "noLanguages": "No languages are present in the CMS. To add a Content Object, first add a language using the Language Manager.",
       "title": "Add Content Object"
     },
     "languageManager": {

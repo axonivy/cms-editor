@@ -53,12 +53,9 @@ type AddContentObjectProps = {
 };
 
 export const AddContentObject = ({ selectRow, children }: AddContentObjectProps) => {
-  const { t } = useTranslation();
-  const { context } = useAppContext();
-  const locales = useMeta('meta/locales', context, []).data;
   const { open, onOpenChange } = useDialogHotkeys(DIALOG_HOTKEY_IDS);
   const { addContentObject: shortcut } = useKnownHotkeys();
-  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: locales.length > 0 && !open });
+  useHotkeys(shortcut.hotkey, () => onOpenChange(true), { scopes: ['global'], keyup: true, enabled: !open });
 
   const mutate = useMutateContentObject();
   const onDialogOpenChange = (open: boolean) => {
@@ -75,7 +72,7 @@ export const AddContentObject = ({ selectRow, children }: AddContentObjectProps)
           <TooltipTrigger asChild>
             <DialogTrigger asChild>{children}</DialogTrigger>
           </TooltipTrigger>
-          <TooltipContent>{locales.length === 0 ? t('dialog.addContentObject.noLanguages') : shortcut.label}</TooltipContent>
+          <TooltipContent>{shortcut.label}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent onCloseAutoFocus={e => e.preventDefault()}>
@@ -199,40 +196,50 @@ const AddContentObjectContent = ({
       ref={enter}
       tabIndex={-1}
     >
-      <BasicField label={t('common.label.name')} message={nameMessage}>
-        <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
-      </BasicField>
-      <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
-        <Combobox
-          value={namespace}
-          onChange={setNamespace}
-          onInput={event => setNamespace(event.currentTarget.value)}
-          options={namespaceOptions(contentObjects)}
-          disabled={isPending}
-        />
-      </BasicField>
-      <BasicField label={t('common.label.type')}>
-        <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
-      </BasicField>
-      {type === 'FILE' && (
-        <Message variant='info' message={t('dialog.addContentObject.fileFormatInfo')} className='cms-editor-add-dialog-file-format-info' />
+      {languageTags.length === 0 ? (
+        <Message variant='error' message={t('dialog.addContentObject.noLanguages')} className='cms-editor-add-dialog-message' />
+      ) : (
+        <>
+          <BasicField label={t('common.label.name')} message={nameMessage}>
+            <Input ref={nameInputRef} value={name} onChange={event => setName(event.target.value)} disabled={isPending} />
+          </BasicField>
+          <BasicField label={t('common.label.namespace')} message={{ variant: 'info', message: t('message.namespaceInfo') }}>
+            <Combobox
+              value={namespace}
+              onChange={setNamespace}
+              onInput={event => setNamespace(event.currentTarget.value)}
+              options={namespaceOptions(contentObjects)}
+              disabled={isPending}
+            />
+          </BasicField>
+          <BasicField label={t('common.label.type')}>
+            <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
+          </BasicField>
+          {type === 'FILE' && (
+            <Message
+              variant='info'
+              message={t('dialog.addContentObject.fileFormatInfo')}
+              className='cms-editor-add-dialog-file-format-info'
+            />
+          )}
+          {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
+            const props = {
+              updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
+              deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
+              language,
+              disabled: isPending,
+              message: valuesMessage ?? languageTagsMessage
+            };
+            const contentObject: CmsStringDataObject | CmsFileDataObject = { uri, type, values, fileExtension };
+            return isCmsFileDataObject(contentObject) ? (
+              <FileValueField key={language.value} contentObject={contentObject} setFileExtension={setFileExtension} {...props} />
+            ) : (
+              <StringValueField key={language.value} contentObject={contentObject} {...props} />
+            );
+          })}
+          {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-message' />}
+        </>
       )}
-      {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
-        const props = {
-          updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
-          deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
-          language,
-          disabled: isPending,
-          message: valuesMessage ?? languageTagsMessage
-        };
-        const contentObject: CmsStringDataObject | CmsFileDataObject = { uri, type, values, fileExtension };
-        return isCmsFileDataObject(contentObject) ? (
-          <FileValueField key={language.value} contentObject={contentObject} setFileExtension={setFileExtension} {...props} />
-        ) : (
-          <StringValueField key={language.value} contentObject={contentObject} {...props} />
-        );
-      })}
-      {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-error-message' />}
     </BasicDialogContent>
   );
 };

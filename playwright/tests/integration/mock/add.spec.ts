@@ -30,11 +30,9 @@ test.describe('add', () => {
   });
 });
 
-test('disable if no languages are present in the CMS', async () => {
+test('show error if no languages are present in the CMS', async () => {
   const add = editor.main.control.add;
   const languageTools = editor.main.control.languageTools;
-
-  await expect(add.trigger).toBeEnabled();
 
   await languageTools.trigger.click();
   await languageTools.languageManager.trigger.click();
@@ -43,14 +41,26 @@ test('disable if no languages are present in the CMS', async () => {
   await languageTools.languageManager.delete.click();
   await languageTools.languageManager.save.trigger.click();
   await languageTools.languageManager.save.save.click();
-  await expect(add.trigger).toBeDisabled();
+  await add.trigger.click();
+  await expect(add.name.locator).toBeHidden();
+  await expect(add.namespace.locator).toBeHidden();
+  await expect(add.type.locator).toBeHidden();
+  await expect(add.values).toHaveCount(0);
+  await add.message.expectToBeError('No languages are present in the CMS. To add a Content Object, first add a language using the Language Manager.');
+  await expect(add.create).toBeDisabled();
 
+  await add.cancel.click();
   await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
   await languageTools.languageManager.add.trigger.click();
   await languageTools.languageManager.add.languages.row(0).locator.click();
   await languageTools.languageManager.add.add.click();
   await languageTools.languageManager.save.trigger.click();
-  await expect(add.trigger).toBeEnabled();
+  await add.trigger.click();
+  await expect(add.name.locator).toBeVisible();
+  await expect(add.namespace.locator).toBeVisible();
+  await expect(add.type.locator).toBeVisible();
+  await expect(add.values).toHaveCount(1);
+  await expect(add.message.locator).toBeHidden();
 });
 
 test('default values', async () => {
@@ -222,12 +232,12 @@ test.describe('disable dialog while create request is pending', () => {
 
 test('show error if create request is error', async () => {
   const add = editor.main.control.add;
-  await expect(add.error.locator).toBeHidden();
+  await expect(add.message.locator).toBeHidden();
   await add.trigger.click();
   await add.name.locator.fill('CreateIsError');
   await add.create.click();
   await expect(add.locator).toBeVisible();
-  await add.error.expectToBeError('An error has occurred: Error: error message');
+  await add.message.expectToBeError('An error has occurred: Error: error message');
 });
 
 test.describe('validation', () => {
