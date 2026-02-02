@@ -1,6 +1,6 @@
 import type { CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import i18next from 'i18next';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMeta } from '../protocol/use-meta';
 import { defaultLanguageTag } from '../utils/language-utils';
 
@@ -10,23 +10,29 @@ export const useLanguages = (context: CmsEditorDataContext) => {
   const clientLanguageTag = i18next.language;
   const languageDisplayName = useMemo(() => new Intl.DisplayNames([clientLanguageTag], { type: 'language' }), [clientLanguageTag]);
 
-  const locales = useMeta('meta/locales', context, []);
-  const [defaultLanguageTags, setDefaultLanguageTagsState] = useState(defaultLanguages(locales.data));
+  const [defaultLanguageTagsState, setDefaultLanguageTagsState] = useState(getDefaultLanguageTagsLocalStorage());
   const setDefaultLanguageTags = (languageTags: Array<string>) => {
-    setDefaultLanguageTagsState(filterNotPresentDefaultLanguageTags(languageTags, locales.data));
+    setDefaultLanguageTagsState(languageTags);
     setDefaultLanguageTagsLocalStorage(languageTags);
   };
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setDefaultLanguageTagsState(defaultLanguages(locales.data)), [locales.data]);
+
+  const locales = useMeta('meta/locales', context, []);
+  const defaultLanguageTags = useMemo(
+    () => defaultLanguages(locales.data, defaultLanguageTagsState, setDefaultLanguageTags),
+    [locales.data, defaultLanguageTagsState]
+  );
 
   return { defaultLanguageTags, setDefaultLanguageTags, languageDisplayName };
 };
 
-const defaultLanguages = (locales: Array<string>): Array<string> => {
+const defaultLanguages = (
+  locales: Array<string>,
+  defaultLanguageTags: Array<string> | undefined,
+  setDefaultLanguageTags: (languageTags: Array<string>) => void
+): Array<string> => {
   if (locales.length === 0) {
     return [];
   }
-  const defaultLanguageTags = getDefaultLanguageTagsLocalStorage();
   if (defaultLanguageTags) {
     return filterNotPresentDefaultLanguageTags(defaultLanguageTags, locales);
   }
@@ -35,7 +41,7 @@ const defaultLanguages = (locales: Array<string>): Array<string> => {
   if (defaultLanguage) {
     defaultLanguages.push(defaultLanguage);
   }
-  setDefaultLanguageTagsLocalStorage(defaultLanguages);
+  setDefaultLanguageTags(defaultLanguages);
   return defaultLanguages;
 };
 

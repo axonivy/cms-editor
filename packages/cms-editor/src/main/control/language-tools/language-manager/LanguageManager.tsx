@@ -130,20 +130,14 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
       queryClient.invalidateQueries({
         queryKey: dataKey({ context, languageTags: filterNotPresentDefaultLanguageTags(defaultLanguages, locales) })
       });
+      setDefaultLanguageTags(defaultLanguages);
+      closeDialog();
     }
   });
 
   const save = (localesToRemove: Array<string>) => {
     const localesToAdd = languages.map(language => language.value).filter(locale => !locales.includes(locale));
-    saveMutation.mutate(
-      { localesToAdd, localesToRemove },
-      {
-        onSuccess: () => {
-          setDefaultLanguageTags(defaultLanguages);
-          closeDialog();
-        }
-      }
-    );
+    saveMutation.mutate({ localesToAdd, localesToRemove });
   };
 
   const hotkeys = useKnownHotkeys();
