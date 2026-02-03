@@ -37,7 +37,7 @@
       "description": "Wählen Sie den Namen, den Namensbereich und die Werte des Inhaltsobjekts, das Sie hinzufügen möchten.",
       "fileFormatInfo": "Alle Dateien müssen vom gleichen Typ sein. Die erste hochgeladene Datei bestimmt den Dateityp.",
       "noDefaultLanguages": "Es sind keine Sprachen in der Sprachenverwaltung markiert, die angezeigt werden sollen. Dies ist die erste gefundene Sprache.",
-      "noLanguages": "Es sind keine Sprachen im CMS vorhanden. Füge Sprachen mit der Sprachenverwaltung hinzu.",
+      "noLanguages": "Es sind keine Sprachen im CMS vorhanden. Um ein Inhaltsobjekt hinzuzufügen, füge zuerst eine Sprache mit der Sprachenverwaltung hinzu.",
       "title": "Inhaltsobjekt hinzufügen"
     },
     "languageManager": {

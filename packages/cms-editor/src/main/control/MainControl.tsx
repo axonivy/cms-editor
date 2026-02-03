@@ -34,8 +34,6 @@ export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: M
 
 export const EmptyMainControl = ({ selectRow }: Pick<MainControlProps, 'selectRow'>) => {
   const { t } = useTranslation();
-  const { context } = useAppContext();
-  const locales = useMeta('meta/locales', context, []).data;
   return (
     <Flex gap={2} className='cms-editor-main-control'>
       <LanguageManager>
@@ -44,7 +42,7 @@ export const EmptyMainControl = ({ selectRow }: Pick<MainControlProps, 'selectRo
         </Button>
       </LanguageManager>
       <AddContentObject selectRow={selectRow}>
-        <Button size='large' variant='primary' icon={IvyIcons.Plus} disabled={locales.length === 0}>
+        <Button size='large' variant='primary' icon={IvyIcons.Plus}>
           {t('dialog.addContentObject.title')}
         </Button>
       </AddContentObject>
