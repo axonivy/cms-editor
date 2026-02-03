@@ -81,7 +81,8 @@
     "translationWizard": "Translation Wizard"
   },
   "label": {
-    "contentObjects": "Content Objects"
+    "contentObjects": "Content Objects",
+    "noLanguage": "No Language"
   },
   "message": {
     "addFirstItem": "Add your first Content Object to the CMS",

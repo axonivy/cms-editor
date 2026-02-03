@@ -11,7 +11,7 @@ import { useClient } from '../protocol/ClientContextProvider';
 import { useMeta } from '../protocol/use-meta';
 import { useQueryKeys } from '../query/query-client';
 import { isCmsReadFileDataObject, isCmsStringDataObject, removeValue } from '../utils/cms-utils';
-import { toLanguages } from '../utils/language-utils';
+import { toLanguages, UNDEFINED_LANGUAGE_TAG } from '../utils/language-utils';
 import './DetailContent.css';
 
 export const DetailContent = () => {
@@ -51,7 +51,8 @@ export const DetailContent = () => {
 
   const locales = useMeta('meta/locales', context, []).data;
 
-  if (!uri || !(isCmsStringDataObject(contentObject) || isCmsReadFileDataObject(contentObject))) {
+  const isFile = isCmsReadFileDataObject(contentObject);
+  if (!uri || !(isCmsStringDataObject(contentObject) || isFile)) {
     return <PanelMessage message={t('message.emptyDetail')} />;
   }
 
@@ -67,6 +68,11 @@ export const DetailContent = () => {
     return <PanelMessage icon={IvyIcons.ErrorXMark} message={t('message.error', { error })} />;
   }
 
+  const languages = toLanguages(locales, languageDisplayName);
+  if (isFile || contentObject.values[UNDEFINED_LANGUAGE_TAG] !== undefined) {
+    languages.unshift({ value: UNDEFINED_LANGUAGE_TAG, label: t('label.noLanguage') });
+  }
+
   const hasExactlyOneValue = Object.keys(contentObject.values).length === 1;
 
   return (
@@ -75,14 +81,14 @@ export const DetailContent = () => {
         <BasicInput value={contentObject.uri} disabled />
       </BasicField>
       <Flex direction='column' gap={4}>
-        {toLanguages(locales, languageDisplayName).map(language => {
+        {languages.map(language => {
           const props = {
             deleteValue: (languageTag: string) => deleteMutation.mutate({ context, deleteRequest: { uri, languageTag } }),
             language,
             disabledDelete: hasExactlyOneValue,
             deleteTooltip: hasExactlyOneValue && contentObject.values[language.value] !== undefined ? t('value.lastValue') : undefined
           };
-          return isCmsReadFileDataObject(contentObject) ? (
+          return isFile ? (
             <FileValueField
               key={language.value}
               contentObject={contentObject}

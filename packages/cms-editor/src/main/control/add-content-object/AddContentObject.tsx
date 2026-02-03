@@ -41,7 +41,7 @@ import { genQueryKey, useQueryKeys } from '../../../query/query-client';
 import { isCmsFileDataObject, isCmsStringDataObject, isCmsValueDataObject, removeValue } from '../../../utils/cms-utils';
 import { isNotUndefined } from '../../../utils/guards';
 import { useKnownHotkeys } from '../../../utils/hotkeys';
-import { toLanguages, type Language } from '../../../utils/language-utils';
+import { toLanguages, UNDEFINED_LANGUAGE_TAG, type Language } from '../../../utils/language-utils';
 import { normalizeUri } from './normalize-uri';
 import { useValidateAddContentObject } from './use-validate-add-content-object';
 
@@ -165,6 +165,12 @@ const AddContentObjectContent = ({
     { scopes: DIALOG_HOTKEY_IDS, enableOnFormTags: true }
   );
 
+  const languages = toLanguages(languageTags, languageDisplayName);
+  const isFile = type === 'FILE';
+  if (isFile) {
+    languages.unshift({ value: UNDEFINED_LANGUAGE_TAG, label: t('label.noLanguage') });
+  }
+
   return (
     <BasicDialogContent
       title={t('dialog.addContentObject.title')}
@@ -215,14 +221,14 @@ const AddContentObjectContent = ({
           <BasicField label={t('common.label.type')}>
             <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
           </BasicField>
-          {type === 'FILE' && (
+          {isFile && (
             <Message
               variant='info'
               message={t('dialog.addContentObject.fileFormatInfo')}
               className='cms-editor-add-dialog-file-format-info'
             />
           )}
-          {toLanguages(languageTags, languageDisplayName).map((language: Language) => {
+          {languages.map((language: Language) => {
             const props = {
               updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
               deleteValue: (languageTag: string) => setValues(values => removeValue(values, languageTag)),
