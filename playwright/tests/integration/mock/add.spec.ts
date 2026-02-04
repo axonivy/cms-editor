@@ -41,6 +41,10 @@ test('show error if no languages are present in the CMS', async () => {
   await languageTools.languageManager.delete.click();
   await languageTools.languageManager.save.trigger.click();
   await languageTools.languageManager.save.save.click();
+  await editor.main.table.row(0).locator.click();
+  await editor.main.control.delete.click();
+  await editor.main.control.delete.click();
+
   await add.trigger.click();
   await expect(add.name.locator).toBeHidden();
   await expect(add.namespace.locator).toBeHidden();
@@ -77,7 +81,8 @@ test('default values', async () => {
     '/Dialogs/procurementRequest',
     '/Dialogs/signal',
     '/Dialogs/trigger',
-    '/Files'
+    '/Files',
+    '/NoLanguage'
   );
   await expect(add.type.locator).toHaveText('String');
   await expect(add.value('English').textbox.locator).toHaveValue('');
@@ -87,16 +92,19 @@ test('default values', async () => {
 test('type', async () => {
   const add = editor.main.control.add;
   const englishValue = add.value('English');
+  const noLanguageValue = add.value('No Language');
 
   await add.trigger.click();
   await expect(add.fileFormatInfo.locator).toBeHidden();
   await expect(englishValue.textbox.locator).toBeVisible();
   await expect(englishValue.filePicker).toBeHidden();
+  await expect(noLanguageValue.locator).toBeHidden();
 
   await add.type.select('File');
   await expect(add.fileFormatInfo.locator).toBeVisible();
   await expect(englishValue.textbox.locator).toBeHidden();
   await expect(englishValue.filePicker).toBeVisible();
+  await expect(noLanguageValue.locator).toBeVisible();
 
   await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
   await expect(englishValue.fileButton).toBeHidden();
@@ -106,6 +114,7 @@ test('type', async () => {
   await expect(englishValue.textbox.locator).toBeVisible();
   await expect(englishValue.textbox.locator).toHaveValue('');
   await expect(englishValue.filePicker).toBeHidden();
+  await expect(noLanguageValue.locator).toBeHidden();
 });
 
 test('file extension', async ({ page }) => {
@@ -186,7 +195,7 @@ test('keyboard namespace', async () => {
   await expect(add.name.locator).toHaveValue('NewContentObject');
   await add.namespace.locator.focus();
   await keyboard.press('Enter');
-  await expect(add.namespace.options).toHaveCount(7);
+  await expect(add.namespace.options).toHaveCount(8);
   await editor.page.keyboard.press('Enter');
   await expect(add.namespace.locator).toHaveValue('/Dialogs/agileBPM/define_WF');
   await editor.page.keyboard.press('Tab');

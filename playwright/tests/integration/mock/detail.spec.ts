@@ -33,10 +33,31 @@ test('uri', async () => {
 });
 
 test('a field for each locale', async () => {
-  await editor.main.table.row(2).locator.click();
+  const noLanguageValue = editor.detail.value('No Language');
+  const englishValue = editor.detail.value('English');
+  const germanValue = editor.detail.value('German');
+
+  await editor.main.table.row(0).locator.click();
   await expect(editor.detail.values).toHaveCount(2);
-  await expect(editor.detail.value('English').textbox.locator).toHaveValue('Case');
-  await expect(editor.detail.value('German').textbox.locator).toHaveValue('Fall');
+  await expect(noLanguageValue.locator).toBeHidden();
+  await expect(englishValue.textbox.locator).toHaveValue('Add a task to the sequence');
+  await expect(germanValue.textbox.locator).toHaveValue('Aufgabe zum Ablauf hinzufügen');
+
+  await editor.page.keyboard.press('ArrowUp');
+  await editor.main.table.row(-3).locator.click();
+  await expect(editor.detail.values).toHaveCount(3);
+  await expect(noLanguageValue.filePicker).toContainText('Choose File');
+  await expect(englishValue.filePicker).toContainText('ImageFile.png');
+  await expect(germanValue.filePicker).toContainText('Choose File');
+
+  await editor.main.table.row(-2).locator.click();
+  await expect(editor.detail.values).toHaveCount(3);
+  await expect(noLanguageValue.textbox.locator).toHaveValue('noLanguageValue');
+  await expect(englishValue.textbox.locator).toHaveValue('value');
+  await expect(germanValue.textbox.locator).toHaveValue('Wert');
+
+  await editor.main.table.row(-1).locator.click();
+  await expect(noLanguageValue.filePicker).toContainText('File.txt');
 });
 
 test.describe('delete value', () => {
@@ -77,9 +98,9 @@ test.describe('delete value', () => {
   test('file', async () => {
     await editor.main.table.locator.focus();
     await editor.page.keyboard.press('ArrowUp');
-    await editor.page.keyboard.press('ArrowUp');
 
-    const row = editor.main.table.row(-2);
+    const row = editor.main.table.row(-4);
+    await row.locator.click();
 
     const englishValue = editor.detail.value('English');
     const germanValue = editor.detail.value('German');
@@ -120,7 +141,7 @@ test.describe('update value', () => {
     test('file picker', async () => {
       await editor.main.table.locator.focus();
       await editor.page.keyboard.press('ArrowUp');
-      await editor.page.keyboard.press('ArrowUp');
+      await editor.main.table.row(-4).locator.click();
 
       const englishValue = editor.detail.value('English');
 
@@ -133,7 +154,7 @@ test.describe('update value', () => {
     test('drag and drop', async () => {
       await editor.main.table.locator.focus();
       await editor.page.keyboard.press('ArrowUp');
-      await editor.page.keyboard.press('ArrowUp');
+      await editor.main.table.row(-4).locator.click();
 
       const englishValue = editor.detail.value('English');
 
@@ -153,7 +174,7 @@ test.describe('update value', () => {
 test('openFile', async () => {
   await editor.main.table.locator.focus();
   await editor.page.keyboard.press('ArrowUp');
-  await editor.page.keyboard.press('ArrowUp');
+  await editor.main.table.row(-4).locator.click();
 
   const msg0 = editor.consoleLog();
   await editor.detail.value('English').fileButton.click();

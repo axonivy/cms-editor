@@ -27,12 +27,12 @@ test.describe('delete', () => {
     await firstRow.locator.click();
     await editor.page.keyboard.press('ArrowUp');
     const lastRow = editor.main.table.row(-1);
-    await lastRow.expectToHaveFileColumns('IMAGE', ['/Files/ImageFile'], ['ImageFile.png']);
-    await editor.detail.expectToHaveFileValues('/Files/ImageFile', { English: true, German: false });
+    await lastRow.expectToHaveFileColumns('FILE', ['/NoLanguage/File'], ['File.txt']);
+    await editor.detail.expectToHaveFileValues('/NoLanguage/File', { 'No Language': true, English: true, German: true });
     await deleteButton.click();
     await lastRow.expectToBeSelected();
-    await lastRow.expectToHaveFileColumns('FILE', ['/Files/TextFile'], ['TextFile.txt']);
-    await editor.detail.expectToHaveFileValues('/Files/TextFile', { English: true, German: true });
+    await lastRow.expectToHaveStringColumns(['/NoLanguage/String'], ['value']);
+    await editor.detail.expectToHaveStringValues('/NoLanguage/String', { 'No Language': 'noLanguageValue', English: 'value', German: 'Wert' });
   });
 
   test('multiple', async () => {

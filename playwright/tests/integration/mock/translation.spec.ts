@@ -23,7 +23,7 @@ test.describe('selected content objects', () => {
 
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
-    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('99 Content Objects selected.');
+    await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('100 Content Objects selected.');
     await languageTools.translationWizard.cancel.click();
 
     await table.row(0).locator.click();
@@ -49,16 +49,16 @@ test.describe('selected content objects', () => {
     ]);
   });
 
-  test('ignore not translatable content objects', async ({ page }) => {
+  test('ignore not translatable content objects', async () => {
     const languageTools = editor.main.control.languageTools;
     const table = editor.main.table;
 
     await table.row(0).locator.click();
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.down('Shift');
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.up('Shift');
+    await editor.page.keyboard.press('ArrowUp');
+    await table.row(-5).locator.click();
+    await editor.page.keyboard.down('Shift');
+    await table.row(-3).locator.click();
+    await editor.page.keyboard.up('Shift');
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
     await expect(languageTools.translationWizard.selectedContentObjects.trigger).toHaveText('1 Content Object selected.');
@@ -85,7 +85,7 @@ test.describe('selected content objects', () => {
 
     await languageTools.translationWizard.translationWizardReview.cancel.click();
     await languageTools.translationWizard.cancel.click();
-    await table.row(-3).locator.click();
+    await table.row(-5).locator.click();
     await editor.detail.value('English').delete.click();
     await languageTools.trigger.click();
     await languageTools.translationWizard.trigger.click();
@@ -105,7 +105,7 @@ test.describe('selected content objects', () => {
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await expect(languageTools.translationWizard.translationWizardReview.trigger).toBeDisabled();
     await languageTools.translationWizard.translationWizardReview.trigger.hover();
-    await expect(page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
+    await expect(editor.page.getByRole('tooltip')).toHaveText('No translatable Content Objects selected.');
   });
 });
 

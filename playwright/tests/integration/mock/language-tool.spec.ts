@@ -293,8 +293,8 @@ test.describe('save confirmation', () => {
     await languageTools.languageManager.delete.click();
     await languageTools.languageManager.delete.click();
     await languageTools.languageManager.save.trigger.click();
-    await expect(languageTools.languageManager.save.valueAmounts.nth(0)).toHaveText('English: 101 values');
-    await expect(languageTools.languageManager.save.valueAmounts.nth(1)).toHaveText('German: 100 values');
+    await expect(languageTools.languageManager.save.valueAmounts.nth(0)).toHaveText('English: 103 values');
+    await expect(languageTools.languageManager.save.valueAmounts.nth(1)).toHaveText('German: 102 values');
     await expect(languageTools.languageManager.save.valueAmounts.nth(2)).toHaveText('French: 1 value');
   });
 

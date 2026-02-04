@@ -64,6 +64,6 @@ test('fileValues', async ({ page }) => {
   await editor.main.table.locator.focus();
   await editor.page.keyboard.press('ArrowUp');
 
-  await editor.main.table.row(-1).expectToHaveFileColumns('IMAGE', ['/Files/ImageFile'], ['ImageFile.png'], ['']);
-  await editor.main.table.row(-2).expectToHaveFileColumns('FILE', ['/Files/TextFile'], ['TextFile.txt'], ['TextFile.txt']);
+  await editor.main.table.row(-3).expectToHaveFileColumns('IMAGE', ['/Files/ImageFile'], ['ImageFile.png'], ['']);
+  await editor.main.table.row(-4).expectToHaveFileColumns('FILE', ['/Files/TextFile'], ['TextFile.txt'], ['TextFile.txt']);
 });

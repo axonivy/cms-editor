@@ -81,7 +81,8 @@
     "translationWizard": "Übersetzungsassistent"
   },
   "label": {
-    "contentObjects": "Inhaltsobjekte"
+    "contentObjects": "Inhaltsobjekte",
+    "noLanguage": "Keine Sprache"
   },
   "message": {
     "addFirstItem": "Fügen Sie Ihr erstes Inhaltsobjekt zum CMS hinzu",

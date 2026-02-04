@@ -1,5 +1,7 @@
 import i18next from 'i18next';
 
+export const UNDEFINED_LANGUAGE_TAG = 'und' as const;
+
 export type Language = {
   value: string;
   label: string;
