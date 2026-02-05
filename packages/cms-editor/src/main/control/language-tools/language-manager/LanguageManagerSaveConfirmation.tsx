@@ -14,12 +14,15 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   const { t } = useTranslation();
   const { open, onOpenChange } = useDialogHotkeys(['languageManagerSaveDialog']);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const { context } = useAppContext();
+  const amountOfValuesToDeleteRaw = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
+  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw).filter(([, amount]) => amount > 0);
 
   const onSaveClick = () => {
-    if (localesToDelete.length === 0) {
-      save(localesToDelete);
-    } else {
+    if (localesToDelete.length > 0 && amountOfValuesToDelete.length > 0) {
       onOpenChange(true);
+    } else {
+      save(localesToDelete);
     }
   };
 
@@ -42,17 +45,24 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
             saveButtonRef.current?.focus();
           }}
         >
-          <LanguageManagerSaveConfirmationContent localesToDelete={localesToDelete} save={save} />
+          <LanguageManagerSaveConfirmationContent
+            localesToDelete={localesToDelete}
+            save={save}
+            amountOfValuesToDelete={amountOfValuesToDelete}
+          />
         </DialogContent>
       </Dialog>
     </>
   );
 };
 
-const LanguageManagerSaveConfirmationContent = ({ localesToDelete, save }: LanguageManagerSaveConfirmationProps) => {
+const LanguageManagerSaveConfirmationContent = ({
+  localesToDelete,
+  save,
+  amountOfValuesToDelete
+}: LanguageManagerSaveConfirmationProps & { amountOfValuesToDelete: Array<[string, number]> }) => {
   const { t } = useTranslation();
-  const { context, languageDisplayName } = useAppContext();
-  const amountOfValuesToDelete = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
+  const { languageDisplayName } = useAppContext();
 
   const languageValuesDisplayString = (languageTag: string, amount: number) => {
     const valueDisplayString = amount === 1 ? t('common.label.value') : t('common.label.values');
@@ -79,11 +89,9 @@ const LanguageManagerSaveConfirmationContent = ({ localesToDelete, save }: Langu
         </Button>
       }
     >
-      {Object.entries(amountOfValuesToDelete)
-        .filter(([, amount]) => amount > 0)
-        .map(([languageTag, amount]) => (
-          <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
-        ))}
+      {amountOfValuesToDelete.map(([languageTag, amount]) => (
+        <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
+      ))}
     </BasicDialogContent>
   );
 };

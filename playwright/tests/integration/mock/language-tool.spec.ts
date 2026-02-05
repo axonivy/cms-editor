@@ -298,7 +298,7 @@ test.describe('save confirmation', () => {
     await expect(languageTools.languageManager.save.valueAmounts.nth(2)).toHaveText('French: 1 value');
   });
 
-  test('do require confirmation even when no values are deleted', async () => {
+  test('do not require confirmation when no values are deleted', async () => {
     const languageTools = editor.main.control.languageTools;
 
     await languageTools.trigger.click();
@@ -311,6 +311,13 @@ test.describe('save confirmation', () => {
     await languageTools.trigger.click();
     await languageTools.languageManager.trigger.click();
     await languageTools.languageManager.languages.row(1).locator.click();
+    await languageTools.languageManager.delete.click();
+    await languageTools.languageManager.save.trigger.click();
+    await expect(languageTools.languageManager.save.locator).toBeHidden();
+
+    await languageTools.trigger.click();
+    await languageTools.languageManager.trigger.click();
+    await languageTools.languageManager.languages.row(0).locator.click();
     await languageTools.languageManager.delete.click();
     await languageTools.languageManager.save.trigger.click();
     await expect(languageTools.languageManager.save.locator).toBeVisible();
