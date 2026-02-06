@@ -15,10 +15,18 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   const { open, onOpenChange } = useDialogHotkeys(['languageManagerSaveDialog']);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const { context } = useAppContext();
-  const amountOfValuesToDeleteRaw = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
-  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw).filter(([, amount]) => amount > 0);
+
+  const {
+    data: amountOfValuesToDeleteRaw,
+    isLoading,
+    isFetching
+  } = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {});
+
+  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw || {}).filter(([, amount]) => amount > 0);
 
   const onSaveClick = () => {
+    if (isLoading || isFetching) return;
+
     if (localesToDelete.length > 0 && amountOfValuesToDelete.length > 0) {
       onOpenChange(true);
     } else {
@@ -29,10 +37,10 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   return (
     <>
       <Button
+        disabled={isLoading || isFetching}
         ref={saveButtonRef}
         variant='primary'
         size='large'
-        icon={IvyIcons.Check}
         aria-label={t('common.label.save')}
         onClick={onSaveClick}
       >
