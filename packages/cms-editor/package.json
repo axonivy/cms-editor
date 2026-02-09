@@ -51,7 +51,7 @@
   },
   "scripts": {
     "clean": "rimraf lib *.tsbuildinfo",
-    "build": "tsc --build && tscp",
+    "build": "tsc --build",
     "package": "vite build",
     "build:clean": "pnpm run clean && pnpm run build",
     "type": "tsc --noEmit",
