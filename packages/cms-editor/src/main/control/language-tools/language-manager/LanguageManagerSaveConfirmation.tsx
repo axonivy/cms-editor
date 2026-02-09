@@ -1,6 +1,6 @@
-import { BasicDialogContent, Button, Dialog, DialogContent, useDialogHotkeys } from '@axonivy/ui-components';
+import { BasicDialogContent, Button, Dialog, DialogContent, Spinner, useDialogHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
@@ -14,20 +14,9 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   const { t } = useTranslation();
   const { open, onOpenChange } = useDialogHotkeys(['languageManagerSaveDialog']);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
-  const { context } = useAppContext();
-
-  const {
-    data: amountOfValuesToDeleteRaw,
-    isLoading,
-    isFetching
-  } = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {});
-
-  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw || {}).filter(([, amount]) => amount > 0);
 
   const onSaveClick = () => {
-    if (isLoading || isFetching) return;
-
-    if (localesToDelete.length > 0 && amountOfValuesToDelete.length > 0) {
+    if (localesToDelete.length > 0) {
       onOpenChange(true);
     } else {
       save(localesToDelete);
@@ -37,10 +26,10 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   return (
     <>
       <Button
-        disabled={isLoading || isFetching}
         ref={saveButtonRef}
         variant='primary'
         size='large'
+        icon={IvyIcons.Check}
         aria-label={t('common.label.save')}
         onClick={onSaveClick}
       >
@@ -53,11 +42,7 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
             saveButtonRef.current?.focus();
           }}
         >
-          <LanguageManagerSaveConfirmationContent
-            localesToDelete={localesToDelete}
-            save={save}
-            amountOfValuesToDelete={amountOfValuesToDelete}
-          />
+          <LanguageManagerSaveConfirmationContent localesToDelete={localesToDelete} save={save} onClose={() => onOpenChange(false)} />
         </DialogContent>
       </Dialog>
     </>
@@ -67,15 +52,26 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
 const LanguageManagerSaveConfirmationContent = ({
   localesToDelete,
   save,
-  amountOfValuesToDelete
-}: LanguageManagerSaveConfirmationProps & { amountOfValuesToDelete: Array<[string, number]> }) => {
+  onClose
+}: LanguageManagerSaveConfirmationProps & { onClose: () => void }) => {
   const { t } = useTranslation();
-  const { languageDisplayName } = useAppContext();
+  const { context, languageDisplayName } = useAppContext();
+  const { data: amountOfValuesToDeleteRaw, isFetching } = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {});
+
+  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw).filter(([, amount]) => amount > 0);
+
+  useEffect(() => {
+    if (!isFetching && amountOfValuesToDelete.length === 0) {
+      save(localesToDelete);
+      onClose();
+    }
+  }, [isFetching, amountOfValuesToDelete.length, save, localesToDelete, onClose]);
 
   const languageValuesDisplayString = (languageTag: string, amount: number) => {
     const valueDisplayString = amount === 1 ? t('common.label.value') : t('common.label.values');
     return `${languageDisplayName.of(languageTag)}: ${amount} ${valueDisplayString}`;
   };
+
   return (
     <BasicDialogContent
       title={t('dialog.languageManager.saveConfirmation.title')}
@@ -86,20 +82,30 @@ const LanguageManagerSaveConfirmationContent = ({
           size='large'
           icon={IvyIcons.Check}
           aria-label={t('common.label.save')}
-          onClick={() => save(localesToDelete)}
+          disabled={isFetching}
+          onClick={() => {
+            save(localesToDelete);
+            onClose();
+          }}
         >
           {t('common.label.save')}
         </Button>
       }
       cancel={
-        <Button variant='outline' size='large'>
+        <Button variant='outline' size='large' onClick={onClose}>
           {t('common.label.cancel')}
         </Button>
       }
     >
-      {amountOfValuesToDelete.map(([languageTag, amount]) => (
-        <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
-      ))}
+      {isFetching ? (
+        <div className='flex items-center justify-center p-8'>
+          <Spinner />
+        </div>
+      ) : (
+        amountOfValuesToDelete.map(([languageTag, amount]) => (
+          <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
+        ))
+      )}
     </BasicDialogContent>
   );
 };
