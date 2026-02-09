@@ -18,11 +18,15 @@
 }
 
 .cms-editor-main-table thead {
-  height: 36px;
+  height: 32px;
   white-space: nowrap;
 }
 
-.cms-editor-main-table tr {
+.cms-editor-main-table td {
+  align-content: center;
+}
+
+.cms-editor-main-table tbody tr {
   display: flex;
   position: absolute;
   width: 100%;
