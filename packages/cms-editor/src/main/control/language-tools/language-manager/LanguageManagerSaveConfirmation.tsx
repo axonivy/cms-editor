@@ -1,6 +1,6 @@
-import { BasicDialogContent, Button, Dialog, DialogContent, useDialogHotkeys } from '@axonivy/ui-components';
+import { BasicDialogContent, Button, Dialog, DialogContent, Spinner, useDialogHotkeys } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
@@ -16,10 +16,10 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const onSaveClick = () => {
-    if (localesToDelete.length === 0) {
-      save(localesToDelete);
-    } else {
+    if (localesToDelete.length > 0) {
       onOpenChange(true);
+    } else {
+      save(localesToDelete);
     }
   };
 
@@ -42,22 +42,36 @@ export const LanguageManagerSaveConfirmation = ({ localesToDelete, save }: Langu
             saveButtonRef.current?.focus();
           }}
         >
-          <LanguageManagerSaveConfirmationContent localesToDelete={localesToDelete} save={save} />
+          <LanguageManagerSaveConfirmationContent localesToDelete={localesToDelete} save={save} onClose={() => onOpenChange(false)} />
         </DialogContent>
       </Dialog>
     </>
   );
 };
 
-const LanguageManagerSaveConfirmationContent = ({ localesToDelete, save }: LanguageManagerSaveConfirmationProps) => {
+const LanguageManagerSaveConfirmationContent = ({
+  localesToDelete,
+  save,
+  onClose
+}: LanguageManagerSaveConfirmationProps & { onClose: () => void }) => {
   const { t } = useTranslation();
   const { context, languageDisplayName } = useAppContext();
-  const amountOfValuesToDelete = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {}).data;
+  const { data: amountOfValuesToDeleteRaw, isFetching } = useMeta('meta/countLocaleValues', { context, locales: localesToDelete }, {});
+
+  const amountOfValuesToDelete = Object.entries(amountOfValuesToDeleteRaw).filter(([, amount]) => amount > 0);
+
+  useEffect(() => {
+    if (!isFetching && amountOfValuesToDelete.length === 0) {
+      save(localesToDelete);
+      onClose();
+    }
+  }, [isFetching, amountOfValuesToDelete.length, save, localesToDelete, onClose]);
 
   const languageValuesDisplayString = (languageTag: string, amount: number) => {
     const valueDisplayString = amount === 1 ? t('common.label.value') : t('common.label.values');
     return `${languageDisplayName.of(languageTag)}: ${amount} ${valueDisplayString}`;
   };
+
   return (
     <BasicDialogContent
       title={t('dialog.languageManager.saveConfirmation.title')}
@@ -68,22 +82,30 @@ const LanguageManagerSaveConfirmationContent = ({ localesToDelete, save }: Langu
           size='large'
           icon={IvyIcons.Check}
           aria-label={t('common.label.save')}
-          onClick={() => save(localesToDelete)}
+          disabled={isFetching}
+          onClick={() => {
+            save(localesToDelete);
+            onClose();
+          }}
         >
           {t('common.label.save')}
         </Button>
       }
       cancel={
-        <Button variant='outline' size='large'>
+        <Button variant='outline' size='large' onClick={onClose}>
           {t('common.label.cancel')}
         </Button>
       }
     >
-      {Object.entries(amountOfValuesToDelete)
-        .filter(([, amount]) => amount > 0)
-        .map(([languageTag, amount]) => (
+      {isFetching ? (
+        <div className='flex items-center justify-center p-8'>
+          <Spinner />
+        </div>
+      ) : (
+        amountOfValuesToDelete.map(([languageTag, amount]) => (
           <span key={languageTag}>{languageValuesDisplayString(languageTag, amount)}</span>
-        ))}
+        ))
+      )}
     </BasicDialogContent>
   );
 };
