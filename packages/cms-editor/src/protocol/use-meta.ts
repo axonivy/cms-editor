@@ -9,11 +9,16 @@ export const useMeta = <TMeta extends keyof MetaRequestTypes>(
   path: TMeta,
   args: MetaRequestTypes[TMeta][0],
   initialData: NonUndefinedGuard<MetaRequestTypes[TMeta][1]>
-): { data: MetaRequestTypes[TMeta][1] } => {
+): { data: MetaRequestTypes[TMeta][1]; isFetching: boolean } => {
   const client = useClient();
-  return useQuery({
+  const result = useQuery({
     queryKey: genQueryKey(path, args),
     queryFn: () => client.meta(path, args),
     initialData
   });
+
+  return {
+    data: result.data as MetaRequestTypes[TMeta][1],
+    isFetching: result.isFetching
+  };
 };
