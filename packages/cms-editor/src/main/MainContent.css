@@ -18,8 +18,11 @@
 }
 
 .cms-editor-main-table thead {
-  height: 36px;
+  height: 32px;
   white-space: nowrap;
+  th {
+    align-content: center;
+  }
 }
 
 .cms-editor-main-table tr {
@@ -32,6 +35,10 @@
 
 .cms-editor-main-table tr > *:last-child {
   flex-grow: 1;
+}
+
+.cms-editor-main-table td {
+  align-content: center;
 }
 
 .cms-editor-main-table th,
