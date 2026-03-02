@@ -13,7 +13,6 @@ import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './CmsEditor.css';
 import { AppProvider } from './context/AppContext';
 import { DetailContent } from './detail/DetailContent';
 import { DetailToolbar } from './detail/DetailToolbar';
@@ -55,7 +54,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
 
   if (isPending) {
     return (
-      <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
+      <Flex alignItems='center' justifyContent='center' className='size-full'>
         <Spinner />
       </Flex>
     );
@@ -86,8 +85,8 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
       }}
     >
       <ResizableGroup orientation='horizontal' defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged}>
-        <ResizablePanel id='main' defaultSize='75%' minSize='50%' className='cms-editor-main-panel'>
-          <Flex direction='column' className='cms-editor-panel-content'>
+        <ResizablePanel id='cms-editor-main' defaultSize='75%' minSize='50%' className='bg-n75'>
+          <Flex direction='column' className='h-full'>
             <MainToolbar title={mainTitle} />
             <MainContent />
           </Flex>
@@ -95,8 +94,8 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
         {detail && (
           <>
             <ResizableHandle />
-            <ResizablePanel id='sidebar' defaultSize='25%' minSize='20%' className='cms-editor-detail-panel'>
-              <Flex direction='column' className='cms-editor-panel-content'>
+            <ResizablePanel id='cms-editor-detail' defaultSize='25%' minSize='20%'>
+              <Flex direction='column' className='h-full'>
                 <DetailToolbar title={detailTitle} helpUrl={data.helpUrl} />
                 <DetailContent key={contentObject?.uri} />
               </Flex>

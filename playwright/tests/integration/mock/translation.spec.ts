@@ -71,9 +71,9 @@ test.describe('selected content objects', () => {
     await languageTools.translationWizard.selectedContentObjects.trigger.click();
     const contentObjects = languageTools.translationWizard.selectedContentObjects.content.locator('span');
     await expect(contentObjects).toHaveText(['/Dialogs/trigger/selectParkingLot', '/Files/TextFile', '/Files/ImageFile']);
-    await expect(contentObjects.nth(0)).not.toHaveClass('cms-editor-translation-wizard-ignored-content-object');
-    await expect(contentObjects.nth(1)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
-    await expect(contentObjects.nth(2)).toHaveClass('cms-editor-translation-wizard-ignored-content-object');
+    await expect(contentObjects.nth(0)).not.toHaveClass('text-warning line-through');
+    await expect(contentObjects.nth(1)).toHaveClass('text-warning line-through');
+    await expect(contentObjects.nth(2)).toHaveClass('text-warning line-through');
 
     await languageTools.translationWizard.targetLanguages.language('German').checkbox.check();
     await languageTools.translationWizard.translationWizardReview.trigger.click();
@@ -408,16 +408,16 @@ test.describe('translation review', () => {
     await languageTools.translationWizard.translationWizardReview.trigger.click();
 
     await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveClass('cms-editor-translation-wizard-review-line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).not.toHaveClass('line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).toHaveClass('line-through');
 
     await languageTools.translationWizard.translationWizardReview.table.row(0).column(3).locator.click();
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).toHaveClass('cms-editor-translation-wizard-review-line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(0)).not.toHaveClass('line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(0).column(3).value(1)).toHaveClass('line-through');
 
     await languageTools.translationWizard.translationWizardReview.table.row(1).column(3).locator.click();
 
-    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveClass('cms-editor-translation-wizard-review-line-through');
+    await expect(languageTools.translationWizard.translationWizardReview.table.row(1).column(3).value(0)).not.toHaveClass('line-through');
   });
 });
 

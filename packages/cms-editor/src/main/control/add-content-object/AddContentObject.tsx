@@ -203,7 +203,7 @@ const AddContentObjectContent = ({
       tabIndex={-1}
     >
       {languageTags.length === 0 ? (
-        <Message variant='error' message={t('dialog.addContentObject.noLanguages')} className='cms-editor-add-dialog-message' />
+        <Message variant='error' message={t('dialog.addContentObject.noLanguages')} />
       ) : (
         <>
           <BasicField label={t('common.label.name')} message={nameMessage}>
@@ -221,13 +221,7 @@ const AddContentObjectContent = ({
           <BasicField label={t('common.label.type')}>
             <BasicSelect value={type} onValueChange={changeType} items={typeItems} disabled={isPending} />
           </BasicField>
-          {isFile && (
-            <Message
-              variant='info'
-              message={t('dialog.addContentObject.fileFormatInfo')}
-              className='cms-editor-add-dialog-file-format-info'
-            />
-          )}
+          {isFile && <Message variant='info' message={t('dialog.addContentObject.fileFormatInfo')} />}
           {languages.map((language: Language) => {
             const props = {
               updateValue: (languageTag: string, value: string) => setValues(values => ({ ...values, [languageTag]: value })),
@@ -243,7 +237,7 @@ const AddContentObjectContent = ({
               <StringValueField key={language.value} contentObject={contentObject} {...props} />
             );
           })}
-          {isError && <Message variant='error' message={t('message.error', { error })} className='cms-editor-add-dialog-message' />}
+          {isError && <Message variant='error' message={t('message.error', { error })} />}
         </>
       )}
     </BasicDialogContent>

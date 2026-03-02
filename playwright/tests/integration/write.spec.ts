@@ -13,7 +13,7 @@ test.afterEach(() => {
 });
 
 test('save data', async () => {
-  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await editor.main.locator.getByRole('button', { name: 'Language Manager' }).click();
   await editor.main.control.languageTools.languageManager.addLanguage(0);
   await editor.main.control.languageTools.languageManager.addLanguage(2);
   await editor.main.control.languageTools.languageManager.addLanguage(3);
@@ -60,7 +60,7 @@ test('save data', async () => {
 });
 
 test('add file', async () => {
-  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await editor.main.locator.getByRole('button', { name: 'Language Manager' }).click();
   await editor.main.control.languageTools.languageManager.addLanguage(0);
   await editor.main.control.languageTools.languageManager.save.trigger.click();
 

@@ -26,18 +26,18 @@ test('theme', async () => {
 });
 
 test('readonly', async () => {
-  await expect(editor.main.control.locator).toBeVisible();
+  await expect(editor.main.control.add.trigger).toBeVisible();
   editor = await CmsEditor.openMock(editor.page, { parameters: { readonly: true } });
-  await expect(editor.main.control.locator).toBeHidden();
+  await expect(editor.main.control.add.trigger).toBeHidden();
   await editor.main.table.row(0).locator.click();
   await expect(editor.detail.value('English').textbox.locator).toBeDisabled();
 });
 
 test('toolbar titles', async () => {
-  await expect(editor.main.toolbar.title).toHaveText('CMS - pmv-name');
+  await expect(editor.main.toolbar.locator).toHaveText('CMS - pmv-name');
   await expect(editor.detail.toolbar.locator).toHaveText('CMS - pmv-name');
   await editor.main.table.row(0).locator.click();
-  await expect(editor.main.toolbar.title).toHaveText('CMS - pmv-name');
+  await expect(editor.main.toolbar.locator).toHaveText('CMS - pmv-name');
   await expect(editor.detail.toolbar.locator).toHaveText('CMS - pmv-name - AddTask');
 });
 
@@ -46,7 +46,7 @@ test('focus jumps', async () => {
   await editor.page.keyboard.press('1');
   await expect(editor.main.toolbar.locator).toBeFocused();
   await editor.page.keyboard.press('2');
-  await expect(editor.main.locator.locator('.cms-editor-main-table-field')).toBeFocused();
+  await expect(editor.main.locator.locator('.ui-fieldset').first()).toBeFocused();
   await editor.page.keyboard.press('3');
   await expect(editor.detail.toolbar.locator).toBeFocused();
 });

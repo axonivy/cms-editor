@@ -6,6 +6,7 @@ import {
   BasicField,
   BasicSelect,
   Button,
+  cn,
   Flex,
   type BasicCheckboxProps,
   type MessageData
@@ -17,7 +18,6 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useMeta } from '../../../../protocol/use-meta';
 import { defaultLanguageTag, toLanguages } from '../../../../utils/language-utils';
 import type { DisabledWithReason } from '../../../../utils/types';
-import './TranslationWizard.css';
 import { TranslationWizardReview } from './TranslationWizardReview';
 
 export const TRANSLATION_WIZARD_DIALOG_HOTKEY_IDS = ['translationWizardDialog'];
@@ -97,11 +97,7 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
           {allSelectedContentObjects.map(co => (
             <span
               key={co.uri}
-              className={
-                notTranslatableFilters.some(filter => !filter.condition(co))
-                  ? 'cms-editor-translation-wizard-ignored-content-object'
-                  : undefined
-              }
+              className={notTranslatableFilters.some(filter => !filter.condition(co)) ? cn('text-warning line-through') : undefined}
             >
               {co.uri}
             </span>
@@ -123,7 +119,7 @@ export const TranslationWizardContent = ({ closeDialog }: { closeDialog: () => v
             areAllSelected={targetLanguageTags.length == selectableTargetLanguageTags.length}
           />
         }
-        className='cms-editor-translation-wizard-target-languages'
+        id='cms-editor-translation-wizard-target-languages'
       >
         {targetLanguages.map(language => (
           <BasicCheckbox

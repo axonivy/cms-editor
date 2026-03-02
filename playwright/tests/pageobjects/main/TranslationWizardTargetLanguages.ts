@@ -6,7 +6,7 @@ export class TranslationWizardTargetLanguages {
   readonly languages: Locator;
 
   constructor(parent: Locator) {
-    this.locator = parent.locator('.cms-editor-translation-wizard-target-languages');
+    this.locator = parent.locator('#cms-editor-translation-wizard-target-languages');
     this.selectDeselectAll = this.locator.getByRole('button');
     this.languages = this.locator.locator('.ui-field');
   }

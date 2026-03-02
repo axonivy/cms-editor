@@ -13,10 +13,10 @@ export class DetailPanel {
 
   constructor(page: Page) {
     this.page = page;
-    this.locator = this.page.locator('.cms-editor-detail-panel');
+    this.locator = this.page.locator('#cms-editor-detail');
     this.toolbar = new DetailToolbar(this.locator);
     this.uri = new Textbox(this.locator, { name: 'Path' });
-    this.values = this.locator.locator('.cms-editor-value-field');
+    this.values = this.locator.locator('.ui-cms-editor-value-field');
     this.message = this.locator.locator('p');
   }
 

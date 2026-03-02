@@ -12,7 +12,6 @@ import { useMeta } from '../protocol/use-meta';
 import { useQueryKeys } from '../query/query-client';
 import { isCmsReadFileDataObject, isCmsStringDataObject, removeValue } from '../utils/cms-utils';
 import { toLanguages, UNDEFINED_LANGUAGE_TAG } from '../utils/language-utils';
-import './DetailContent.css';
 
 export const DetailContent = () => {
   const { t } = useTranslation();
@@ -76,7 +75,7 @@ export const DetailContent = () => {
   const hasExactlyOneValue = Object.keys(contentObject.values).length === 1;
 
   return (
-    <Flex direction='column' gap={4} className='cms-editor-detail-content'>
+    <Flex direction='column' gap={4} className='overflow-auto p-3'>
       <BasicField label={t('common.label.path')}>
         <BasicInput value={contentObject.uri} disabled />
       </BasicField>

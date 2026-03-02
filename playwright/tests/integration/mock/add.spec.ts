@@ -54,7 +54,7 @@ test('show error if no languages are present in the CMS', async () => {
   await expect(add.create).toBeDisabled();
 
   await add.cancel.click();
-  await editor.main.control.locator.getByRole('button', { name: 'Language Manager' }).click();
+  await editor.main.locator.getByRole('button', { name: 'Language Manager' }).click();
   await languageTools.languageManager.add.trigger.click();
   await languageTools.languageManager.add.languages.row(0).locator.click();
   await languageTools.languageManager.add.add.click();
@@ -293,24 +293,17 @@ test.describe('validation', () => {
   });
 
   test('file picker border', async () => {
-    const borderWithHexToRgb = (border: string) =>
-      border.replace(/#([0-9a-f]{6})/gi, (_, hex) => {
-        const r = parseInt(hex.substr(0, 2), 16);
-        const g = parseInt(hex.substr(2, 2), 16);
-        const b = parseInt(hex.substr(4, 2), 16);
-        return `rgb(${r}, ${g}, ${b})`;
-      });
-    const border = async (name: string) => borderWithHexToRgb(await editor.page.evaluate(([name]) => getComputedStyle(document.body).getPropertyValue(name!), [name]));
-
     const add = editor.main.control.add;
     const englishValue = add.value('English');
 
     await add.trigger.click();
     await add.type.select('File');
-    await expect(englishValue.filePicker).toHaveCSS('border', await border('--error-border'));
+    const errorBorder = '1px dashed rgb(229, 21, 28)';
+    await expect(englishValue.filePicker).toHaveCSS('border', errorBorder);
 
     await englishValue.selectFile(path.join('test-files', 'TestFile.txt'));
-    await expect(englishValue.filePicker).toHaveCSS('border', await border('--dashed-border'));
+    const defaultBorder = '1px dashed rgb(231, 231, 231)';
+    await expect(englishValue.filePicker).toHaveCSS('border', defaultBorder);
   });
 });
 

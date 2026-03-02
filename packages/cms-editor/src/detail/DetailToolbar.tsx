@@ -19,7 +19,7 @@ export const DetailToolbar = ({ title, helpUrl }: DetailToolbarProps) => {
   const { openHelp } = useKnownHotkeys();
 
   return (
-    <SidebarHeader icon={IvyIcons.PenEdit} title={title} tabIndex={-1} ref={firstElement} className='cms-editor-detail-toolbar'>
+    <SidebarHeader icon={IvyIcons.PenEdit} title={title} tabIndex={-1} ref={firstElement}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

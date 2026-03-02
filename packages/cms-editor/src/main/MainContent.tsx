@@ -32,7 +32,6 @@ import { useQueryKeys } from '../query/query-client';
 import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type CmsValueDataObject } from '../utils/cms-utils';
 import { useKnownHotkeys } from '../utils/hotkeys';
 import { toLanguages } from '../utils/language-utils';
-import './MainContent.css';
 import { EmptyMainControl, MainControl } from './control/MainControl';
 
 export const MainContent = () => {
@@ -64,7 +63,7 @@ export const MainContent = () => {
         cell: cell => (
           <Flex alignItems='center' gap={1}>
             {<IvyIcon icon={isCmsDataFileDataObject(cell.row.original) ? fileIcon(cell.row.original.mimeType) : IvyIcons.Quote} />}
-            <span>{cell.getValue()}</span>
+            <span className='block truncate'>{cell.getValue()}</span>
           </Flex>
         ),
         minSize: 200,
@@ -77,7 +76,7 @@ export const MainContent = () => {
         id: language.value,
         accessorFn: co => (isCmsDataFileDataObject(co) && co.values[language.value] ? fileName(co) : co.values[language.value]),
         header: ({ column }) => <SortableHeader column={column} name={language.label} />,
-        cell: cell => <span>{cell.getValue()}</span>,
+        cell: cell => <span className='block truncate'>{cell.getValue()}</span>,
         minSize: 200,
         size: 500,
         maxSize: 1000
@@ -158,7 +157,7 @@ export const MainContent = () => {
 
   if (contentObjects === undefined || contentObjects.length === 0) {
     return (
-      <Flex direction='column' alignItems='center' justifyContent='center' style={{ height: '100%' }}>
+      <Flex direction='column' alignItems='center' justifyContent='center' className='h-full'>
         <PanelMessage icon={IvyIcons.Tool} message={t('message.addFirstItem')} mode='column'>
           <EmptyMainControl selectRow={(rowId: string) => selectRow(table, rowId)} />
         </PanelMessage>
@@ -167,7 +166,7 @@ export const MainContent = () => {
   }
 
   return (
-    <Flex direction='column' onClick={() => table.resetRowSelection()} className='cms-editor-main-content' ref={ref}>
+    <Flex direction='column' onClick={() => table.resetRowSelection()} className='h-full overflow-auto' ref={ref}>
       <BasicField
         label={t('label.contentObjects')}
         control={
@@ -182,11 +181,11 @@ export const MainContent = () => {
         tabIndex={-1}
         ref={firstElement}
         onClick={event => event.stopPropagation()}
-        className='cms-editor-main-table-field'
+        className='m-3 min-h-0'
       >
         {globalFilter.filter}
-        <div ref={tableContainer} className='cms-editor-main-table-container'>
-          <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='cms-editor-main-table'>
+        <div ref={tableContainer} className='relative overflow-x-hidden'>
+          <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='grid'>
             <TableResizableHeader headerGroups={table.getHeaderGroups()} onClick={() => table.resetRowSelection()} />
             <TableBody style={{ height: `${virtualizer.getTotalSize()}px` }}>
               {virtualizer.getVirtualItems().map(virtualRow => {
@@ -201,6 +200,7 @@ export const MainContent = () => {
                     style={{ transform: `translateY(${virtualRow.start}px)` }}
                     vindex={virtualRow.index}
                     onClick={event => handleMultiSelectOnRow(row, event)}
+                    className='absolute flex h-8 w-full items-center'
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
