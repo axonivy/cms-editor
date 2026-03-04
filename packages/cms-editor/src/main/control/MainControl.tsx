@@ -20,13 +20,13 @@ export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: M
   const { context } = useAppContext();
   const locales = useMeta('meta/locales', context, []).data;
   return (
-    <Flex gap={2} className='cms-editor-main-control'>
+    <Flex gap={2}>
       <LanguageTools />
-      <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
+      <Separator decorative orientation='vertical' className='m-0! h-5!' />
       <AddContentObject selectRow={selectRow}>
         <Button icon={IvyIcons.Plus} aria-label={hotkeys.addContentObject.label} disabled={locales.length === 0} />
       </AddContentObject>
-      <Separator decorative orientation='vertical' style={{ height: '20px', margin: 0 }} />
+      <Separator decorative orientation='vertical' className='m-0! h-5!' />
       <DeleteContentObject deleteContentObjects={deleteContentObjects} hasSelection={hasSelection} />
     </Flex>
   );
@@ -35,7 +35,7 @@ export const MainControl = ({ selectRow, deleteContentObjects, hasSelection }: M
 export const EmptyMainControl = ({ selectRow }: Pick<MainControlProps, 'selectRow'>) => {
   const { t } = useTranslation();
   return (
-    <Flex gap={2} className='cms-editor-main-control'>
+    <Flex gap={2}>
       <LanguageManager>
         <Button size='large' variant='primary' icon={IvyIcons.Language}>
           {t('dialog.languageManager.title')}

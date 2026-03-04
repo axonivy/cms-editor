@@ -5,7 +5,7 @@ export class DetailToolbar {
   readonly help: Locator;
 
   constructor(parent: Locator) {
-    this.locator = parent.locator('.cms-editor-detail-toolbar');
+    this.locator = parent.locator('.ui-sidebar-header');
     this.help = this.locator.getByRole('button', { name: 'Open Help' });
   }
 }

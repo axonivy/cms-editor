@@ -2,6 +2,7 @@ import type { CmsStringDataObject, CmsTranslationRequest, CmsTranslationResponse
 import {
   BasicDialogContent,
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogTrigger,
@@ -30,7 +31,6 @@ import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
-import './TranslationWizardReview.css';
 import { useContentObjectTranslations, type ContentObjectTranslation } from './use-content-object-translations';
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
@@ -77,19 +77,13 @@ const TranslationDialogContent = ({ closeTranslationWizard, translationRequest }
   if (query.isPending) {
     return (
       <Flex alignItems='center' justifyContent='center' style={{ width: '100%', height: '100%' }}>
-        <Spinner className='cms-editor-translation-wizard-review-spinner' />
+        <Spinner />
       </Flex>
     );
   }
 
   if (query.isError) {
-    return (
-      <PanelMessage
-        icon={IvyIcons.ErrorXMark}
-        message={t('message.error', { error: query.error })}
-        className='cms-editor-translation-wizard-review-error'
-      />
-    );
+    return <PanelMessage icon={IvyIcons.ErrorXMark} message={t('message.error', { error: query.error })} />;
   }
 
   return (
@@ -247,7 +241,7 @@ const TranslationWizardReviewDialogContent = ({
   return (
     <Flex>
       <Table style={{ width: 'auto' }}>
-        <TableResizableHeader headerGroups={table.getHeaderGroups()} className='cms-editor-translation-wizard-review-table-header' />
+        <TableResizableHeader headerGroups={table.getHeaderGroups()} className='sticky top-0 z-10 bg-n25' />
         <TableBody>
           {table.getRowModel().rows.map(row => (
             <TableRow key={row.id}>
@@ -263,7 +257,7 @@ const TranslationWizardReviewDialogContent = ({
 };
 
 const TranslationCellSimple = ({ translationValue }: { translationValue: string }) => (
-  <Flex className='cms-editor-translation-wizard-review-cell-simple'>
+  <Flex>
     <span>{translationValue}</span>
   </Flex>
 );
@@ -307,15 +301,10 @@ const TranslationCellWithToggle = ({
   };
 
   return (
-    <Flex
-      className='cms-editor-translation-wizard-review-cell-toggle'
-      style={{ cursor: 'pointer' }}
-      onClick={handleClick}
-      direction='column'
-    >
-      <span className={!isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{translationValue}</span>
+    <Flex style={{ cursor: 'pointer' }} onClick={handleClick} direction='column'>
+      <span className={!isTranslationSelected ? cn('line-through') : undefined}>{translationValue}</span>
       <Separator />
-      <span className={isTranslationSelected ? 'cms-editor-translation-wizard-review-line-through' : undefined}>{originalValue}</span>
+      <span className={isTranslationSelected ? cn('line-through') : undefined}>{originalValue}</span>
     </Flex>
   );
 };

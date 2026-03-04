@@ -25,9 +25,9 @@ export class AddContentObject {
     this.name = new Textbox(this.locator, { name: 'Name' });
     this.namespace = new Combobox(this.locator, { name: 'Namespace' });
     this.type = new Select(this.page, this.locator, { name: 'Type' });
-    this.fileFormatInfo = new Message(this.locator, { className: 'cms-editor-add-dialog-file-format-info' });
-    this.values = this.locator.locator('.cms-editor-value-field');
-    this.message = new Message(this.locator, { className: 'cms-editor-add-dialog-message' });
+    this.fileFormatInfo = new Message(this.locator, { hasText: 'All files must be of the same type.' });
+    this.values = this.locator.locator('.ui-cms-editor-value-field');
+    this.message = new Message(this.locator, { severity: 'error' });
     this.cancel = this.locator.getByRole('button', { name: 'Cancel' });
     this.create = this.locator.getByRole('button', { name: 'Create Content Object' });
   }

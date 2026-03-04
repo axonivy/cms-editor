@@ -15,14 +15,14 @@ export class CmsValueField {
     this.page = page;
     if (options?.label) {
       this.locator = parent
-        .locator('.cms-editor-value-field')
+        .locator('.ui-cms-editor-value-field')
         .filter({ has: this.page.locator('label').filter({ hasText: options.label }) });
     } else {
-      this.locator = parent.locator('.cms-editor-value-field').nth(options?.nth ?? 0);
+      this.locator = parent.locator('.ui-cms-editor-value-field').nth(options?.nth ?? 0);
     }
     this.label = this.locator.locator('label');
     this.delete = this.locator.getByRole('button', { name: 'Delete value' });
-    this.filePicker = this.locator.locator('.cms-editor-file-picker');
+    this.filePicker = this.locator.locator('.ui-cms-editor-file-picker');
     this.fileInput = this.filePicker.locator('input[type=file]');
     this.fileButton = this.locator.getByRole('button', { name: 'Open File' });
     this.textbox = new Textbox(this.locator);

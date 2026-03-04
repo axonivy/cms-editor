@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { useAction } from '../protocol/use-action';
 import { fileName, isCmsReadFileDataObject } from '../utils/cms-utils';
 import { BaseValueField, type BaseValueFieldProps } from './BaseValueField';
-import './FileValueField.css';
 
 export type FileValueFieldProps = BaseValueFieldProps<CmsFileDataObject | CmsReadFileDataObject> & {
   updateValue: (languageTag: string, value: string) => void;
@@ -93,7 +92,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       <Flex
         gap={2}
         alignItems='center'
-        className='cms-editor-file-picker'
+        className='ui-cms-editor-file-picker cursor-pointer rounded-sm border border-dashed border-border-input-color bg-n25 p-2.5 group-data-[message-state=error]/field:border-error aria-[disabled]:cursor-not-allowed'
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={event => event.preventDefault()}
@@ -101,7 +100,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       >
         {contentObject.values[baseProps.language.value] === undefined ? (
           <>
-            <IvyIcon icon={IvyIcons.Upload} />
+            <IvyIcon icon={IvyIcons.Upload} className='text-n600' />
             <span>
               <a href='#' onClick={e => e.preventDefault()}>
                 {t('common.label.chooseFile')}
@@ -111,7 +110,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           </>
         ) : (
           <>
-            <IvyIcon icon={IvyIcons.Check} />
+            <IvyIcon icon={IvyIcons.Check} className='text-n600' />
             <span>{fileNameValue}</span>
             <a href='#' onClick={e => e.preventDefault()}>
               {t('common.label.changeFile')}
@@ -124,6 +123,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
           onChange={event => updateFile(event.target.files?.[0])}
           disabled={baseProps.disabled}
           ref={inputRef}
+          hidden
         />
       </Flex>
     </BaseValueField>

@@ -28,8 +28,8 @@ export const MainToolbar = ({ title }: MainToolbarProps) => {
   useHotkeys(hotkeys.focusToolbar.hotkey, () => firstElement.current?.focus(), { scopes: ['global'] });
 
   return (
-    <Toolbar tabIndex={-1} ref={firstElement} className='cms-editor-main-toolbar'>
-      <ToolbarTitle className='cms-editor-main-toolbar-title'>{title}</ToolbarTitle>
+    <Toolbar tabIndex={-1} ref={firstElement}>
+      <ToolbarTitle>{title}</ToolbarTitle>
 
       <TooltipProvider>
         <Tooltip>

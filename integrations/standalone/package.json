@@ -5,9 +5,9 @@
   "dependencies": {
     "@axonivy/cms-editor": "workspace:~14.0.0-next",
     "@axonivy/cms-editor-protocol": "workspace:~14.0.0-next",
-    "@axonivy/jsonrpc": "~14.0.0-next.1011.e9ae6be",
-    "@axonivy/ui-components": "~14.0.0-next.1011.e9ae6be",
-    "@axonivy/ui-icons": "~14.0.0-next.1011.e9ae6be",
+    "@axonivy/jsonrpc": "~14.0.0-next.1039.4d8a559",
+    "@axonivy/ui-components": "~14.0.0-next.1039.4d8a559",
+    "@axonivy/ui-icons": "~14.0.0-next.1039.4d8a559",
     "@tanstack/react-query": "^5.64",
     "@tanstack/react-query-devtools": "^5.64",
     "i18next": "^25.0.0",
@@ -17,9 +17,11 @@
     "react-i18next": "^16.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.2.1",
     "vite": "^7.0.0"
   },
   "scripts": {

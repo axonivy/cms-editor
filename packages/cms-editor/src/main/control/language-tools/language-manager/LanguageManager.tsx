@@ -31,7 +31,6 @@ import { useMeta } from '../../../../protocol/use-meta';
 import { genQueryKey, useQueryKeys } from '../../../../query/query-client';
 import { useKnownHotkeys } from '../../../../utils/hotkeys';
 import { sortLanguages, toLanguages, type Language } from '../../../../utils/language-utils';
-import './LanguageManager.css';
 import { LanguageManagerControl } from './LanguageManagerControl';
 import { LanguageManagerSaveConfirmation } from './LanguageManagerSaveConfirmation';
 
@@ -174,7 +173,7 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
       onClick={() => table.resetRowSelection()}
     >
       <BasicField
-        className='cms-editor-language-tool-languages-field'
+        className='overflow-auto'
         label={t('common.label.languages')}
         control={
           <LanguageManagerControl

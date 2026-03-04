@@ -13,9 +13,9 @@ export class MainPanel {
   readonly table: Table;
 
   constructor(page: Page) {
-    this.locator = page.locator('.cms-editor-main-panel');
+    this.locator = page.locator('#cms-editor-main');
     this.toolbar = new MainToolbar(page, this.locator);
-    this.label = this.locator.locator('.cms-editor-main-table-field').locator('label');
+    this.label = this.locator.locator('.ui-fieldset').first().locator('label');
     this.control = new Control(page, this.locator);
     this.search = new Textbox(this.locator);
     this.table = new Table(this.locator);

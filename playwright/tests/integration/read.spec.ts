@@ -21,6 +21,6 @@ test('load data', async ({ page }) => {
 test('load data - absolute file path', async ({ page }) => {
   const file = process.env.ABSOLUTE_PROJECT_PATH + '/cms/cms_en.yaml';
   const editor = await CmsEditor.openCms(page, { file });
-  await expect(editor.main.toolbar.title).toContainText('cms-test-project');
+  await expect(editor.main.toolbar.locator).toContainText('cms-test-project');
   await expect(editor.main.table.rows).toHaveCount(3);
 });
