@@ -10,6 +10,7 @@ export const initTranslation = () => {
     .use(LanguageDetector)
     .init({
       debug: true,
+      showSupportNotice: false,
       supportedLngs: ['en', 'de', 'ja'],
       fallbackLng: 'en',
       ns: ['cms-editor'],
