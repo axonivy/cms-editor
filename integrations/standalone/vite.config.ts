@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     outDir: 'build',
     chunkSizeWarningLimit: 5000,
-    rollupOptions: { input: { index: './index.html', mock: './mock.html' } }
+    rolldownOptions: { input: { index: './index.html', mock: './mock.html' } }
   },
   server: { port: 3003 },
   resolve: {
