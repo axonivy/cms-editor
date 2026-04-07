@@ -38,7 +38,6 @@ type ContextHelperProps = {
 const initTranslation = (clientLanguage?: string) => {
   if (i18n.isInitializing || i18n.isInitialized) return;
   i18n.use(initReactI18next).init({
-    showSupportNotice: false,
     lng: clientLanguage ?? 'en',
     fallbackLng: 'en',
     ns: ['cms-editor'],
