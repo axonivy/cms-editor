@@ -31,9 +31,9 @@
     "react-i18next": "^16.0.0"
   },
   "devDependencies": {
-    "@axonivy/jsonrpc": "~14.0.0-next.1039.4d8a559",
-    "@axonivy/ui-components": "~14.0.0-next.1039.4d8a559",
-    "@axonivy/ui-icons": "~14.0.0-next.1039.4d8a559",
+    "@axonivy/jsonrpc": "~14.0.0-next.1101.a7eaf61",
+    "@axonivy/ui-components": "~14.0.0-next.1101.a7eaf61",
+    "@axonivy/ui-icons": "~14.0.0-next.1101.a7eaf61",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/jest-dom": "6.9.1",
