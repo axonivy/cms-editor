@@ -10,7 +10,7 @@ export const useLanguages = (context: CmsEditorDataContext) => {
   const clientLanguageTag = i18next.language;
   const languageDisplayName = useMemo(() => new Intl.DisplayNames([clientLanguageTag], { type: 'language' }), [clientLanguageTag]);
 
-  const [defaultLanguageTagsState, setDefaultLanguageTagsState] = useState(getDefaultLanguageTagsLocalStorage());
+  const [defaultLanguageTagsState, setDefaultLanguageTagsState] = useState(() => getDefaultLanguageTagsLocalStorage());
   const setDefaultLanguageTags = (languageTags: Array<string>) => {
     setDefaultLanguageTagsState(languageTags);
     setDefaultLanguageTagsLocalStorage(languageTags);

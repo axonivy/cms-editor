@@ -3,7 +3,7 @@ import config from '@axonivy/eslint-config';
 export default config.defineConfig(
   ...config.base,
   ...config.i18n,
-  ...config.tailwind('packages/cms-editor/src/index.css'),
+  ...config.tailwind('packages/cms-editor/src/index.css', import.meta.dirname),
   // TypeScript recommended configs
   {
     name: 'typescript-eslint',

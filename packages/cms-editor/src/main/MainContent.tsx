@@ -103,11 +103,11 @@ export const MainContent = () => {
   const { handleMultiSelectOnRow } = useMultiSelectRow(table);
 
   const rows = table.getRowModel().rows;
-  const tableContainer = useRef<HTMLDivElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
     estimateSize: () => 32,
-    getScrollElement: () => tableContainer.current,
+    getScrollElement: () => tableContainerRef.current,
     overscan: 20
   });
 
@@ -115,8 +115,8 @@ export const MainContent = () => {
 
   const hotkeys = useKnownHotkeys();
 
-  const firstElement = useRef<HTMLDivElement>(null);
-  useHotkeys(hotkeys.focusMain.hotkey, () => firstElement.current?.focus(), { scopes: ['global'] });
+  const firstElementRef = useRef<HTMLDivElement>(null);
+  useHotkeys(hotkeys.focusMain.hotkey, () => firstElementRef.current?.focus(), { scopes: ['global'] });
 
   const readonly = useReadonly();
 
@@ -179,12 +179,12 @@ export const MainContent = () => {
           )
         }
         tabIndex={-1}
-        ref={firstElement}
+        ref={firstElementRef}
         onClick={event => event.stopPropagation()}
         className='m-3 min-h-0'
       >
         {globalFilter.filter}
-        <div ref={tableContainer} className='relative overflow-x-hidden'>
+        <div ref={tableContainerRef} className='relative overflow-x-hidden'>
           <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='grid'>
             <TableResizableHeader headerGroups={table.getHeaderGroups()} onClick={() => table.resetRowSelection()} />
             <TableBody style={{ height: `${virtualizer.getTotalSize()}px` }}>

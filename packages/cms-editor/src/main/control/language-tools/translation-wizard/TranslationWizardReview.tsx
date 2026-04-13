@@ -131,7 +131,7 @@ const TranslationWizardReviewContent = ({ closeTranslationWizard, translationReq
   const { context } = useAppContext();
   const { updateStringValuesMutation } = useUpdateValues();
 
-  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(initializeTranslationData(data));
+  const [translationData, setTranslationData] = useState<Array<CmsStringDataObject>>(() => initializeTranslationData(data));
 
   const applyTranslations = () => {
     updateStringValuesMutation.mutate({

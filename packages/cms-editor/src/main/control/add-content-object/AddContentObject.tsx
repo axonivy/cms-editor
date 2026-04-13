@@ -102,7 +102,7 @@ const AddContentObjectContent = ({
   const allValuesEmpty = () => Object.fromEntries(languageTags.map(tag => [tag, '']));
 
   const [name, setName] = useState('NewContentObject');
-  const [namespace, setNamespace] = useState(initialNamespace(contentObjects, selectedContentObjects));
+  const [namespace, setNamespace] = useState(() => initialNamespace(contentObjects, selectedContentObjects));
   const uri = normalizeUri(`${namespace}/${name}`);
   const [type, setType] = useState<ContentObjectType>('STRING');
   const [fileExtension, setFileExtension] = useState<string | undefined>();
