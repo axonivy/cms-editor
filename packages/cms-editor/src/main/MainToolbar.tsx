@@ -24,11 +24,11 @@ export const MainToolbar = ({ title }: MainToolbarProps) => {
 
   const hotkeys = useKnownHotkeys();
 
-  const firstElement = useRef<HTMLDivElement>(null);
-  useHotkeys(hotkeys.focusToolbar.hotkey, () => firstElement.current?.focus(), { scopes: ['global'] });
+  const firstElementRef = useRef<HTMLDivElement>(null);
+  useHotkeys(hotkeys.focusToolbar.hotkey, () => firstElementRef.current?.focus(), { scopes: ['global'] });
 
   return (
-    <Toolbar tabIndex={-1} ref={firstElement}>
+    <Toolbar tabIndex={-1} ref={firstElementRef}>
       <ToolbarTitle>{title}</ToolbarTitle>
 
       <TooltipProvider>

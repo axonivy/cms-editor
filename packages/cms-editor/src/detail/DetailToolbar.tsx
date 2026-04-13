@@ -12,14 +12,14 @@ type DetailToolbarProps = {
 export const DetailToolbar = ({ title, helpUrl }: DetailToolbarProps) => {
   const hotkeys = useKnownHotkeys();
 
-  const firstElement = useRef<HTMLDivElement>(null);
-  useHotkeys(hotkeys.focusInscription.hotkey, () => firstElement.current?.focus(), { scopes: ['global'] });
+  const firstElementRef = useRef<HTMLDivElement>(null);
+  useHotkeys(hotkeys.focusInscription.hotkey, () => firstElementRef.current?.focus(), { scopes: ['global'] });
 
   const openUrl = useAction('openUrl');
   const { openHelp } = useKnownHotkeys();
 
   return (
-    <SidebarHeader icon={IvyIcons.PenEdit} title={title} tabIndex={-1} ref={firstElement}>
+    <SidebarHeader icon={IvyIcons.PenEdit} title={title} tabIndex={-1} ref={firstElementRef}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

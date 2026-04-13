@@ -1,5 +1,5 @@
 import type { Capabilities, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
-import { createContext, useContext } from 'react';
+import { createContext, use } from 'react';
 import type { CmsValueDataObject } from '../utils/cms-utils';
 
 type AppContext = {
@@ -15,7 +15,7 @@ type AppContext = {
   languageDisplayName: Intl.DisplayNames;
 };
 
-const appContext = createContext<AppContext>({
+const AppContext = createContext<AppContext>({
   context: { app: '', pmv: '', file: '' },
   capabilities: { translationServiceEnabled: false },
   contentObjects: [],
@@ -28,8 +28,8 @@ const appContext = createContext<AppContext>({
   languageDisplayName: new Intl.DisplayNames(undefined, { type: 'language' })
 });
 
-export const AppProvider = appContext.Provider;
+export const AppProvider = AppContext.Provider;
 
 export const useAppContext = (): AppContext => {
-  return useContext(appContext);
+  return use(AppContext);
 };

@@ -61,8 +61,8 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
   const { context, setDefaultLanguageTags, languageDisplayName } = useAppContext();
   const { t } = useTranslation();
   const locales = useMeta('meta/locales', context, []).data;
-  const [defaultLanguages, setDefaultLanguages] = useState(getDefaultLanguageTagsLocalStorage() ?? []);
-  const [languages, setLanguages] = useState<Array<Language>>(toLanguages(locales, languageDisplayName));
+  const [defaultLanguages, setDefaultLanguages] = useState(() => getDefaultLanguageTagsLocalStorage() ?? []);
+  const [languages, setLanguages] = useState<Array<Language>>(() => toLanguages(locales, languageDisplayName));
 
   const addLanguage = (language: Language) => setLanguages(languages => sortLanguages([...languages, language]));
 

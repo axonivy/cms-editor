@@ -29,7 +29,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
 
   const contentObject = baseProps.contentObject;
 
-  const [fileNameValue, setFileNameValue] = useState(fileName(contentObject));
+  const [fileNameValue, setFileNameValue] = useState(() => fileName(contentObject));
 
   const inputRef = useRef<HTMLInputElement>(null);
 
