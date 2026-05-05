@@ -21,7 +21,7 @@
     <engine.page.url>https://product.ivyteam.io/</engine.page.url>
     <webtest.cmd>webtest</webtest.cmd>
     <absolute.project.path>
-      ${engine.dir}/data/workspaces/Developer/${engine.test.ws}/cms-test-project</absolute.project.path>
+      ${engine.dir}/data/default/workspaces/Developer/${engine.test.ws}/cms-test-project</absolute.project.path>
   </properties>
   <dependencies>
     <dependency>
