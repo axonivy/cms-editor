@@ -11,7 +11,7 @@ if [ ! -d "$CMS_TEST_PROJECT_DIR" ]; then
   exit 1
 fi
 
-TARGET_DIR="$1/workspace/ch.ivyteam.ivy.server.file.feature/target/server-root/data/workspaces/Developer/$CMS_TEST_PROJECT_NAME"
+TARGET_DIR="$1/workspace/ch.ivyteam.ivy.server.file.feature/target/server-root/data/default/workspaces/Developer/$CMS_TEST_PROJECT_NAME"
 mkdir -p "$TARGET_DIR"
 if [ -L "$TARGET_DIR/$CMS_TEST_PROJECT_NAME" ]; then
   rm "$TARGET_DIR/$CMS_TEST_PROJECT_NAME"
