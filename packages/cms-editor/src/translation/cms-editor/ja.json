@@ -37,7 +37,8 @@
       "description": "追加したいコンテンツオブジェクトの名前、名前空間、値を選択してください。",
       "fileFormatInfo": "すべてのファイルは同じタイプでなければなりません。 アップロードした最初のファイルがファイルのタイプを決定します。",
       "title": "コンテンツオブジェクトを追加",
-      "noDefaultLanguages": "Language Manager に表示する言語がチェックされていません。これは検出された最初の言語です。"
+      "noDefaultLanguages": "Language Manager に表示する言語がチェックされていません。これは検出された最初の言語です。",
+      "noLanguages": "CMSでは言語が存在しません。 コンテンツオブジェクトを追加するには、まずランゲージマネージャを使用して言語を追加します."
     },
     "languageManager": {
       "description": "CMSの言語を編集します。 表示したい言語を確認してください。",
@@ -90,7 +91,8 @@
     "noValues": "少なくとも 1 つの値が存在する必要があります。"
   },
   "label": {
-    "contentObjects": "コンテンツオブジェクト"
+    "contentObjects": "コンテンツオブジェクト",
+    "noLanguage": "言語なし"
   },
   "value": {
     "delete": "値を削除する",
