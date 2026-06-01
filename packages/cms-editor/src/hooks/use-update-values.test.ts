@@ -14,7 +14,6 @@ import {
   type InferDataFromTag,
   type InvalidateQueryFilters,
   type MutationOptions,
-  type NoInfer,
   type QueryClient,
   type QueryKey,
   type Updater
@@ -326,8 +325,8 @@ class QueryClientMock implements Partial<QueryClient> {
     TInferredQueryFnData = InferDataFromTag<TQueryFnData, TTaggedQueryKey>
   >(
     queryKey: TTaggedQueryKey,
-    updater: Updater<NoInfer<TInferredQueryFnData> | undefined, NoInfer<TInferredQueryFnData> | undefined>
-  ): NoInfer<TInferredQueryFnData> | undefined {
+    updater: Updater<TInferredQueryFnData | undefined, TInferredQueryFnData | undefined>
+  ): TInferredQueryFnData | undefined {
     const queryDataKey = Array.from(this.queryData.keys()).find(key => deepEqual(key, queryKey));
     const data = queryDataKey ? this.queryData.get(queryDataKey) : undefined;
     const currentData = data ? data[data.length - 1] : undefined;
