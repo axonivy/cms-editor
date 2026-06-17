@@ -17,7 +17,7 @@
   "types": "lib/index.d.ts",
   "main": "lib/editor.js",
   "dependencies": {
-    "@axonivy/cms-editor-protocol": "workspace:~14.0.0-next",
+    "@axonivy/cms-editor-protocol": "workspace:~",
     "@tanstack/react-virtual": "^3.12.0"
   },
   "peerDependencies": {
@@ -31,9 +31,9 @@
     "react-i18next": "^16.0.0 || ^17.0.0"
   },
   "devDependencies": {
-    "@axonivy/jsonrpc": "~14.0.0-next.1125.e82f52e",
-    "@axonivy/ui-components": "~14.0.0-next.1125.e82f52e",
-    "@axonivy/ui-icons": "~14.0.0-next.1125.e82f52e",
+    "@axonivy/jsonrpc": "next-14.0.0",
+    "@axonivy/ui-components": "next-14.0.0",
+    "@axonivy/ui-icons": "next-14.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/jest-dom": "6.9.1",
