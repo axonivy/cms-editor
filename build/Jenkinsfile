@@ -20,7 +20,7 @@ pipeline {
             }
           }
           archiveArtifacts artifacts: '**/integrations/standalone/build/**', allowEmptyArchive: true
-          currentBuild.description = "<a href=${BUILD_URL}artifact/integrations/standalone/build/index.html?server=localhost:8081&secure=false&app=designer&pmv=cms-test-project>&raquo; CMS Editor</a><br>" +
+          currentBuild.description = "<a href=${BUILD_URL}artifact/integrations/standalone/build/index.html?server=localhost:8081&secure=false&app=designer&project=cms-test-project>&raquo; CMS Editor</a><br>" +
             "<a href=${BUILD_URL}artifact/integrations/standalone/build/mock.html>&raquo; CMS Editor Mock</a>"
 
           withChecks('ESLint') {

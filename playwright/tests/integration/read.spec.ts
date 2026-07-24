@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { app, CmsEditor } from '../pageobjects/CmsEditor';
 
 test('load data', async ({ page }) => {
-  const editor = await CmsEditor.openCms(page, { app: app, pmv: 'cms-test-project' });
+  const editor = await CmsEditor.openCms(page, { app: app, project: 'cms-test-project' });
   await expect(editor.main.table.rows).toHaveCount(3);
 
   await editor.main.table.row(0).locator.click();

@@ -67,7 +67,7 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
   const contentObjects = data.data.filter((contentObject: CmsDataObject) => isCmsValueDataObject(contentObject));
   const contentObject =
     selectedContentObjects.length === 1 && selectedContentObjects[0] !== undefined ? contentObjects[selectedContentObjects[0]] : undefined;
-  const { mainTitle, detailTitle } = toolbarTitles(data.context.pmv, contentObject);
+  const { mainTitle, detailTitle } = toolbarTitles(data.context.project, contentObject);
 
   return (
     <AppProvider
@@ -109,8 +109,8 @@ function CmsEditor({ context, initializePromise }: EditorProps) {
 
 export default CmsEditor;
 
-export const toolbarTitles = (pmv: string, contentObject?: CmsDataObject) => {
-  const mainTitle = `CMS - ${pmv}`;
+export const toolbarTitles = (project: string, contentObject?: CmsDataObject) => {
+  const mainTitle = `CMS - ${project}`;
   let detailTitle = mainTitle;
   if (contentObject) {
     const lastSlashIndex = contentObject.uri.lastIndexOf('/');

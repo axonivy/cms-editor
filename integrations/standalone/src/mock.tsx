@@ -29,7 +29,7 @@ root.render(
         <QueryProvider client={queryClient}>
           <ReadonlyProvider readonly={readonly}>
             <HotkeysProvider initiallyActiveScopes={['global']}>
-              <CmsEditor context={{ app: '', pmv: 'pmv-name', file: '' }} initializePromise={initializePromise} />
+              <CmsEditor context={{ app: '', project: 'project-name', file: '' }} initializePromise={initializePromise} />
             </HotkeysProvider>
           </ReadonlyProvider>
         </QueryProvider>

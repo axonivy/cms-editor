@@ -16,7 +16,7 @@ type AppContext = {
 };
 
 const AppContext = createContext<AppContext>({
-  context: { app: '', pmv: '', file: '' },
+  context: { app: '', project: '', file: '' },
   capabilities: { translationServiceEnabled: false },
   contentObjects: [],
   selectedContentObjects: [],
