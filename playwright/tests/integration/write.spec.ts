@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(() => {
-  editor.deletePmv();
+  editor.deleteProject();
 });
 
 test('save data', async () => {

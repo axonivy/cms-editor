@@ -23,7 +23,7 @@ import { customRenderHook } from '../context/test-utils/test-utils';
 import { updatesValuesOfDefaultLanguages, updateValueOfContentObjectInData, useUpdateValues } from './use-update-values';
 
 test('updateValuesInReadQuery', () => {
-  const context = { app: 'app', pmv: 'pmv', file: 'file' };
+  const context = { app: 'app', project: 'project', file: 'file' };
 
   const queryClient = new QueryClientMock();
   const queryKey = ['cms-editor', 'read', { context, uri: 'uri' }];
@@ -40,7 +40,7 @@ test('updateValuesInReadQuery', () => {
 });
 
 test('updateValuesInDataQuery', () => {
-  const context = { app: 'app', pmv: 'pmv', file: 'file' };
+  const context = { app: 'app', project: 'project', file: 'file' };
 
   const queryClient = new QueryClientMock();
   const queryKey = ['cms-editor', 'data', { context, languageTags: ['en'] }];
@@ -75,7 +75,7 @@ test('updateValuesInDataQuery', () => {
 
 describe('updateStringValuesMutation', () => {
   test('does not update data query when values of default languages are not updated', async () => {
-    const context = { app: 'app', pmv: 'pmv', file: 'file' };
+    const context = { app: 'app', project: 'project', file: 'file' };
 
     const client = new ClientMock();
     const queryClient = new QueryClientMock();
@@ -118,7 +118,7 @@ describe('updateStringValuesMutation', () => {
   });
 
   test('updates data query when values of default languages are updated', async () => {
-    const context = { app: 'app', pmv: 'pmv', file: 'file' };
+    const context = { app: 'app', project: 'project', file: 'file' };
 
     const client = new ClientMock();
     const queryClient = new QueryClientMock();
@@ -185,7 +185,7 @@ describe('updateStringValuesMutation', () => {
 
 describe('updateFileValuesMutation', () => {
   test('does not update data query when values of default languages are not updated', async () => {
-    const context = { app: 'app', pmv: 'pmv', file: 'file' };
+    const context = { app: 'app', project: 'project', file: 'file' };
 
     const client = new ClientMock();
     const queryClient = new QueryClientMock();
@@ -211,7 +211,7 @@ describe('updateFileValuesMutation', () => {
   });
 
   test('updates data query when values of default languages are updated', async () => {
-    const context = { app: 'app', pmv: 'pmv', file: 'file' };
+    const context = { app: 'app', project: 'project', file: 'file' };
 
     const client = new ClientMock();
     const queryClient = new QueryClientMock();

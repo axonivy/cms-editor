@@ -34,11 +34,11 @@ test('readonly', async () => {
 });
 
 test('toolbar titles', async () => {
-  await expect(editor.main.toolbar.locator).toHaveText('CMS - pmv-name');
-  await expect(editor.detail.toolbar.locator).toHaveText('CMS - pmv-name');
+  await expect(editor.main.toolbar.locator).toHaveText('CMS - project-name');
+  await expect(editor.detail.toolbar.locator).toHaveText('CMS - project-name');
   await editor.main.table.row(0).locator.click();
-  await expect(editor.main.toolbar.locator).toHaveText('CMS - pmv-name');
-  await expect(editor.detail.toolbar.locator).toHaveText('CMS - pmv-name - AddTask');
+  await expect(editor.main.toolbar.locator).toHaveText('CMS - project-name');
+  await expect(editor.detail.toolbar.locator).toHaveText('CMS - project-name - AddTask');
 });
 
 test('focus jumps', async () => {

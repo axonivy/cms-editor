@@ -8,10 +8,7 @@
 
 export type ContentObjectType = ("STRING" | "FILE" | "FOLDER")
 export type CmsValueDataObject =
-  | CmsStringDataObject
-  | CmsFileDataObject
-  | CmsDataFileDataObject
-  | CmsReadFileDataObject;
+  CmsStringDataObject | CmsFileDataObject | CmsDataFileDataObject | CmsReadFileDataObject;
 export type CmsDataObject = CmsFolderDataObject | CmsValueDataObject;
 
 export interface CMS {
@@ -43,7 +40,7 @@ export interface CmsAddLocalesArgs {
 export interface CmsEditorDataContext {
   app: string;
   file: string;
-  pmv: string;
+  project: string;
 }
 export interface CmsCountLocaleValuesArgs {
   context: CmsEditorDataContext;

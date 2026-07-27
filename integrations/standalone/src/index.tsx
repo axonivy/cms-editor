@@ -5,12 +5,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { initTranslation } from './i18n';
 import './index.css';
-import { appParam, fileParam, pmvParam, readonlyParam, themeParam, webSocketBaseParam } from './url-helper';
+import { appParam, fileParam, projectParam, readonlyParam, themeParam, webSocketBaseParam } from './url-helper';
 
 export async function start(): Promise<void> {
   const server = webSocketBaseParam();
   const app = appParam();
-  const pmv = pmvParam();
+  const project = projectParam();
   const file = fileParam();
   const theme = themeParam();
   const readonly = readonlyParam();
@@ -34,7 +34,7 @@ export async function start(): Promise<void> {
 
   const initialize = async (connection: Connection) => {
     const client = await ClientJsonRpc.startClient(connection);
-    const context = { app, pmv, file };
+    const context = { app, project, file };
     const initializePromise = client.initialize(context);
     root.render(
       <React.StrictMode>

@@ -15,14 +15,14 @@ export class CmsEditor {
   readonly html: Locator;
   readonly main: MainPanel;
   readonly detail: DetailPanel;
-  private readonly pmv?: string;
+  private readonly project?: string;
 
-  constructor(page: Page, pmv?: string) {
+  constructor(page: Page, project?: string) {
     this.page = page;
     this.html = this.page.locator('html');
     this.main = new MainPanel(this.page);
     this.detail = new DetailPanel(this.page);
-    this.pmv = pmv;
+    this.project = project;
   }
 
   async expectToBeLight() {
@@ -33,13 +33,13 @@ export class CmsEditor {
     await expect(this.html).toHaveClass('dark');
   }
 
-  static async openCms(page: Page, options?: { app?: string; pmv?: string; file?: string; readonly?: boolean; theme?: string }) {
+  static async openCms(page: Page, options?: { app?: string; project?: string; file?: string; readonly?: boolean; theme?: string }) {
     const serverUrl = server.replace(/^https?:\/\//, '');
     let url = `?server=${serverUrl}${ws}`;
     if (options) {
       url += `&${this.params(options)}`;
     }
-    return this.openUrl(page, url, options?.pmv);
+    return this.openUrl(page, url, options?.project);
   }
 
   static async openNewCms(page: Page) {
@@ -61,7 +61,7 @@ export class CmsEditor {
     if (!result.ok) {
       throw Error(`Failed to create project: ${result.status}`);
     }
-    return await this.openCms(page, { app, pmv: name });
+    return await this.openCms(page, { app, project: name });
   }
 
   static async openMock(
@@ -92,8 +92,8 @@ export class CmsEditor {
     return params;
   }
 
-  private static async openUrl(page: Page, url: string, pmv?: string) {
-    const editor = new CmsEditor(page, pmv);
+  private static async openUrl(page: Page, url: string, project?: string) {
+    const editor = new CmsEditor(page, project);
     await page.goto(url);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     return editor;
@@ -120,8 +120,8 @@ export class CmsEditor {
     });
   }
 
-  async deletePmv() {
-    const result = await fetch(`${server}${ws}/api/web-ide/project?app=${app}&pmv=${this.pmv}`, {
+  async deleteProject() {
+    const result = await fetch(`${server}${ws}/api/web-ide/project?app=${app}&project=${this.project}`, {
       method: 'DELETE',
       headers: {
         'X-Requested-By': 'cms-editor-tests',
