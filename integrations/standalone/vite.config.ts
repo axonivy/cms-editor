@@ -13,8 +13,8 @@ export default defineConfig({
   server: { port: 3003 },
   resolve: {
     alias: {
-      '@axonivy/cms-editor': resolve(__dirname, '../../packages/cms-editor/src'),
-      '@axonivy/cms-editor-protocol': resolve(__dirname, '../../packages/protocol/src')
+      '@axonivy/cms-editor': resolve(import.meta.dirname, '../../packages/cms-editor/src'),
+      '@axonivy/cms-editor-protocol': resolve(import.meta.dirname, '../../packages/protocol/src')
     }
   },
   base: './'
