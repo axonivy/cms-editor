@@ -10,7 +10,7 @@ export default defineConfig({
     outDir: 'lib',
     sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(import.meta.dirname, 'src/index.ts'),
       fileName: 'editor',
       formats: ['es']
     },
@@ -33,7 +33,7 @@ export default defineConfig({
     dir: 'src',
     include: ['**/*.test.ts?(x)'],
     alias: {
-      '@axonivy/cms-editor-protocol': resolve(__dirname, '../../packages/protocol/src')
+      '@axonivy/cms-editor-protocol': resolve(import.meta.dirname, '../../packages/protocol/src')
     },
     globals: true,
     environment: 'jsdom',
