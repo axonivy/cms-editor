@@ -2,6 +2,7 @@ import { type CmsData, type CmsDeleteArgs } from '@axonivy/cms-editor-protocol';
 import {
   adjustSelectionAfterDeletionOfRow,
   BasicField,
+  dataTableHelper,
   Flex,
   IvyIcon,
   PanelMessage,
@@ -11,20 +12,18 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableGlobalFilter,
   TableResizableHeader,
   useHotkeys,
   useMultiSelectRow,
   useReadonly,
-  useTableGlobalFilter,
-  useTableKeyHandler,
-  useTableSelect,
-  useTableSort
+  useTableKeyHandler
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import { flexRender, useTable } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../context/AppContext';
 import { useClient } from '../protocol/ClientContextProvider';
@@ -33,6 +32,8 @@ import { fileIcon, fileName, isCmsDataFileDataObject, isCmsValueDataObject, type
 import { useKnownHotkeys } from '../utils/hotkeys';
 import { toLanguages } from '../utils/language-utils';
 import { EmptyMainControl, MainControl } from './control/MainControl';
+
+const { columnHelper, tableOptions } = dataTableHelper<CmsValueDataObject>();
 
 export const MainContent = () => {
   const { t } = useTranslation();
@@ -47,59 +48,51 @@ export const MainContent = () => {
     languageDisplayName
   } = useAppContext();
 
-  const selection = useTableSelect<CmsValueDataObject>({
-    onSelect: selectedRows => setSelectedContentObjects(Object.keys(selectedRows).map(key => Number(key)))
-  });
+  const columns = useMemo(
+    () =>
+      columnHelper.columns([
+        columnHelper.accessor('uri', {
+          header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
+          cell: cell => (
+            <Flex alignItems='center' gap={1}>
+              {<IvyIcon icon={isCmsDataFileDataObject(cell.row.original) ? fileIcon(cell.row.original.mimeType) : IvyIcons.Quote} />}
+              <span className='block truncate'>{cell.getValue()}</span>
+            </Flex>
+          ),
+          minSize: 200,
+          size: 500,
+          maxSize: 1000
+        }),
+        ...toLanguages(defaultLanguageTags, languageDisplayName).map(language =>
+          columnHelper.accessor(
+            co => (isCmsDataFileDataObject(co) && co.values[language.value] ? fileName(co) : co.values[language.value]),
+            {
+              id: language.value,
+              header: ({ column }) => <SortableHeader column={column} name={language.label} />,
+              cell: cell => <span className='block truncate'>{cell.getValue()}</span>,
+              minSize: 200,
+              size: 500,
+              maxSize: 1000
+            }
+          )
+        )
+      ]),
+    [defaultLanguageTags, languageDisplayName, t]
+  );
 
-  const sort = useTableSort();
-
-  const globalFilter = useTableGlobalFilter();
-
-  const columns = useMemo(() => {
-    const columns: Array<ColumnDef<CmsValueDataObject, ReactNode>> = [
-      {
-        accessorKey: 'uri',
-        header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
-        cell: cell => (
-          <Flex alignItems='center' gap={1}>
-            {<IvyIcon icon={isCmsDataFileDataObject(cell.row.original) ? fileIcon(cell.row.original.mimeType) : IvyIcons.Quote} />}
-            <span className='block truncate'>{cell.getValue()}</span>
-          </Flex>
-        ),
-        minSize: 200,
-        size: 500,
-        maxSize: 1000
-      }
-    ];
-    toLanguages(defaultLanguageTags, languageDisplayName).forEach(language =>
-      columns.push({
-        id: language.value,
-        accessorFn: co => (isCmsDataFileDataObject(co) && co.values[language.value] ? fileName(co) : co.values[language.value]),
-        header: ({ column }) => <SortableHeader column={column} name={language.label} />,
-        cell: cell => <span className='block truncate'>{cell.getValue()}</span>,
-        minSize: 200,
-        size: 500,
-        maxSize: 1000
-      })
-    );
-    return columns;
-  }, [defaultLanguageTags, languageDisplayName, t]);
-
-  const table = useReactTable({
-    ...selection.options,
+  const table = useTable({
+    ...tableOptions,
     enableMultiRowSelection: true,
-    ...sort.options,
-    ...globalFilter.options,
     data: contentObjects,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: {
-      ...selection.tableState,
-      rowSelection: Object.fromEntries(selectedContentObjects.map(index => [index, true])),
-      ...sort.tableState,
-      ...globalFilter.tableState
-    }
+    columns
   });
+
+  useEffect(() => {
+    const subscription = table.atoms.rowSelection.subscribe(selectedRows => {
+      setSelectedContentObjects(Object.keys(selectedRows).map(key => Number(key)));
+    });
+    return () => subscription.unsubscribe();
+  }, [table, setSelectedContentObjects]);
   const { handleMultiSelectOnRow } = useMultiSelectRow(table);
 
   const rows = table.getRowModel().rows;
@@ -183,7 +176,7 @@ export const MainContent = () => {
         onClick={event => event.stopPropagation()}
         className='m-3 min-h-0'
       >
-        {globalFilter.filter}
+        <TableGlobalFilter table={table} />
         <div ref={tableContainerRef} className='relative overflow-x-hidden'>
           <Table onKeyDown={event => handleKeyDown(event, () => setDetail(!detail))} className='grid'>
             <TableResizableHeader headerGroups={table.getHeaderGroups()} onClick={() => table.resetRowSelection()} />

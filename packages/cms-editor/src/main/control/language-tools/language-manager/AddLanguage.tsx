@@ -44,7 +44,7 @@ export const AddLanguage = ({ languages, addLanguage }: AddLanguageProps) => {
         <BasicDialogHeader
           title={t('dialog.languageManager.languageBrowser.title')}
           description={t('dialog.languageManager.languageBrowser.description')}
-        ></BasicDialogHeader>
+        />
         <LanguageBrowser languages={languages} addLanguage={addLanguage} closeDialog={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>

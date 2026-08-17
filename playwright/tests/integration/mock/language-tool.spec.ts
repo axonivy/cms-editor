@@ -28,15 +28,16 @@ test.describe('default languages', () => {
     await expect(table.headers).toHaveCount(3);
     await expect(table.header(1).content).toHaveText('English');
     await expect(table.header(2).content).toHaveText('German');
-    await table.row(0).expectToBeSelected();
+    await table.row(0).expectNotToBeSelected();
 
+    await table.row(0).locator.click();
     await languageTools.trigger.click();
     await languageTools.languageManager.trigger.click();
     await languageTools.languageManager.checkboxOfRow(0).uncheck();
     await languageTools.languageManager.save.trigger.click();
     await expect(table.headers).toHaveCount(2);
     await expect(table.header(1).content).toHaveText('German');
-    await table.row(0).expectToBeSelected();
+    await table.row(0).expectNotToBeSelected();
   });
 
   test('local storage', async ({ page }) => {
@@ -395,7 +396,7 @@ test.describe('table updates after save', () => {
     await expect(table.headers).toHaveCount(2);
     await expect(table.header(1).content).toHaveText('English');
     await expect(table.row(0).column(0).value(0)).toHaveText('/Dialogs/agileBPM/define_WF/AdhocWorkflowTasks');
-    await table.row(0).expectToBeSelected();
+    await table.row(0).expectNotToBeSelected();
   });
 
   test('deleting language with non-visible default language', async ({ page }) => {

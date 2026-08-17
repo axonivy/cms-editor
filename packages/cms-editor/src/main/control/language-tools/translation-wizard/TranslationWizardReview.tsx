@@ -3,6 +3,7 @@ import {
   BasicDialogContent,
   Button,
   cn,
+  dataTableHelper,
   Dialog,
   DialogContent,
   DialogTrigger,
@@ -19,19 +20,20 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-  useTableSort
+  TooltipTrigger
 } from '@axonivy/ui-components';
 import { IvyIcons } from '@axonivy/ui-icons';
 import { useQuery } from '@tanstack/react-query';
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
-import { useMemo, useState, type ComponentProps, type ReactNode } from 'react';
+import { flexRender, useTable } from '@tanstack/react-table';
+import { useMemo, useState, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
 import { useUpdateValues } from '../../../../hooks/use-update-values';
 import { useClient } from '../../../../protocol/ClientContextProvider';
 import { useQueryKeys } from '../../../../query/query-client';
 import { useContentObjectTranslations, type ContentObjectTranslation } from './use-content-object-translations';
+
+const { columnHelper, tableOptions } = dataTableHelper<ContentObjectTranslation>();
 
 export type DisabledWithReason = { disabled: boolean; reason?: string };
 
@@ -176,19 +178,15 @@ const TranslationWizardReviewDialogContent = ({
 
   const translations = useContentObjectTranslations(translationRequest, data ?? []);
 
-  const sort = useTableSort();
-
-  const columns = useMemo<Array<ColumnDef<ContentObjectTranslation, ReactNode>>>(() => {
+  const columns = useMemo(() => {
     const getFullDisplayName = (languageTag: string): string => languageDisplayName.of(languageTag) ?? languageTag;
 
-    const baseColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = [
-      {
-        accessorKey: 'uri',
+    const baseColumns = [
+      columnHelper.accessor('uri', {
         header: ({ column }) => <SortableHeader column={column} name={t('common.label.path')} />,
         cell: cell => <span>{cell.getValue()}</span>
-      },
-      {
-        accessorKey: 'sourceValue',
+      }),
+      columnHelper.accessor('sourceValue', {
         header: ({ column }) => (
           <SortableHeader
             column={column}
@@ -196,46 +194,43 @@ const TranslationWizardReviewDialogContent = ({
           />
         ),
         cell: cell => <span>{cell.getValue()}</span>
-      }
+      })
     ];
 
-    const targetColumns: Array<ColumnDef<ContentObjectTranslation, ReactNode>> = translationRequest.targetLanguageTags.map(languageTag => ({
-      id: `target-${languageTag}`,
-      accessorFn: row => row.values[languageTag]?.value ?? '',
-      header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
-      cell: cell => {
-        const originalRow = cell.row.original;
-        const value = originalRow.values[languageTag];
-        const translationValue = value?.value ?? '';
-        const originalValue = value?.originalvalue ?? null;
+    const targetColumns = translationRequest.targetLanguageTags.map(languageTag =>
+      columnHelper.accessor(row => row.values[languageTag]?.value ?? '', {
+        id: `target-${languageTag}`,
+        header: ({ column }) => <SortableHeader column={column} name={getFullDisplayName(languageTag)} />,
+        cell: cell => {
+          const originalRow = cell.row.original;
+          const value = originalRow.values[languageTag];
+          const translationValue = value?.value ?? '';
+          const originalValue = value?.originalvalue ?? null;
 
-        if (originalValue === '' || originalValue === null) {
-          return <TranslationCellSimple translationValue={translationValue} />;
+          if (originalValue === '' || originalValue === null) {
+            return <TranslationCellSimple translationValue={translationValue} />;
+          }
+
+          return (
+            <TranslationCellWithToggle
+              originalRow={originalRow}
+              languageTag={languageTag}
+              translationValue={translationValue}
+              originalValue={originalValue}
+              setTranslationData={setTranslationData}
+            />
+          );
         }
+      })
+    );
 
-        return (
-          <TranslationCellWithToggle
-            originalRow={originalRow}
-            languageTag={languageTag}
-            translationValue={translationValue}
-            originalValue={originalValue}
-            setTranslationData={setTranslationData}
-          />
-        );
-      }
-    }));
-
-    return [...baseColumns, ...targetColumns];
+    return columnHelper.columns([...baseColumns, ...targetColumns]);
   }, [translationRequest, languageDisplayName, t, setTranslationData]);
 
-  const table = useReactTable({
-    ...sort.options,
+  const table = useTable({
+    ...tableOptions,
     data: translations,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: {
-      ...sort.tableState
-    }
+    columns
   });
 
   return (
