@@ -8,10 +8,6 @@ test.beforeEach(async ({ page }) => {
   editor = await CmsEditor.openNewCms(page);
 });
 
-test.afterEach(() => {
-  editor.deleteProject();
-});
-
 test('save data', async () => {
   await editor.main.locator.getByRole('button', { name: 'Language Manager' }).click();
   await editor.main.control.languageTools.languageManager.addLanguage(0);
