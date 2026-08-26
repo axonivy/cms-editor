@@ -7,6 +7,7 @@ export const server = process.env.BASE_URL ?? 'http://localhost:8080/';
 export const user = 'Developer';
 const ws = process.env.TEST_WS ?? '~Developer-cms-test-project';
 export const app = process.env.TEST_APP ?? 'Developer-cms-test-project';
+const project = 'cms-test-project';
 
 const tmpDir = '/tmp';
 
@@ -44,7 +45,7 @@ export class CmsEditor {
 
   static async openNewCms(page: Page) {
     const name = 'project' + randomUUID().replaceAll('-', '');
-    const result = await fetch(`${server}${ws}/api/web-ide/project/new`, {
+    const result = await fetch(`${server}designer/api/web-ide/project/new`, {
       method: 'POST',
       headers: {
         'X-Requested-By': 'cms-editor-tests',
@@ -52,6 +53,7 @@ export class CmsEditor {
         Authorization: 'Basic ' + Buffer.from(user + ':' + user).toString('base64')
       },
       body: JSON.stringify({
+        workspaceId: project,
         name,
         groupId: `cms.test.${name}`,
         projectId: `cms-test-${name}`,
@@ -118,19 +120,5 @@ export class CmsEditor {
         }
       });
     });
-  }
-
-  async deleteProject() {
-    const result = await fetch(`${server}${ws}/api/web-ide/project?app=${app}&project=${this.project}`, {
-      method: 'DELETE',
-      headers: {
-        'X-Requested-By': 'cms-editor-tests',
-        'Content-Type': 'application/json',
-        Authorization: 'Basic ' + Buffer.from(user + ':' + user).toString('base64')
-      }
-    });
-    if (!result.ok) {
-      throw Error(`Failed to delete project: ${result.status}`);
-    }
   }
 }
