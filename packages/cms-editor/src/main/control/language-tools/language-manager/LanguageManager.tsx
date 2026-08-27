@@ -3,6 +3,7 @@ import {
   BasicDialogContent,
   BasicField,
   Button,
+  dataTableHelper,
   deleteFirstSelectedRow,
   Dialog,
   DialogContent,
@@ -17,11 +18,10 @@ import {
   TooltipTrigger,
   useDialogHotkeys,
   useHotkeys,
-  useTableKeyHandler,
-  useTableSelect
+  useTableKeyHandler
 } from '@axonivy/ui-components';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from '@tanstack/react-table';
+import { flexRender, useTable } from '@tanstack/react-table';
 import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../../../context/AppContext';
@@ -35,6 +35,7 @@ import { LanguageManagerControl } from './LanguageManagerControl';
 import { LanguageManagerSaveConfirmation } from './LanguageManagerSaveConfirmation';
 
 export const LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS = ['languageManagerDialog'];
+const { columnHelper, tableOptions } = dataTableHelper<Language>();
 
 export const LanguageManager = ({ children }: { children: ReactNode }) => {
   const { open, onOpenChange } = useDialogHotkeys(LANGUAGE_MANAGER_DIALOG_HOTKEY_IDS);
@@ -77,10 +78,8 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
   const onCheckedChange = (checked: boolean, languageTag: string) =>
     checked ? addDefaultLanguage(languageTag) : removeDefaultLanguage(languageTag);
 
-  const selection = useTableSelect<Language>();
-  const columns: Array<ColumnDef<Language, string>> = [
-    {
-      accessorKey: 'label',
+  const columns = columnHelper.columns([
+    columnHelper.accessor('label', {
       cell: cell => (
         <BasicCheckbox
           label={cell.getValue()}
@@ -89,16 +88,12 @@ export const LanguageManagerContent = ({ closeDialog }: { closeDialog: () => voi
           tabIndex={-1}
         />
       )
-    }
-  ];
-  const table = useReactTable<Language>({
-    ...selection.options,
+    })
+  ]);
+  const table = useTable({
+    ...tableOptions,
     data: languages,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: {
-      ...selection.tableState
-    }
+    columns
   });
 
   const { handleKeyDown } = useTableKeyHandler({ table, data: languages });
