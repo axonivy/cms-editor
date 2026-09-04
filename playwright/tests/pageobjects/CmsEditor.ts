@@ -1,13 +1,14 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 import { DetailPanel } from './detail/DetailPanel';
 import { MainPanel } from './main/MainPanel';
 
 export const server = process.env.BASE_URL ?? 'http://localhost:8080/';
 export const user = 'Developer';
-const ws = process.env.TEST_WS ?? '~Developer-cms-test-project';
 export const app = process.env.TEST_APP ?? 'Developer-cms-test-project';
-const project = 'cms-test-project';
+const projectPath = path.resolve(import.meta.dirname, '../..', 'cms-test-project');
 
 const tmpDir = '/tmp';
 
@@ -35,15 +36,62 @@ export class CmsEditor {
   }
 
   static async openCms(page: Page, options?: { app?: string; project?: string; file?: string; readonly?: boolean; theme?: string }) {
-    const serverUrl = server.replace(/^https?:\/\//, '');
-    let url = `?server=${serverUrl}${ws}`;
+    const workspace = await this.createWorkspace();
+    const registeredProject = `cms-test-project-${randomUUID().slice(0, 8)}`;
+    await this.loadProject(workspace.id, registeredProject);
+    const workspaceApp = workspace.basePath.replace(/^~/, '');
+    const serverUrl = this.serverUrl();
+    let url = `?server=${serverUrl}${workspace.basePath}`;
     if (options) {
-      url += `&${this.params(options)}`;
+      url += `&${this.params({ ...options, app: workspaceApp, project: registeredProject })}`;
     }
     return this.openUrl(page, url, options?.project);
   }
 
+  private static async createWorkspace() {
+    const suffix = randomUUID().slice(0, 8);
+    const name = `cms-test-workspace-${suffix}`;
+    const workspacePath = path.join('/tmp', name);
+    await mkdir(workspacePath, { recursive: true });
+    const headers = this.apiHeaders();
+    const response = await fetch(this.apiUrl('workspace'), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ name, path: workspacePath })
+    });
+    if (!response.ok) throw Error(`Failed to create workspace: ${response.status} ${await response.text()}`);
+    const workspace: unknown = await response.json();
+    if (
+      typeof workspace !== 'object' ||
+      workspace === null ||
+      !('id' in workspace) ||
+      typeof workspace.id !== 'string' ||
+      !('baseUrl' in workspace) ||
+      typeof workspace.baseUrl !== 'string'
+    ) {
+      throw Error('Workspace creation returned an invalid response');
+    }
+    return { id: workspace.id, basePath: workspace.baseUrl.replace(/^\//, '') };
+  }
+
+  private static async loadProject(workspaceId: string, project: string) {
+    const headers = this.apiHeaders();
+    const projectResponse = await fetch(this.apiUrl('project'), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ workspaceId, name: project, path: projectPath })
+    });
+    if (!projectResponse.ok) throw Error(`Failed to create project: ${projectResponse.status} ${await projectResponse.text()}`);
+    const deployResponse = await fetch(this.apiUrl('projects/deployProjects'), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ workspaceId, projectDirs: [projectPath] })
+    });
+    if (!deployResponse.ok) throw Error(`Failed to deploy project: ${deployResponse.status} ${await deployResponse.text()}`);
+  }
+
   static async openNewCms(page: Page) {
+    const workspace = await this.createWorkspace();
     const name = 'project' + randomUUID().replaceAll('-', '');
     const result = await fetch(`${server}designer/api/web-ide/project/new`, {
       method: 'POST',
@@ -53,7 +101,7 @@ export class CmsEditor {
         Authorization: 'Basic ' + Buffer.from(user + ':' + user).toString('base64')
       },
       body: JSON.stringify({
-        workspaceId: project,
+        workspaceId: workspace.id,
         name,
         groupId: `cms.test.${name}`,
         projectId: `cms-test-${name}`,
@@ -63,7 +111,25 @@ export class CmsEditor {
     if (!result.ok) {
       throw Error(`Failed to create project: ${result.status}`);
     }
-    return await this.openCms(page, { app, project: name });
+    const serverUrl = this.serverUrl();
+    const workspaceApp = workspace.basePath.replace(/^~/, '');
+    return this.openUrl(page, `?server=${serverUrl}${workspace.basePath}&app=${workspaceApp}&project=${name}`, name);
+  }
+
+  private static apiHeaders() {
+    return {
+      'X-Requested-By': 'cms-editor-tests',
+      'Content-Type': 'application/json',
+      Authorization: 'Basic ' + Buffer.from(user + ':' + user).toString('base64')
+    };
+  }
+
+  private static apiUrl(resource: string) {
+    return `${server.replace(/\/?$/, '/')}designer/api/web-ide/${resource}`;
+  }
+
+  private static serverUrl() {
+    return server.replace(/^https?:\/\//, '');
   }
 
   static async openMock(
