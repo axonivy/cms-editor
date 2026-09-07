@@ -92,7 +92,7 @@ export const FileValueField = ({ updateValue, deleteValue, setFileExtension, all
       <Flex
         gap={2}
         alignItems='center'
-        className='ui-cms-editor-file-picker cursor-pointer rounded-sm border border-dashed border-border-input-color bg-n25 p-2.5 group-data-[message-state=error]/field:border-error aria-[disabled]:cursor-not-allowed'
+        className='ui-cms-editor-file-picker cursor-pointer rounded-sm border border-dashed! border-border-input-color bg-n25 p-2.5 group-data-[message-state=error]/field:border-error aria-[disabled]:cursor-not-allowed'
         onClick={() => inputRef.current?.click()}
         onDrop={onDrop}
         onDragOver={event => event.preventDefault()}
