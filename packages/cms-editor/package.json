@@ -18,6 +18,7 @@
   "main": "lib/editor.js",
   "dependencies": {
     "@axonivy/cms-editor-protocol": "workspace:~",
+    "@tanstack/react-table": "^9.2",
     "@tanstack/react-virtual": "^3.14.9"
   },
   "peerDependencies": {
@@ -26,7 +27,6 @@
     "@axonivy/ui-icons": "~14.0.0-next",
     "@tanstack/react-query": "^5.64",
     "@tanstack/react-query-devtools": "^5.64",
-    "@tanstack/react-table": "^9.1",
     "i18next": "^26.0.0",
     "react": "^19.0",
     "react-i18next": "^17.0.0"
