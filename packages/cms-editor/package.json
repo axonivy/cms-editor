@@ -22,9 +22,9 @@
     "@tanstack/react-virtual": "^3.14.9"
   },
   "peerDependencies": {
-    "@axonivy/jsonrpc": "~14.0.0-next",
-    "@axonivy/ui-components": "~14.0.0-next",
-    "@axonivy/ui-icons": "~14.0.0-next",
+    "@axonivy/jsonrpc": "~15.1.0-next",
+    "@axonivy/ui-components": "~15.1.0-next",
+    "@axonivy/ui-icons": "~15.1.0-next",
     "@tanstack/react-query": "^5.64",
     "@tanstack/react-query-devtools": "^5.64",
     "i18next": "^26.0.0",
@@ -32,9 +32,9 @@
     "react-i18next": "^17.0.0"
   },
   "devDependencies": {
-    "@axonivy/jsonrpc": "next-14.0.0",
-    "@axonivy/ui-components": "next-14.0.0",
-    "@axonivy/ui-icons": "next-14.0.0",
+    "@axonivy/jsonrpc": "next-15.1.0",
+    "@axonivy/ui-components": "next-15.1.0",
+    "@axonivy/ui-icons": "next-15.1.0",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "^16.3.2",
