@@ -1,7 +1,7 @@
 {
   "name": "@axonivy/cms-editor-standalone",
   "private": true,
-  "version": "14.0.0-next",
+  "version": "15.1.0-next",
   "dependencies": {
     "@axonivy/cms-editor": "workspace:~",
     "@axonivy/cms-editor-protocol": "workspace:~",
