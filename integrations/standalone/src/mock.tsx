@@ -1,4 +1,6 @@
-import { ClientContextProvider, CmsEditor, initQueryClient, QueryProvider } from '@axonivy/cms-editor';
+import { ClientContextProvider, CmsEditor, initQueryClient } from '@axonivy/cms-editor';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { HotkeysProvider, ReadonlyProvider, ThemeProvider } from '@axonivy/ui-components';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
@@ -26,13 +28,14 @@ root.render(
   <React.StrictMode>
     <ThemeProvider defaultTheme={theme}>
       <ClientContextProvider client={client}>
-        <QueryProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
           <ReadonlyProvider readonly={readonly}>
             <HotkeysProvider initiallyActiveScopes={['global']}>
               <CmsEditor context={{ app: '', project: 'project-name', file: '' }} initializePromise={initializePromise} />
             </HotkeysProvider>
           </ReadonlyProvider>
-        </QueryProvider>
+          <ReactQueryDevtools initialIsOpen={false} buttonPosition={'bottom-left'} />
+        </QueryClientProvider>
       </ClientContextProvider>
     </ThemeProvider>
   </React.StrictMode>
