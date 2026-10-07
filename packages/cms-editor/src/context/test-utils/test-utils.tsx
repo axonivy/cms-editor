@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
 import { initReactI18next } from 'react-i18next';
 import { enTranslation, type CmsValueDataObject } from '../..';
 import { ClientContextProvider } from '../../protocol/ClientContextProvider';
-import { QueryProvider } from '../../query/QueryProvider';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '../AppContext';
 
 type ContextHelperProps = {
@@ -77,9 +77,9 @@ const ContextHelper = ({
   return (
     <ReadonlyProvider readonly={readonly}>
       <ClientContextProvider client={client}>
-        <QueryProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
           <AppProvider value={aContext}>{children}</AppProvider>
-        </QueryProvider>
+        </QueryClientProvider>
       </ClientContextProvider>
     </ReadonlyProvider>
   );
