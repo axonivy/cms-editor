@@ -9,15 +9,7 @@ import type {
   Void
 } from '@axonivy/cms-editor-protocol';
 import { deepEqual } from '@axonivy/ui-components';
-import {
-  MutationCache,
-  type InferDataFromTag,
-  type InvalidateQueryFilters,
-  type MutationOptions,
-  type QueryClient,
-  type QueryKey,
-  type Updater
-} from '@tanstack/react-query';
+import { MutationCache, type InvalidateQueryFilters, type MutationOptions, type QueryClient, type QueryKey } from '@tanstack/react-query';
 import { waitFor } from '@testing-library/react';
 import { customRenderHook } from '../context/test-utils/test-utils';
 import { updatesValuesOfDefaultLanguages, updateValueOfContentObjectInData, useUpdateValues } from './use-update-values';
@@ -319,29 +311,16 @@ class QueryClientMock implements Partial<QueryClient> {
   queryData: Map<readonly unknown[], Array<unknown>> = new Map();
   invalidatedQueries: Array<readonly unknown[]> = [];
 
-  setQueryData<
-    TQueryFnData = unknown,
-    TTaggedQueryKey extends QueryKey = readonly unknown[],
-    TInferredQueryFnData = InferDataFromTag<TQueryFnData, TTaggedQueryKey>
-  >(
-    queryKey: TTaggedQueryKey,
-    updater: Updater<TInferredQueryFnData | undefined, TInferredQueryFnData | undefined>
-  ): TInferredQueryFnData | undefined {
+  setQueryData: QueryClient['setQueryData'] = (queryKey, updater) => {
     const queryDataKey = Array.from(this.queryData.keys()).find(key => deepEqual(key, queryKey));
     const data = queryDataKey ? this.queryData.get(queryDataKey) : undefined;
     const currentData = data ? data[data.length - 1] : undefined;
     if (!currentData) {
       throw new Error(`No data for query key: ${queryKey}`);
     }
-    data?.push(
-      typeof updater === 'function'
-        ? (updater as (input: NoInfer<TInferredQueryFnData> | undefined) => NoInfer<TInferredQueryFnData> | undefined)(
-            currentData as TInferredQueryFnData
-          )
-        : updater
-    );
+    data?.push(typeof updater === 'function' ? (updater as (input: unknown) => unknown)(currentData) : updater);
     return;
-  }
+  };
 
   invalidateQueries<TTaggedQueryKey extends QueryKey = readonly unknown[]>(
     filters?: InvalidateQueryFilters<TTaggedQueryKey>
