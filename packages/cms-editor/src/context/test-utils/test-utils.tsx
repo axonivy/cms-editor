@@ -1,13 +1,12 @@
 import type { Capabilities, Client, CmsEditorDataContext } from '@axonivy/cms-editor-protocol';
 import { ReadonlyProvider } from '@axonivy/ui-components';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, renderHook, type RenderHookOptions, type RenderOptions } from '@testing-library/react';
 import i18n from 'i18next';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { initReactI18next } from 'react-i18next';
 import { enTranslation, type CmsValueDataObject } from '../..';
 import { ClientContextProvider } from '../../protocol/ClientContextProvider';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from '../AppContext';
 
 type ContextHelperProps = {
@@ -57,7 +56,8 @@ const ContextHelper = ({
   const readonly = readonlyContext?.readonly !== undefined ? readonlyContext.readonly : false;
 
   const client = (clientContext?.client ?? {}) as Client;
-  const queryClient = (query?.client ?? new QueryClient()) as QueryClient;
+  const [defaultQueryClient] = useState(() => new QueryClient());
+  const queryClient = (query?.client ?? defaultQueryClient) as QueryClient;
 
   const aContext = {
     context: appContext?.context ?? ({} as CmsEditorDataContext),
