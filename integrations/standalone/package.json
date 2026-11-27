@@ -1,7 +1,7 @@
 {
   "name": "@axonivy/cms-editor-standalone",
   "private": true,
-  "version": "14.0.2-next",
+  "version": "14.0.3-next",
   "dependencies": {
     "@axonivy/cms-editor": "workspace:~",
     "@axonivy/cms-editor-protocol": "workspace:~",
@@ -16,8 +16,8 @@
     "react-i18next": "^17.0.11"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^5.101.4",
     "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-query-devtools": "^5.101.4",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@typescript/native": "npm:typescript@^7.0.2",
